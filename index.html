@@ -4,43 +4,99 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A Little World — Made for RT</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="experience" id="experience">
-    <div class="room-image" aria-hidden="true"></div>
-    <div class="warm-overlay" aria-hidden="true"></div>
-    <div class="vignette" aria-hidden="true"></div>
 
-    <section class="intro-content" aria-label="Welcome">
+  <main class="room">
+
+    <!-- Background room illustration -->
+    <div class="room-background"></div>
+    <div class="room-overlay"></div>
+    <div class="room-vignette"></div>
+
+    <!-- Intro text -->
+    <header class="welcome">
       <p class="eyebrow">A LITTLE WORLD...</p>
-      <div class="tiny-divider"><span></span><b>♥</b><span></span></div>
+      <div class="divider">
+        <span></span>
+        <b>♥</b>
+        <span></span>
+      </div>
 
-      <h1>Made for RT <span class="outline-heart">♡</span></h1>
-
+      <h1>Made for RT <span>♡</span></h1>
       <p class="subtitle">
-        A small corner of the internet,<br />
-        made with a lot of love.
+        A little room filled with<br />
+        pieces of us.
       </p>
-    </section>
+    </header>
 
-    <!-- The clickable area is positioned over the central window. -->
-    <button class="window-trigger" id="windowTrigger" aria-label="Open the window to enter">
-      <span class="window-glow"></span>
-      <span class="window-prompt">Tap the window<br><em>to enter</em><small>♡</small></span>
+    <!-- Interactive objects -->
+
+    <!-- BOOK: Our Story -->
+    <button class="object book" data-section="story" aria-label="Our Story">
+      <span class="object-glow"></span>
+      <span class="object-label">Our Story</span>
     </button>
 
-    <p class="bottom-hint">A little something, just because you're you.</p>
+    <!-- LETTER: Things I Love About You -->
+    <button class="object letter" data-section="love" aria-label="Things I Love About You">
+      <span class="object-glow"></span>
+      <span class="object-label">Things I Love About You</span>
+    </button>
 
-    <section class="next-screen" id="nextScreen" aria-hidden="true">
-      <p class="eyebrow">THE WINDOW IS OPEN...</p>
-      <h2>Welcome to your<br /><span>little corner of my world.</span> ❤️</h2>
-      <p>This is where our story begins.</p>
-      <button class="continue-button" type="button" disabled>Next chapter coming soon →</button>
-    </section>
+    <!-- FLOWERS: Date of Dates -->
+    <button class="object flowers" data-section="dates" aria-label="Date of Dates">
+      <span class="object-glow"></span>
+      <span class="object-label">Date of Dates</span>
+    </button>
+
+    <!-- WINDOW: Bucket List -->
+    <button class="object window" data-section="bucketlist" aria-label="Our Bucket List">
+      <span class="object-glow"></span>
+      <span class="object-label">Our Bucket List</span>
+    </button>
+
+    <!-- MOON: Photos -->
+    <button class="object moon" data-section="photos" aria-label="Our Photos">
+      <span class="object-glow"></span>
+      <span class="object-label">Our Photos</span>
+    </button>
+
+    <!-- CAT: Secret surprise -->
+    <button class="object cat" id="catButton" aria-label="A little surprise">
+      <span class="object-glow"></span>
+    </button>
+
+    <!-- Secret cat message -->
+    <div class="cat-message" id="catMessage">
+      <span class="cat-heart">♥</span>
+      <p>I love you, RT</p>
+      <small>more than this little room could ever hold.</small>
+    </div>
+
+    <!-- Section preview modal -->
+    <div class="section-modal" id="sectionModal" aria-hidden="true">
+      <div class="modal-card">
+        <button class="close-modal" id="closeModal" aria-label="Close">×</button>
+        <p class="modal-eyebrow">A LITTLE SOMETHING FOR YOU</p>
+        <h2 id="modalTitle">Our Story</h2>
+        <p id="modalText">
+          This little chapter is waiting to be written.
+        </p>
+        <button class="back-button" id="modalBack">Back to our room ♡</button>
+      </div>
+    </div>
+
+    <p class="bottom-hint">
+      Hover over the little things. Some of them have stories.
+    </p>
+
   </main>
 
   <script src="script.js"></script>
