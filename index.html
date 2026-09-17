@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Little World — Made for RT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="experience" id="experience">
+    <div class="room-image" aria-hidden="true"></div>
+    <div class="warm-overlay" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <section class="intro-content" aria-label="Welcome">
+      <p class="eyebrow">A LITTLE WORLD...</p>
+      <div class="tiny-divider"><span></span><b>♥</b><span></span></div>
+
+      <h1>Made for RT <span class="outline-heart">♡</span></h1>
+
+      <p class="subtitle">
+        A small corner of the internet,<br />
+        made with a lot of love.
+      </p>
+    </section>
+
+    <!-- The clickable area is positioned over the central window. -->
+    <button class="window-trigger" id="windowTrigger" aria-label="Open the window to enter">
+      <span class="window-glow"></span>
+      <span class="window-prompt">Tap the window<br><em>to enter</em><small>♡</small></span>
+    </button>
+
+    <p class="bottom-hint">A little something, just because you're you.</p>
+
+    <section class="next-screen" id="nextScreen" aria-hidden="true">
+      <p class="eyebrow">THE WINDOW IS OPEN...</p>
+      <h2>Welcome to your<br /><span>little corner of my world.</span> ❤️</h2>
+      <p>This is where our story begins.</p>
+      <button class="continue-button" type="button" disabled>Next chapter coming soon →</button>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
