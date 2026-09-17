@@ -7,95 +7,97 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <main class="room">
+  <main class="pixel-world">
 
-    <!-- Background room illustration -->
-    <div class="room-background"></div>
-    <div class="room-overlay"></div>
-    <div class="room-vignette"></div>
+    <!-- Vertical pixel-art room -->
+    <div class="pixel-room"></div>
+    <div class="room-shade"></div>
 
-    <!-- Intro text -->
-    <header class="welcome">
-      <p class="eyebrow">A LITTLE WORLD...</p>
-      <div class="divider">
-        <span></span>
-        <b>♥</b>
-        <span></span>
-      </div>
-
-      <h1>Made for RT <span>♡</span></h1>
-      <p class="subtitle">
-        A little room filled with<br />
-        pieces of us.
-      </p>
-    </header>
+    <!-- Small top title -->
+    <div class="intro">
+      <p>A LITTLE WORLD...</p>
+      <h1>Made for RT <span>♥</span></h1>
+      <div class="intro-line"></div>
+      <small>A small corner of the internet,<br>made with a lot of love.</small>
+    </div>
 
     <!-- Interactive objects -->
 
-    <!-- BOOK: Our Story -->
-    <button class="object book" data-section="story" aria-label="Our Story">
-      <span class="object-glow"></span>
-      <span class="object-label">Our Story</span>
+    <!-- Window = Bucket List -->
+    <button class="hotspot hotspot-window"
+      data-section="bucketlist"
+      aria-label="Our Bucket List">
+      <span class="hotspot-label">🌿 Bucket List</span>
     </button>
 
-    <!-- LETTER: Things I Love About You -->
-    <button class="object letter" data-section="love" aria-label="Things I Love About You">
-      <span class="object-glow"></span>
-      <span class="object-label">Things I Love About You</span>
+    <!-- Photo frame = Our Photos -->
+    <button class="hotspot hotspot-photo"
+      data-section="photos"
+      aria-label="Our Photos">
+      <span class="hotspot-label">🖼️ Our Photos</span>
     </button>
 
-    <!-- FLOWERS: Date of Dates -->
-    <button class="object flowers" data-section="dates" aria-label="Date of Dates">
-      <span class="object-glow"></span>
-      <span class="object-label">Date of Dates</span>
+    <!-- Flowers = Date of Dates -->
+    <button class="hotspot hotspot-flowers"
+      data-section="dates"
+      aria-label="Date of Dates">
+      <span class="hotspot-label">🌸 Date of Dates</span>
     </button>
 
-    <!-- WINDOW: Bucket List -->
-    <button class="object window" data-section="bucketlist" aria-label="Our Bucket List">
-      <span class="object-glow"></span>
-      <span class="object-label">Our Bucket List</span>
+    <!-- Book = Our Story -->
+    <button class="hotspot hotspot-book"
+      data-section="story"
+      aria-label="Our Story">
+      <span class="hotspot-label">📖 Our Story</span>
     </button>
 
-    <!-- MOON: Photos -->
-    <button class="object moon" data-section="photos" aria-label="Our Photos">
-      <span class="object-glow"></span>
-      <span class="object-label">Our Photos</span>
+    <!-- Letter = Things I Love About You -->
+    <button class="hotspot hotspot-letter"
+      data-section="love"
+      aria-label="Things I Love About You">
+      <span class="hotspot-label">💌 Things I Love About You</span>
     </button>
 
-    <!-- CAT: Secret surprise -->
-    <button class="object cat" id="catButton" aria-label="A little surprise">
-      <span class="object-glow"></span>
+    <!-- Cat = Secret love message -->
+    <button class="hotspot hotspot-cat"
+      id="catButton"
+      aria-label="A little surprise">
+      <span class="hotspot-label">♡</span>
     </button>
 
-    <!-- Secret cat message -->
+    <!-- Cat message -->
     <div class="cat-message" id="catMessage">
-      <span class="cat-heart">♥</span>
-      <p>I love you, RT</p>
-      <small>more than this little room could ever hold.</small>
+      <button class="message-close" id="messageClose">×</button>
+      <div class="big-heart">♥</div>
+      <h2>I love u RT Baby</h2>
+      <p>♡</p>
     </div>
 
-    <!-- Section preview modal -->
+    <!-- Section modal -->
     <div class="section-modal" id="sectionModal" aria-hidden="true">
       <div class="modal-card">
-        <button class="close-modal" id="closeModal" aria-label="Close">×</button>
-        <p class="modal-eyebrow">A LITTLE SOMETHING FOR YOU</p>
+        <button class="close-modal" id="closeModal">×</button>
+
+        <p class="modal-kicker">A LITTLE CHAPTER</p>
         <h2 id="modalTitle">Our Story</h2>
-        <p id="modalText">
-          This little chapter is waiting to be written.
-        </p>
-        <button class="back-button" id="modalBack">Back to our room ♡</button>
+        <p id="modalText"></p>
+
+        <button class="back-button" id="modalBack">
+          Back to our room ♡
+        </button>
       </div>
     </div>
 
-    <p class="bottom-hint">
-      Hover over the little things. Some of them have stories.
-    </p>
+    <div class="bottom-note">
+      <span>— ♥ —</span>
+      <p>Hover over the little things.<br>Some of them have stories.</p>
+    </div>
 
   </main>
 
