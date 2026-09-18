@@ -13,9 +13,17 @@ const modalBackdrop = document.querySelector(".modal-backdrop");
 
 hotspots.forEach((hotspot) => {
 
-  // Click / tap opens the memory
   hotspot.addEventListener("click", () => {
 
+    // If the object has a link, open that page instead of the popup
+    const link = hotspot.dataset.link;
+
+    if (link) {
+      window.location.href = link;
+      return;
+    }
+
+    // Otherwise, open the normal memory popup
     const title = hotspot.dataset.title;
     const content = hotspot.dataset.content;
 
