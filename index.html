@@ -7,100 +7,121 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-  <main class="pixel-world">
+  <main class="page">
 
-    <!-- Vertical pixel-art room -->
-    <div class="pixel-room"></div>
-    <div class="room-shade"></div>
+    <header class="intro">
+      <div class="eyebrow">A LITTLE WORLD... <span>♥</span></div>
 
-    <!-- Small top title -->
-    <div class="intro">
-      <p>A LITTLE WORLD...</p>
-      <h1>Made for RT <span>♥</span></h1>
-      <div class="intro-line"></div>
-      <small>A small corner of the internet,<br>made with a lot of love.</small>
-    </div>
+      <h1>Made for RT <span class="outline-heart">♡</span></h1>
 
-    <!-- Interactive objects -->
+      <p>A little room filled with<br>pieces of us.</p>
+    </header>
 
-    <!-- Window = Bucket List -->
-    <button class="hotspot hotspot-window"
-      data-section="bucketlist"
-      aria-label="Our Bucket List">
-      <span class="hotspot-label">🌿 Bucket List</span>
-    </button>
 
-    <!-- Photo frame = Our Photos -->
-    <button class="hotspot hotspot-photo"
-      data-section="photos"
-      aria-label="Our Photos">
-      <span class="hotspot-label">🖼️ Our Photos</span>
-    </button>
+    <!-- THE ROOM -->
 
-    <!-- Flowers = Date of Dates -->
-    <button class="hotspot hotspot-flowers"
-      data-section="dates"
-      aria-label="Date of Dates">
-      <span class="hotspot-label">🌸 Date of Dates</span>
-    </button>
+    <section class="room-wrapper">
 
-    <!-- Book = Our Story -->
-    <button class="hotspot hotspot-book"
-      data-section="story"
-      aria-label="Our Story">
-      <span class="hotspot-label">📖 Our Story</span>
-    </button>
+      <div class="room-scene" aria-label="Our little pixel room">
 
-    <!-- Letter = Things I Love About You -->
-    <button class="hotspot hotspot-letter"
-      data-section="love"
-      aria-label="Things I Love About You">
-      <span class="hotspot-label">💌 Things I Love About You</span>
-    </button>
+        <img
+          src="assets/pixel-room.png"
+          alt="A cozy pixel-art room with a window, desk, flowers, books, photographs and a cat"
+          class="room-image"
+        />
 
-    <!-- Cat = Secret love message -->
-    <button class="hotspot hotspot-cat"
-      id="catButton"
-      aria-label="A little surprise">
-      <span class="hotspot-label">♡</span>
-    </button>
+        <!-- WINDOW -->
+        <button
+          class="hotspot window-hotspot"
+          data-title="Our Bucket List"
+          data-content="All the places we want to go, all the little things we want to do, and all the memories still waiting for us."
+          aria-label="Our Bucket List"
+        ></button>
 
-    <!-- Cat message -->
-    <div class="cat-message" id="catMessage">
-      <button class="message-close" id="messageClose">×</button>
-      <div class="big-heart">♥</div>
-      <h2>I love u RT Baby</h2>
-      <p>♡</p>
-    </div>
+        <!-- BOOK -->
+        <button
+          class="hotspot book-hotspot"
+          data-title="Our Story"
+          data-content="Every little chapter of us. From the first conversations to everything we are still going to become."
+          aria-label="Our Story"
+        ></button>
 
-    <!-- Section modal -->
-    <div class="section-modal" id="sectionModal" aria-hidden="true">
-      <div class="modal-card">
-        <button class="close-modal" id="closeModal">×</button>
+        <!-- LETTER -->
+        <button
+          class="hotspot letter-hotspot"
+          data-title="Things I Love About You"
+          data-content="The little things, the big things, and all the things I probably don't say enough."
+          aria-label="Things I Love About You"
+        ></button>
 
-        <p class="modal-kicker">A LITTLE CHAPTER</p>
-        <h2 id="modalTitle">Our Story</h2>
-        <p id="modalText"></p>
+        <!-- FLOWERS -->
+        <button
+          class="hotspot flowers-hotspot"
+          data-title="Date of Dates"
+          data-content="A place for our favourite dates, our sweetest memories, and all the dates we haven't had yet."
+          aria-label="Date of Dates"
+        ></button>
 
-        <button class="back-button" id="modalBack">
-          Back to our room ♡
-        </button>
+        <!-- PHOTO FRAMES -->
+        <button
+          class="hotspot photos-hotspot"
+          data-title="Our Photos"
+          data-content="Little pieces of time I want to keep forever. More memories will find their place here."
+          aria-label="Our Photos"
+        ></button>
+
+        <!-- CAT -->
+        <button
+          class="hotspot cat-hotspot"
+          data-title="I love u RT Baby ♡"
+          data-content="Just a tiny reminder from your sleepy little guardian."
+          aria-label="I love u RT Baby"
+        ></button>
+
       </div>
-    </div>
 
-    <div class="bottom-note">
-      <span>— ♥ —</span>
+    </section>
+
+
+    <footer class="footer">
+      <div class="footer-heart">— ♥ —</div>
       <p>Hover over the little things.<br>Some of them have stories.</p>
-    </div>
+    </footer>
 
   </main>
 
+
+  <!-- POPUP -->
+
+  <div class="modal" id="memoryModal" aria-hidden="true">
+
+    <div class="modal-backdrop"></div>
+
+    <div class="modal-card" role="dialog" aria-modal="true">
+
+      <button class="modal-close" aria-label="Close">×</button>
+
+      <div class="modal-small">A LITTLE PIECE OF US</div>
+
+      <h2 id="modalTitle"></h2>
+
+      <div class="modal-divider">♥</div>
+
+      <p id="modalContent"></p>
+
+    </div>
+
+  </div>
+
+
   <script src="script.js"></script>
+
 </body>
 </html>
