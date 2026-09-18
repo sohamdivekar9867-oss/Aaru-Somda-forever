@@ -3,6 +3,9 @@ const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORY_EDIT_PIN = "RT2026";
 
+// These are the two original perspective pages. They are protected from deletion.
+const ORIGINAL_SLUGS = new Set(["rt-perspective", "soham-perspective"]);
+
 let storyRows = [];
 let readerPages = [];
 let currentPage = 0;
@@ -11,16 +14,27 @@ let editingUnlocked = false;
 const $ = id => document.getElementById(id);
 
 function escapeHtml(value = "") {
-  return value.replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[char]));
+  return String(value).replace(/[&<>'"]/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#039;",
+    '"': "&quot;"
+  }[char]));
 }
 
 function renderContent(content = "") {
   const parts = content.trim() ? content.trim().split(/\n\s*\n/) : ["Write your memories here."];
-  return parts.map(part => `<p>${escapeHtml(part.trim()).replace(/\n/g, "<br>")}</p>`).join("");
+  return parts
+    .map(part => `<p>${escapeHtml(part.trim()).replace(/\n/g, "<br>")}</p>`)
+    .join("");
 }
 
 function textFromEditor(element) {
-  return Array.from(element.querySelectorAll("p")).map(p => p.innerText.trim()).filter(Boolean).join("\n\n") || element.innerText.trim();
+  return Array.from(element.querySelectorAll("p"))
+    .map(p => p.innerText.trim())
+    .filter(Boolean)
+    .join("\n\n") || element.innerText.trim();
 }
 
 function normaliseAuthor(author, slug = "") {
@@ -30,21 +44,66 @@ function normaliseAuthor(author, slug = "") {
 
 function groupStories(rows) {
   const groups = [];
+
   rows.forEach(row => {
-    const title = row.title || "Untitled chapter";
+    const title = (row.title || "Untitled chapter").trim();
     let group = groups.find(item => item.title.toLowerCase() === title.toLowerCase());
-    if (!group) { group = { title, rows: [] }; groups.push(group); }
+
+    if (!group) {
+      group = { title, rows: [] };
+      groups.push(group);
+    }
+
     group.rows.push(row);
   });
+
   return groups;
+}
+
+function isDeletableGroup(group) {
+  // A group is deletable if it contains at least one dynamically created page.
+  // The original RT and Soham pages remain protected.
+  return group.rows.some(row => !ORIGINAL_SLUGS.has(row.slug));
 }
 
 function createStoryPage(row, number) {
   const author = normaliseAuthor(row.author, row.slug);
+  const slug = row.slug;
   const page = document.createElement("section");
+
   page.className = "reader-page story-page";
-  page.dataset.slug = row.slug;
-  page.innerHTML = `<div class="page-inner"><div class="page-top"><span>${String(number).padStart(2,"0")} · ${author === "RT" ? "HER SIDE" : "HIS SIDE"}</span><span>${escapeHtml(row.title || "OUR STORY")}</span></div><div class="story-page-content"><p class="page-eyebrow">${escapeHtml(row.title || "Our story")}</p><h2>${escapeHtml(author)}'s<br><em>Perspective</em></h2><div class="page-rule"></div><div class="editable-content contenteditable-area" id="editor-${escapeHtml(row.slug)}" contenteditable="${editingUnlocked}" spellcheck="true">${renderContent(row.content || "")}</div><button class="story-save-button" data-slug="${escapeHtml(row.slug)}">Save this page</button><button class="story-delete-button" data-slug="${escapeHtml(row.slug)}" hidden>Delete page</button><div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div></div><div class="page-bottom"><span>Written by ${escapeHtml(author)}</span><span>${String(number).padStart(2,"0")}</span></div></div>`;
+  page.dataset.slug = slug;
+
+  page.innerHTML = `
+    <div class="page-inner">
+      <div class="page-top">
+        <span>${String(number).padStart(2, "0")} · ${author === "RT" ? "HER SIDE" : "HIS SIDE"}</span>
+        <span>${escapeHtml(row.title || "OUR STORY")}</span>
+      </div>
+
+      <div class="story-page-content">
+        <p class="page-eyebrow">${escapeHtml(row.title || "Our story")}</p>
+        <h2>${escapeHtml(author)}'s<br><em>Perspective</em></h2>
+        <div class="page-rule"></div>
+
+        <div
+          class="editable-content contenteditable-area"
+          id="editor-${escapeHtml(slug)}"
+          contenteditable="${editingUnlocked}"
+          spellcheck="true"
+        >${renderContent(row.content || "")}</div>
+
+        <button class="story-save-button" data-slug="${escapeHtml(slug)}">Save this page</button>
+
+        <div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div>
+      </div>
+
+      <div class="page-bottom">
+        <span>Written by ${escapeHtml(author)}</span>
+        <span>${String(number).padStart(2, "0")}</span>
+      </div>
+    </div>`;
+
   return page;
 }
 
@@ -52,11 +111,13 @@ function buildPages() {
   const container = $("dynamicStoryPages");
   container.innerHTML = "";
   readerPages = [$("indexPage")];
-  storyRows.forEach((row, i) => {
-    const page = createStoryPage(row, i + 3);
+
+  storyRows.forEach((row, index) => {
+    const page = createStoryPage(row, index + 3);
     container.appendChild(page);
     readerPages.push(page);
   });
+
   bindPageButtons();
   buildIndex();
   showPage(Math.min(currentPage, readerPages.length - 1));
@@ -64,87 +125,289 @@ function buildPages() {
 
 function buildIndex() {
   const groups = groupStories(storyRows);
-  const html = groups.map((group, i) => {
+
+  const makeEntry = (group, index, overlay = false) => {
     const first = group.rows[0];
     const target = `story-${first.slug}`;
-    return `<button class="index-entry" data-target="${escapeHtml(target)}"><span class="index-number">${String(i+1).padStart(2,"0")}</span><span class="index-entry-text"><strong>${escapeHtml(group.title)}</strong></span><span class="index-page-number">${String(i+3).padStart(2,"0")}</span></button>`;
-  }).join("");
-  $("indexList").innerHTML = html || `<div class="index-coming-soon"><span>♡</span> Your first chapter is waiting to be written.</div>`;
-  $("overlayIndexList").innerHTML = html;
-  document.querySelectorAll(".index-entry").forEach(button => button.addEventListener("click", () => goToSlug(button.dataset.target.replace(/^story-/, ""))));
+    const number = String(index + 1).padStart(2, "0");
+    const pageNumber = String(storyRows.indexOf(first) + 3).padStart(2, "0");
+    const deletable = editingUnlocked && isDeletableGroup(group);
+    const entryClass = overlay ? "overlay-entry" : "index-entry";
+    const numberClass = overlay ? "overlay-entry-number" : "index-number";
+    const textClass = overlay ? "overlay-entry-text" : "index-entry-text";
+    const pageClass = overlay ? "overlay-entry-page" : "index-page-number";
+
+    return `
+      <div class="${entryClass}-wrapper">
+        <button class="${entryClass}" data-target="${escapeHtml(target)}">
+          <span class="${numberClass}">${number}</span>
+          <span class="${textClass}"><strong>${escapeHtml(group.title)}</strong></span>
+          <span class="${pageClass}">${pageNumber}</span>
+        </button>
+        ${deletable ? `<button class="entry-delete-button" data-title="${escapeHtml(group.title)}" title="Delete this entire story entry">Delete</button>` : ""}
+      </div>`;
+  };
+
+  const mainHtml = groups.length
+    ? groups.map((group, index) => makeEntry(group, index, false)).join("")
+    : `<div class="index-coming-soon"><span>♡</span> Your first chapter is waiting to be written.</div>`;
+
+  const overlayHtml = groups.length
+    ? groups.map((group, index) => makeEntry(group, index, true)).join("")
+    : `<div class="index-coming-soon"><span>♡</span> Your first chapter is waiting to be written.</div>`;
+
+  $("indexList").innerHTML = mainHtml;
+  $("overlayIndexList").innerHTML = overlayHtml;
+
+  document.querySelectorAll(".index-entry, .overlay-entry").forEach(button => {
+    button.addEventListener("click", () => {
+      goToSlug(button.dataset.target.replace(/^story-/, ""));
+    });
+  });
+
+  document.querySelectorAll(".entry-delete-button").forEach(button => {
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      deleteStoryEntry(button.dataset.title);
+    });
+  });
 }
 
 function bindPageButtons() {
-  document.querySelectorAll(".story-save-button").forEach(button => button.addEventListener("click", () => saveStory(button)));
-  document.querySelectorAll(".story-delete-button").forEach(button => button.addEventListener("click", () => deleteStory(button.dataset.slug)));
+  document.querySelectorAll(".story-save-button").forEach(button => {
+    button.addEventListener("click", () => saveStory(button));
+  });
 }
 
 async function loadStories() {
-  const { data, error } = await supabaseClient.from("story_pages").select("slug,title,author,content,subtitle,page_type,display_order,published").eq("published", true).order("display_order", { ascending: true });
-  if (error) { console.error(error); alert("Could not load the story pages."); return; }
+  const { data, error } = await supabaseClient
+    .from("story_pages")
+    .select("slug,title,author,content,subtitle,page_type,display_order,published")
+    .eq("published", true)
+    .order("display_order", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    alert("Could not load the story pages.");
+    return;
+  }
+
   storyRows = data || [];
   buildPages();
 }
 
 async function saveStory(button) {
-  if (!editingUnlocked) return alert("Unlock editing first ♡");
+  if (!editingUnlocked) {
+    alert("Unlock editing first ♡");
+    return;
+  }
+
   const row = storyRows.find(item => item.slug === button.dataset.slug);
   const editor = document.getElementById(`editor-${button.dataset.slug}`);
+
   if (!row || !editor) return;
+
   const content = textFromEditor(editor);
-  button.disabled = true; button.textContent = "Saving...";
-  const { error } = await supabaseClient.from("story_pages").update({ content, updated_at: new Date().toISOString() }).eq("slug", row.slug);
-  if (error) { console.error(error); button.textContent = "Save failed"; alert("Could not save this page. Check the Supabase policy."); }
-  else { row.content = content; button.textContent = "Saved ✓"; setTimeout(() => { button.textContent = "Save this page"; button.disabled = false; }, 1800); }
+  button.disabled = true;
+  button.textContent = "Saving...";
+
+  const { error } = await supabaseClient
+    .from("story_pages")
+    .update({
+      content,
+      updated_at: new Date().toISOString()
+    })
+    .eq("slug", row.slug);
+
+  if (error) {
+    console.error(error);
+    button.textContent = "Save failed";
+    button.disabled = false;
+    alert("Could not save this page. Check the Supabase UPDATE policy.");
+    return;
+  }
+
+  // Update only this row locally. RT and Soham remain independent.
+  row.content = content;
+  button.textContent = "Saved ✓";
+
+  setTimeout(() => {
+    button.textContent = "Save this page";
+    button.disabled = false;
+  }, 1800);
 }
 
 async function addNewPage() {
   if (!editingUnlocked) return;
+
   const title = prompt("Enter the heading for this new chapter:");
   if (!title || !title.trim()) return;
+
   const cleanTitle = title.trim();
-  const base = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `chapter-${Date.now()}`;
-  if (storyRows.some(row => (row.title || "").toLowerCase() === cleanTitle.toLowerCase())) return alert("A chapter with this heading already exists.");
-  const maxOrder = storyRows.reduce((max, row) => Math.max(max, Number(row.display_order) || 0), 0);
-  const rows = [{ slug: `${base}-rt`, title: cleanTitle, author: "RT", content: "", page_type: "perspective", display_order: maxOrder + 1, published: true }, { slug: `${base}-soham`, title: cleanTitle, author: "Soham", content: "", page_type: "perspective", display_order: maxOrder + 2, published: true }];
-  const { data, error } = await supabaseClient.from("story_pages").insert(rows).select();
-  if (error) { console.error(error); alert("Could not create the new pages. Check that INSERT permission is enabled in Supabase."); return; }
+  const base = cleanTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || `chapter-${Date.now()}`;
+
+  if (storyRows.some(row => (row.title || "").trim().toLowerCase() === cleanTitle.toLowerCase())) {
+    alert("A chapter with this heading already exists.");
+    return;
+  }
+
+  const maxOrder = storyRows.reduce(
+    (max, row) => Math.max(max, Number(row.display_order) || 0),
+    0
+  );
+
+  // Both rows share the same title, so they appear as one entry in the index.
+  // Their slugs and content remain separate, allowing independent saving.
+  const rows = [
+    {
+      slug: `${base}-rt`,
+      title: cleanTitle,
+      author: "RT",
+      content: "",
+      page_type: "perspective",
+      display_order: maxOrder + 1,
+      published: true
+    },
+    {
+      slug: `${base}-soham`,
+      title: cleanTitle,
+      author: "Soham",
+      content: "",
+      page_type: "perspective",
+      display_order: maxOrder + 2,
+      published: true
+    }
+  ];
+
+  const { data, error } = await supabaseClient
+    .from("story_pages")
+    .insert(rows)
+    .select();
+
+  if (error) {
+    console.error(error);
+    alert("Could not create the new pages. Check that INSERT permission is enabled in Supabase.");
+    return;
+  }
+
   storyRows.push(...(data || rows));
   buildPages();
   alert(`“${cleanTitle}” has been added with RT's and Soham's pages ♡`);
 }
 
-async function deleteStory(slug) {
-  if (!editingUnlocked || !confirm("Delete this perspective page? This cannot be undone.")) return;
-  const { error } = await supabaseClient.from("story_pages").delete().eq("slug", slug);
-  if (error) return alert("Could not delete this page.");
-  storyRows = storyRows.filter(row => row.slug !== slug); buildPages();
+async function deleteStoryEntry(title) {
+  if (!editingUnlocked) return;
+
+  const matchingRows = storyRows.filter(
+    row => (row.title || "").trim().toLowerCase() === String(title).trim().toLowerCase()
+  );
+
+  const deletableRows = matchingRows.filter(row => !ORIGINAL_SLUGS.has(row.slug));
+  if (!deletableRows.length) {
+    alert("The original story pages cannot be deleted ♡");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Delete “${title}” completely?\n\nThis will delete both RT's and Soham's perspectives. This cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  // Delete every row belonging to this story title in one operation.
+  // This removes both perspectives together for dynamically created entries.
+  const slugsToDelete = deletableRows.map(row => row.slug);
+
+  const { error } = await supabaseClient
+    .from("story_pages")
+    .delete()
+    .in("slug", slugsToDelete);
+
+  if (error) {
+    console.error(error);
+    alert("Could not delete this story entry. Check the Supabase DELETE policy.");
+    return;
+  }
+
+  storyRows = storyRows.filter(row => !slugsToDelete.includes(row.slug));
+  currentPage = 0;
+  buildPages();
+  closeOverlay();
+  alert(`“${title}” and both perspectives were deleted.`);
 }
 
 function unlockEditing() {
+  if (editingUnlocked) return;
+
   const pin = prompt("Enter the private PIN:");
-  if (pin !== STORY_EDIT_PIN) return alert("Incorrect PIN ♡");
+  if (pin !== STORY_EDIT_PIN) {
+    alert("Incorrect PIN ♡");
+    return;
+  }
+
   editingUnlocked = true;
   $("addPageBtn").hidden = false;
-  document.querySelectorAll(".contenteditable-area").forEach(el => el.contentEditable = "true");
-  document.querySelectorAll(".story-delete-button").forEach(button => button.hidden = false);
+  document.querySelectorAll(".contenteditable-area").forEach(el => {
+    el.contentEditable = "true";
+  });
   $("editStoryBtn").textContent = "Editing unlocked ✓";
+
+  // Rebuild the index so Delete buttons appear only after unlocking.
+  buildIndex();
 }
 
 function showPage(index) {
   if (!readerPages.length) return;
+
   currentPage = Math.max(0, Math.min(index, readerPages.length - 1));
-  readerPages.forEach((page, i) => page.classList.toggle("active-page", i === currentPage));
+  readerPages.forEach((page, i) => {
+    page.classList.toggle("active-page", i === currentPage);
+  });
+
   $("pageCounter").textContent = `Page ${currentPage + 2} of ${readerPages.length + 1}`;
-  $("prevBtn").disabled = currentPage === 0; $("nextBtn").disabled = currentPage === readerPages.length - 1;
+  $("prevBtn").disabled = currentPage === 0;
+  $("nextBtn").disabled = currentPage === readerPages.length - 1;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-function goToSlug(slug) { const page = readerPages.find(p => p.dataset.slug === slug); if (page) showPage(readerPages.indexOf(page)); closeOverlay(); }
-function openOverlay() { $("indexOverlay").classList.add("open"); }
-function closeOverlay() { $("indexOverlay").classList.remove("open"); }
+
+function goToSlug(slug) {
+  const page = readerPages.find(page => page.dataset.slug === slug);
+  if (page) showPage(readerPages.indexOf(page));
+  closeOverlay();
+}
+
+function openOverlay() {
+  $("indexOverlay").classList.add("open");
+}
+
+function closeOverlay() {
+  $("indexOverlay").classList.remove("open");
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-  $("startBookBtn").addEventListener("click", () => { $("coverPage").classList.add("cover-opening"); setTimeout(() => { $("coverPage").style.display = "none"; $("reader").style.display = "block"; showPage(0); }, 450); });
-  $("prevBtn").addEventListener("click", () => showPage(currentPage - 1)); $("nextBtn").addEventListener("click", () => showPage(currentPage + 1)); $("bottomIndexBtn").addEventListener("click", () => showPage(0)); $("indexToggle").addEventListener("click", openOverlay); $("closeIndexBtn").addEventListener("click", closeOverlay); $("editStoryBtn").addEventListener("click", unlockEditing); $("addPageBtn").addEventListener("click", addNewPage); document.addEventListener("keydown", e => { if (e.key === "Escape") closeOverlay(); });
+  $("startBookBtn").addEventListener("click", () => {
+    $("coverPage").classList.add("cover-opening");
+    setTimeout(() => {
+      $("coverPage").style.display = "none";
+      $("reader").style.display = "block";
+      showPage(0);
+    }, 450);
+  });
+
+  $("prevBtn").addEventListener("click", () => showPage(currentPage - 1));
+  $("nextBtn").addEventListener("click", () => showPage(currentPage + 1));
+  $("bottomIndexBtn").addEventListener("click", () => showPage(0));
+  $("indexToggle").addEventListener("click", openOverlay);
+  $("closeIndexBtn").addEventListener("click", closeOverlay);
+  $("editStoryBtn").addEventListener("click", unlockEditing);
+  $("addPageBtn").addEventListener("click", addNewPage);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeOverlay();
+  });
+
   loadStories();
 });
