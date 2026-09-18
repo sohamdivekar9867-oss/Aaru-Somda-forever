@@ -4,13 +4,14 @@
 
 const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 
-// Paste the PUBLISHABLE key you copied from Supabase here
+// Publishable key — safe to use in browser code
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -54,10 +55,127 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // =========================
+  // LOAD STORIES FROM SUPABASE
+  // =========================
+
+  async function loadStoryContent() {
+
+    try {
+
+      const { data, error } = await supabaseClient
+        .from("story_pages")
+        .select(`
+          slug,
+          title,
+          author,
+          content,
+          subtitle,
+          page_type,
+          display_order,
+          published
+        `)
+        .eq("published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) {
+        console.error("Error loading story pages:", error);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        console.log("No published story pages found.");
+        return;
+      }
+
+      console.log("Story pages loaded:", data);
+
+
+      // =========================
+      // FIND INDIVIDUAL STORIES
+      // =========================
+
+      const rtStory = data.find(
+        page => page.slug === "rt-perspective"
+      );
+
+      const sohamStory = data.find(
+        page => page.slug === "soham-perspective"
+      );
+
+
+      // =========================
+      // RENDER STORY CONTENT
+      // =========================
+
+      function renderStoryContent(elementId, content) {
+
+        const element = document.getElementById(elementId);
+
+        if (!element || !content) return;
+
+        // Clear existing placeholder content
+        element.innerHTML = "";
+
+        // Split content into paragraphs wherever there is
+        // an empty line between paragraphs.
+        const paragraphs = content
+          .trim()
+          .split(/\n\s*\n/);
+
+        paragraphs.forEach(text => {
+
+          const paragraph = document.createElement("p");
+
+          paragraph.textContent = text.trim();
+
+          element.appendChild(paragraph);
+
+        });
+
+      }
+
+
+      // =========================
+      // INSERT DATABASE CONTENT
+      // =========================
+
+      if (rtStory) {
+
+        renderStoryContent(
+          "rtStoryContent",
+          rtStory.content
+        );
+
+      }
+
+      if (sohamStory) {
+
+        renderStoryContent(
+          "sohamStoryContent",
+          sohamStory.content
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error("Unexpected error loading stories:", error);
+
+    }
+
+  }
+
+
+  // Load the stories immediately
+  loadStoryContent();
+
+
+  // =========================
   // OPEN THE BOOK
   // =========================
 
   if (startBookBtn) {
+
     startBookBtn.addEventListener("click", () => {
 
       if (coverPage) {
@@ -85,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 450);
 
     });
+
   }
 
 
@@ -97,16 +216,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!pages.length) return;
 
     // Keep index within valid range
-    currentPage = Math.max(0, Math.min(index, pages.length - 1));
+    currentPage = Math.max(
+      0,
+      Math.min(index, pages.length - 1)
+    );
 
     pages.forEach((page, i) => {
-      page.classList.toggle("active-page", i === currentPage);
+
+      page.classList.toggle(
+        "active-page",
+        i === currentPage
+      );
+
     });
 
     // Update page counter
     if (pageCounter) {
+
       pageCounter.textContent =
         `Page ${currentPage + 2} of ${pages.length + 1}`;
+
     }
 
     // Update navigation buttons
@@ -115,13 +244,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (nextBtn) {
-      nextBtn.disabled = currentPage === pages.length - 1;
+      nextBtn.disabled =
+        currentPage === pages.length - 1;
     }
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
+
   }
 
 
@@ -130,19 +261,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
 
   if (nextBtn) {
+
     nextBtn.addEventListener("click", () => {
+
       if (currentPage < pages.length - 1) {
         showPage(currentPage + 1);
       }
+
     });
+
   }
 
   if (prevBtn) {
+
     prevBtn.addEventListener("click", () => {
+
       if (currentPage > 0) {
         showPage(currentPage - 1);
       }
+
     });
+
   }
 
 
@@ -163,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     closeOverlay();
+
   }
 
 
@@ -170,8 +310,11 @@ document.addEventListener("DOMContentLoaded", () => {
   indexEntries.forEach(entry => {
 
     entry.addEventListener("click", () => {
+
       const targetId = entry.dataset.target;
+
       goToPage(targetId);
+
     });
 
   });
@@ -188,7 +331,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const clone = entry.cloneNode(true);
 
       clone.addEventListener("click", () => {
+
         goToPage(entry.dataset.target);
+
       });
 
       overlayIndexList.appendChild(clone);
@@ -203,15 +348,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
 
   function openOverlay() {
+
     if (indexOverlay) {
       indexOverlay.classList.add("open");
     }
+
   }
 
   function closeOverlay() {
+
     if (indexOverlay) {
       indexOverlay.classList.remove("open");
     }
+
   }
 
   if (indexToggle) {
@@ -223,9 +372,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (bottomIndexBtn) {
+
     bottomIndexBtn.addEventListener("click", () => {
+
       showPage(0);
+
     });
+
   }
 
 
@@ -234,9 +387,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
 
   document.addEventListener("keydown", (event) => {
+
     if (event.key === "Escape") {
       closeOverlay();
     }
+
   });
 
 });
