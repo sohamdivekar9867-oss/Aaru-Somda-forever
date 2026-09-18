@@ -1,498 +1,474 @@
+/* =========================
+   RESET
+========================= */
+
 * {
   box-sizing: border-box;
 }
 
-:root {
-  --cream: #ffe7d2;
-  --pink: #ff9da9;
-  --dark: #241321;
-  --panel: rgba(42, 20, 35, 0.94);
+html {
+  scroll-behavior: smooth;
 }
 
-html,
 body {
   margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: #241321;
-}
-
-body {
+  background: #160b13;
+  color: #f9e8df;
   font-family: "DM Mono", monospace;
-  color: var(--cream);
   overflow-x: hidden;
 }
 
-/* Main page */
-
-.pixel-world {
-  position: relative;
-  width: 100%;
-  min-height: 100svh;
-  background: #241321;
-  overflow: hidden;
+button {
+  font: inherit;
 }
 
-/*
-  The image is vertical.
-  We use it as a full-screen background on mobile.
-*/
 
-.pixel-room {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+/* =========================
+   PAGE
+========================= */
 
-  background-image: url("./assets/pixel-room.png");
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
-
-  background-color: #241321;
+.page {
+  min-height: 100vh;
+  padding: 55px 20px 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Gentle dark overlay for readability */
 
-.room-shade {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(25, 10, 22, 0.25),
-      rgba(25, 10, 22, 0.02) 35%,
-      rgba(25, 10, 22, 0.15) 75%,
-      rgba(25, 10, 22, 0.5)
-    );
-}
-
-/* Intro */
+/* =========================
+   INTRO
+========================= */
 
 .intro {
-  position: absolute;
-  z-index: 3;
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
   text-align: center;
-  pointer-events: none;
+  position: relative;
+  z-index: 5;
+  margin-bottom: 35px;
 }
 
-.intro p {
-  margin: 0 0 12px;
-  color: #ffb7b5;
-  font-size: 10px;
-  letter-spacing: 4px;
-  text-shadow: 0 2px 8px #241321;
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 7px;
+  color: #f4b8b2;
+  margin-bottom: 18px;
+}
+
+.eyebrow span {
+  font-size: 14px;
+  margin-left: 6px;
 }
 
 .intro h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: 1.05;
+  font-weight: 500;
   margin: 0;
-  color: #ffe6d5;
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(15px, 4vw, 27px);
-  line-height: 1.7;
-  text-shadow:
-    2px 2px 0 #5b3044,
-    0 0 12px rgba(255, 160, 170, 0.35);
+  color: #fff0e7;
+  text-shadow: 0 0 25px rgba(255, 177, 170, 0.12);
 }
 
-.intro h1 span {
-  color: #ff879d;
+.outline-heart {
+  color: #f29ca5;
+  font-size: 1.1em;
+  margin-left: 3px;
 }
 
-.intro-line {
-  width: 70px;
-  height: 2px;
-  margin: 13px auto;
-  background: #ff9da9;
-  opacity: 0.8;
+.intro p {
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #eac9c3;
+  margin: 22px 0 0;
 }
 
-.intro small {
-  color: #ffe2d2;
-  font-size: 10px;
-  line-height: 1.8;
-  text-shadow: 0 2px 8px #241321;
+
+/* =========================
+   ROOM
+========================= */
+
+.room-wrapper {
+  width: min(100%, 760px);
+  display: flex;
+  justify-content: center;
 }
 
-/* Interactive hotspots */
+.room-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 5px;
+
+  box-shadow:
+    0 0 0 1px rgba(255, 190, 170, 0.08),
+    0 25px 80px rgba(0, 0, 0, 0.45),
+    0 0 80px rgba(151, 56, 77, 0.12);
+
+  background: #28131d;
+}
+
+.room-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* =========================
+   INVISIBLE OBJECT HOTSPOTS
+========================= */
 
 .hotspot {
   position: absolute;
-  z-index: 5;
-
-  border: 0;
+  z-index: 3;
+  display: block;
   padding: 0;
+  border: 0;
+  border-radius: 12px;
   background: transparent;
   cursor: pointer;
-
+  outline: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Subtle glowing interaction area */
-
+/* Soft glow around the object when hovered */
 .hotspot::before {
   content: "";
   position: absolute;
-  inset: -12px;
-
-  border-radius: 50%;
-  background: rgba(255, 166, 150, 0.28);
-  filter: blur(15px);
-
+  inset: -8px;
+  border-radius: inherit;
+  background: rgba(255, 185, 170, 0.08);
+  box-shadow:
+    0 0 18px rgba(255, 175, 160, 0.16),
+    inset 0 0 12px rgba(255, 210, 190, 0.06);
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .hotspot:hover::before,
 .hotspot:focus-visible::before,
-.hotspot:active::before {
+.hotspot.active::before {
   opacity: 1;
 }
 
-.hotspot:focus-visible {
-  outline: 2px solid #ffe1d1;
-  outline-offset: 5px;
-}
-
-/* Labels */
-
-.hotspot-label {
+/* The label appears ONLY on hover/focus */
+.hotspot::after {
+  content: attr(data-title);
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 12px);
-  transform: translate(-50%, 8px);
+  bottom: calc(100% + 15px);
+  transform: translateX(-50%) translateY(5px);
 
   width: max-content;
   max-width: 220px;
 
-  padding: 9px 12px;
-  border: 1px solid rgba(255, 200, 190, 0.35);
-  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid rgba(255, 193, 180, 0.2);
+  border-radius: 18px;
 
-  background: rgba(40, 18, 32, 0.92);
-  color: #ffe8d9;
+  background: rgba(42, 20, 31, 0.96);
+  color: #ffe8df;
 
   font-family: "DM Mono", monospace;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
+  letter-spacing: 0.2px;
+  white-space: normal;
   text-align: center;
 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
   opacity: 0;
-  pointer-events: none;
-
+  visibility: hidden;
   transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    visibility 0.25s ease;
 
-  box-shadow:
-    0 0 12px rgba(255, 150, 150, 0.15),
-    0 5px 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
 }
 
-.hotspot:hover .hotspot-label,
-.hotspot:focus-visible .hotspot-label,
-.hotspot:active .hotspot-label {
+.hotspot:hover::after,
+.hotspot:focus-visible::after,
+.hotspot.active::after {
   opacity: 1;
-  transform: translate(-50%, 0);
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
-/*
-  POSITIONING FOR THE NEW VERTICAL IMAGE
 
-  These are based on the image layout:
-  window = upper-middle
-  photo = upper-right
-  flowers = middle-right
-  book + letter = desk
-  cat = chair
-*/
+/* =========================
+   OBJECT POSITIONS
+   Based on the clean 1024 x 1536 image
+========================= */
 
-/* Window / Bucket List */
-.hotspot-window {
-  top: 13%;
-  left: 42%;
-  width: 35%;
-  height: 30%;
+/* Window — central window */
+.window-hotspot {
+  left: 29%;
+  top: 10%;
+  width: 43%;
+  height: 43%;
 }
 
-/* Photo frame */
-.hotspot-photo {
-  top: 19%;
-  right: 3%;
-  width: 23%;
-  height: 17%;
+/* Book — on the left side of desk */
+.book-hotspot {
+  left: 27%;
+  top: 53%;
+  width: 25%;
+  height: 9%;
 }
 
-/* Flowers */
-.hotspot-flowers {
-  top: 45%;
-  right: 5%;
-  width: 28%;
+/* Letter — center-right on desk */
+.letter-hotspot {
+  left: 50%;
+  top: 53%;
+  width: 20%;
+  height: 9%;
+}
+
+/* Flowers — right side of desk */
+.flowers-hotspot {
+  left: 67%;
+  top: 50%;
+  width: 25%;
   height: 15%;
 }
 
-/* Book */
-.hotspot-book {
-  top: 53%;
-  left: 23%;
-  width: 28%;
-  height: 10%;
+/* Photo frames — right wall */
+.photos-hotspot {
+  left: 87%;
+  top: 10%;
+  width: 11%;
+  height: 30%;
 }
 
-/* Letter */
-.hotspot-letter {
-  top: 53%;
-  left: 51%;
-  width: 27%;
-  height: 10%;
-}
-
-/* Cat */
-.hotspot-cat {
+/* Cat — chair, lower left */
+.cat-hotspot {
+  left: 9%;
   top: 65%;
-  left: 12%;
-  width: 30%;
-  height: 18%;
+  width: 28%;
+  height: 13%;
 }
 
-/* Cat message */
+/* Keep labels inside the room where necessary */
+.photos-hotspot::after {
+  left: auto;
+  right: 0;
+  transform: translateY(5px);
+}
 
-.cat-message {
-  position: fixed;
-  z-index: 20;
-  top: 50%;
-  left: 50%;
+.photos-hotspot:hover::after,
+.photos-hotspot:focus-visible::after,
+.photos-hotspot.active::after {
+  transform: translateY(0);
+}
 
-  transform: translate(-50%, -50%) scale(0.9);
+.window-hotspot::after {
+  bottom: auto;
+  top: calc(100% + 12px);
+}
 
-  width: min(88%, 360px);
-  padding: 35px 20px 30px;
+.cat-hotspot::after {
+  bottom: auto;
+  top: calc(100% + 12px);
+}
 
-  border: 1px solid rgba(255, 190, 190, 0.35);
-  border-radius: 16px;
 
-  background: var(--panel);
-  backdrop-filter: blur(14px);
+/* =========================
+   FOOTER
+========================= */
 
+.footer {
   text-align: center;
-
-  opacity: 0;
-  pointer-events: none;
-
-  transition:
-    opacity 0.35s ease,
-    transform 0.35s ease;
-
-  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
+  margin-top: 32px;
+  color: #cda6a4;
 }
 
-.cat-message.show {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.message-close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-
-  border: 0;
-  background: transparent;
-  color: #ffd8d0;
+.footer-heart {
+  font-family: "Playfair Display", serif;
   font-size: 24px;
-  cursor: pointer;
+  color: #f29ca5;
+  letter-spacing: 9px;
+  margin-bottom: 12px;
 }
 
-.big-heart {
-  color: #ff879d;
-  font-size: 35px;
-  margin-bottom: 10px;
-  text-shadow: 0 0 15px rgba(255, 100, 130, 0.5);
-}
-
-.cat-message h2 {
-  margin: 0;
-  color: #ffe8d9;
-  font-family: "Press Start 2P", monospace;
-  font-size: 15px;
+.footer p {
+  font-size: 11px;
   line-height: 1.8;
+  margin: 0;
+  letter-spacing: 0.2px;
 }
 
-.cat-message p {
-  margin: 12px 0 0;
-  color: #ff9da9;
-  font-size: 24px;
-}
 
-/* Section modal */
+/* =========================
+   MODAL
+========================= */
 
-.section-modal {
+.modal {
   position: fixed;
   inset: 0;
-  z-index: 15;
-
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 20px;
-
-  background: rgba(20, 8, 18, 0.45);
-  backdrop-filter: blur(5px);
+  padding: 25px;
 
   opacity: 0;
-  pointer-events: none;
-
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.section-modal.show {
+.modal.open {
   opacity: 1;
-  pointer-events: auto;
+  visibility: visible;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 5, 10, 0.75);
+  backdrop-filter: blur(5px);
 }
 
 .modal-card {
   position: relative;
-  width: min(90%, 400px);
-
-  padding: 40px 22px 30px;
-
-  border: 1px solid rgba(255, 190, 190, 0.3);
-  border-radius: 16px;
-
-  background: linear-gradient(145deg, #4a2638, #291522);
-
+  z-index: 2;
+  width: min(100%, 420px);
+  padding: 42px 30px 35px;
   text-align: center;
 
-  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 185, 175, 0.2);
+  border-radius: 5px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(70, 30, 45, 0.98),
+      rgba(31, 13, 23, 0.98)
+    );
+
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
 
   transform: translateY(15px);
-  transition: transform 0.35s ease;
+  transition: transform 0.3s ease;
 }
 
-.section-modal.show .modal-card {
+.modal.open .modal-card {
   transform: translateY(0);
 }
 
-.close-modal {
+.modal-close {
   position: absolute;
-  top: 8px;
-  right: 14px;
+  top: 12px;
+  right: 16px;
 
   border: 0;
   background: transparent;
-  color: #ffd8d0;
+  color: #dcb6b5;
   font-size: 25px;
   cursor: pointer;
+  line-height: 1;
 }
 
-.modal-kicker {
-  margin: 0;
-  color: #ff9da9;
+.modal-small {
   font-size: 9px;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
+  color: #e99da0;
+  margin-bottom: 18px;
 }
 
 .modal-card h2 {
-  margin: 18px 0 15px;
-  color: #ffe8d9;
-  font-family: "Press Start 2P", monospace;
+  font-family: "Playfair Display", serif;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #ffece4;
+  margin: 0;
+}
+
+.modal-divider {
+  color: #ef9ba1;
+  margin: 20px 0;
   font-size: 18px;
-  line-height: 1.7;
 }
 
-.modal-card p:not(.modal-kicker) {
-  color: #f8d7cc;
-  font-size: 12px;
-  line-height: 1.8;
+.modal-card p {
+  font-family: "Playfair Display", serif;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #e8c7c1;
+  margin: 0;
 }
 
-.back-button {
-  margin-top: 15px;
-  padding: 11px 15px;
 
-  border: 1px solid rgba(255, 200, 190, 0.3);
-  border-radius: 8px;
+/* =========================
+   MOBILE
+========================= */
 
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffe8d9;
+@media (max-width: 600px) {
 
-  font-family: "DM Mono", monospace;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-/* Bottom text */
-
-.bottom-note {
-  position: absolute;
-  z-index: 3;
-  bottom: 3%;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 90%;
-  text-align: center;
-
-  pointer-events: none;
-  color: #ffe0d0;
-  text-shadow: 0 2px 8px #241321;
-}
-
-.bottom-note span {
-  color: #ff9da9;
-  font-size: 14px;
-}
-
-.bottom-note p {
-  margin: 10px 0 0;
-  font-size: 9px;
-  line-height: 1.8;
-}
-
-/* Desktop: keep the room vertical and centered */
-
-@media (min-width: 700px) {
-  .pixel-world {
-    width: min(100%, 700px);
-    min-height: 100svh;
-    margin: 0 auto;
+  .page {
+    padding: 32px 12px 28px;
   }
 
-  .pixel-room {
-    width: min(100%, 700px);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    background-size: 100% auto;
-    background-position: center top;
+  .intro {
+    margin-bottom: 25px;
   }
 
-  .room-shade {
-    width: min(100%, 700px);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 4px;
+    margin-bottom: 14px;
   }
 
   .intro h1 {
-    font-size: 24px;
+    font-size: clamp(38px, 11vw, 58px);
   }
-}
 
-/* Accessibility */
+  .intro p {
+    font-size: 16px;
+    margin-top: 16px;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
+  .room-wrapper {
+    width: 100%;
+  }
+
+  .room-scene {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 3px;
+  }
+
+  .hotspot::after {
+    font-size: 10px;
+    padding: 9px 12px;
+    max-width: 180px;
+  }
+
+  .footer {
+    margin-top: 24px;
+  }
+
+  .footer p {
+    font-size: 10px;
+  }
+
+  .modal-card {
+    padding: 38px 23px 30px;
+  }
+
+  .modal-card h2 {
+    font-size: 25px;
+  }
+
+  .modal-card p {
+    font-size: 16px;
   }
 }
