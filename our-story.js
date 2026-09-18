@@ -1,3 +1,17 @@
+// ==========================================
+// SUPABASE CONNECTION
+// ==========================================
+
+const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
+
+// Paste the PUBLISHABLE key you copied from Supabase here
+const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // =========================
