@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Dates ♡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="timeline.css" />
+</head>
+<body>
+  <main class="dates-page">
+    <a class="back-link" href="index.html">← Back to our little world</a>
+    <header class="dates-header">
+      <div class="eyebrow">A GARDEN OF MEMORIES <span>✿</span></div>
+      <h1>Our Dates <span>♡</span></h1>
+      <p>Every date, a little flower in the story of us.</p>
+    </header>
+
+    <section class="dates-toolbar">
+      <button class="soft-button" id="addDateButton" hidden>＋ Add a date</button>
+      <button class="outline-button" id="editDatesButton">🔒 Edit dates</button>
+    </section>
+
+    <section class="timeline" id="timeline" aria-live="polite">
+      <div class="loading">Gathering our memories… ✿</div>
+    </section>
+
+    <p class="footer-note">Some days pass. The memories stay. ♡</p>
+  </main>
+
+  <div class="modal" id="dateModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="dateModalTitle">
+      <button class="modal-close" data-close-modal aria-label="Close">×</button>
+      <div class="modal-small">A NEW MEMORY IN OUR GARDEN</div>
+      <h2 id="dateModalTitle">Add a date</h2>
+      <form id="dateForm">
+        <label>Location *
+          <input id="locationInput" required maxlength="160" placeholder="e.g. Phoenix Palladium, Lower Parel" />
+        </label>
+        <label>Special occasion
+          <input id="occasionInput" maxlength="120" placeholder="e.g. RT's Birthday" />
+        </label>
+        <label>Date *
+          <input id="dateInput" type="date" required />
+        </label>
+        <label>Description
+          <textarea id="descriptionInput" maxlength="1200" placeholder="Tell the story of this date…"></textarea>
+        </label>
+        <label>A little detail I remember
+          <textarea id="detailInput" maxlength="700" placeholder="A tiny moment I never want to forget…"></textarea>
+        </label>
+        <label>Favourite moment
+          <textarea id="favouriteInput" maxlength="700" placeholder="The moment that stayed with me…"></textarea>
+        </label>
+        <p class="photo-help">You can add up to 5 photos. They will appear below the note.</p>
+        <div class="photo-inputs">
+          <label>Photo 1 <input class="photo-input" type="file" accept="image/*"></label>
+          <label>Photo 2 <input class="photo-input" type="file" accept="image/*"></label>
+          <label>Photo 3 <input class="photo-input" type="file" accept="image/*"></label>
+          <label>Photo 4 <input class="photo-input" type="file" accept="image/*"></label>
+          <label>Photo 5 <input class="photo-input" type="file" accept="image/*"></label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="outline-button" data-close-modal>Cancel</button>
+          <button type="submit" class="soft-button" id="saveDateButton">Save date</button>
+        </div>
+        <p class="form-status" id="formStatus" role="status"></p>
+      </form>
+    </div>
+  </div>
+  <script src="timeline.js"></script>
+</body>
+</html>
