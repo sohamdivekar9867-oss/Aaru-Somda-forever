@@ -2,7 +2,6 @@ const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORY_EDIT_PIN = "RT2026";
-const AARATI_DISPLAY_NAME = "Aaru";
 
 // These are the two original perspective pages. They are protected from deletion.
 const ORIGINAL_SLUGS = new Set(["rt-perspective", "soham-perspective"]);
@@ -40,7 +39,7 @@ function textFromEditor(element) {
 
 function normaliseAuthor(author, slug = "") {
   const value = `${author || ""} ${slug}`.toLowerCase();
-  return value.includes("soham") ? "Somda" : AARATI_DISPLAY_NAME;
+  return value.includes("soham") ? "Somda" : "Aaru";
 }
 
 function groupStories(rows) {
@@ -63,7 +62,7 @@ function groupStories(rows) {
 
 function isDeletableGroup(group) {
   // A group is deletable if it contains at least one dynamically created page.
-  // The original RT and Somda pages remain protected.
+  // The original Aaru and Somda pages remain protected.
   return group.rows.some(row => !ORIGINAL_SLUGS.has(row.slug));
 }
 
@@ -78,7 +77,7 @@ function createStoryPage(row, number) {
   page.innerHTML = `
     <div class="page-inner">
       <div class="page-top">
-        <span>${String(number).padStart(2, "0")} · ${author === AARATI_DISPLAY_NAME ? "HER SIDE" : "HIS SIDE"}</span>
+        <span>${String(number).padStart(2, "0")} · ${author === "Aaru" ? "HER SIDE" : "HIS SIDE"}</span>
         <span>${escapeHtml(row.title || "OUR STORY")}</span>
       </div>
 
@@ -94,7 +93,7 @@ function createStoryPage(row, number) {
           spellcheck="true"
         >${renderContent(row.content || "")}</div>
 
-        <button class="story-save-button" data-slug="${escapeHtml(slug)}" ${editingUnlocked ? "" : "hidden"}>Save this page</button>
+        <button class="story-save-button" data-slug="${escapeHtml(slug)}">Save this page</button>
 
         <div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div>
       </div>
@@ -228,7 +227,7 @@ async function saveStory(button) {
     return;
   }
 
-  // Update only this row locally. RT and Somda remain independent.
+  // Update only this row locally. Aaru and Somda remain independent.
   row.content = content;
   button.textContent = "Saved ✓";
 
@@ -266,7 +265,7 @@ async function addNewPage() {
     {
       slug: `${base}-rt`,
       title: cleanTitle,
-      author: "RT",
+      author: "Aaru",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 1,
@@ -290,7 +289,7 @@ async function addNewPage() {
 
   if (error) {
     console.error(error);
-    alert("Could not create the new pages. Check that INSERT permission is enabled in Supabase.");
+    alert("Could not create the new pages. Check that INSEAaru permission is enabled in Supabase.");
     return;
   }
 
@@ -329,17 +328,17 @@ async function deleteStoryEntry(title) {
     .select("slug");
 
   if (error) {
-    console.error(error);
-    alert("Could not delete this story entry. The Supabase DELETE policy may need to be enabled.");
+    console.error("Delete error:", error);
+    alert("Could not delete this story entry. Please add the Supabase DELETE policy, then try again.");
     return;
   }
 
   const deletedSlugs = (deletedRows || []).map(row => row.slug);
-  const allDeleted = slugsToDelete.every(slug => deletedSlugs.includes(slug));
+  const allRowsDeleted = slugsToDelete.every(slug => deletedSlugs.includes(slug));
 
-  if (!allDeleted) {
-    console.error("Delete did not remove all expected rows.", { slugsToDelete, deletedRows });
-    alert("The delete request did not remove both database rows. Please check the Supabase DELETE policy.");
+  if (!allRowsDeleted) {
+    console.error("Delete incomplete:", { requested: slugsToDelete, deleted: deletedSlugs });
+    alert("Supabase did not confirm deletion of both perspectives. Please check the DELETE policy.");
     return;
   }
 
@@ -351,10 +350,7 @@ async function deleteStoryEntry(title) {
 }
 
 function unlockEditing() {
-  if (editingUnlocked) {
-    lockEditing();
-    return;
-  }
+  if (editingUnlocked) return;
 
   const pin = prompt("Enter the private PIN:");
   if (pin !== STORY_EDIT_PIN) {
@@ -364,34 +360,12 @@ function unlockEditing() {
 
   editingUnlocked = true;
   $("addPageBtn").hidden = false;
-  $("editStoryBtn").textContent = "Lock editing 🔒";
-
   document.querySelectorAll(".contenteditable-area").forEach(el => {
     el.contentEditable = "true";
   });
-
-  document.querySelectorAll(".story-save-button").forEach(button => {
-    button.hidden = false;
-  });
+  $("editStoryBtn").textContent = "Editing unlocked ✓";
 
   // Rebuild the index so Delete buttons appear only after unlocking.
-  buildIndex();
-}
-
-function lockEditing() {
-  editingUnlocked = false;
-  $("addPageBtn").hidden = true;
-  $("editStoryBtn").textContent = "Edit Story";
-
-  document.querySelectorAll(".contenteditable-area").forEach(el => {
-    el.contentEditable = "false";
-  });
-
-  document.querySelectorAll(".story-save-button").forEach(button => {
-    button.hidden = true;
-  });
-
-  // Rebuild the index so Delete buttons disappear when locked.
   buildIndex();
 }
 
@@ -404,16 +378,8 @@ function showPage(index) {
   });
 
   $("pageCounter").textContent = `Page ${currentPage + 2} of ${readerPages.length + 1}`;
-  // Previous from the index returns to the cover page.
-  $("prevBtn").disabled = false;
+  $("prevBtn").disabled = currentPage === 0;
   $("nextBtn").disabled = currentPage === readerPages.length - 1;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function returnToCover() {
-  $("reader").style.display = "none";
-  $("coverPage").style.display = "flex";
-  $("coverPage").classList.remove("cover-opening");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -441,13 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 450);
   });
 
-  $("prevBtn").addEventListener("click", () => {
-    if (currentPage === 0) {
-      returnToCover();
-    } else {
-      showPage(currentPage - 1);
-    }
-  });
+  $("prevBtn").addEventListener("click", () => showPage(currentPage - 1));
   $("nextBtn").addEventListener("click", () => showPage(currentPage + 1));
   $("bottomIndexBtn").addEventListener("click", () => showPage(0));
   $("indexToggle").addEventListener("click", openOverlay);
