@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const STORY_EDIT_PIN = "RT2026";
+const AARATI_DISPLAY_NAME = "Aaru";
 
 // These are the two original perspective pages. They are protected from deletion.
 const ORIGINAL_SLUGS = new Set(["rt-perspective", "soham-perspective"]);
@@ -39,7 +40,7 @@ function textFromEditor(element) {
 
 function normaliseAuthor(author, slug = "") {
   const value = `${author || ""} ${slug}`.toLowerCase();
-  return value.includes("soham") ? "Soham" : "RT";
+  return value.includes("soham") ? "Somda" : AARATI_DISPLAY_NAME;
 }
 
 function groupStories(rows) {
@@ -62,7 +63,7 @@ function groupStories(rows) {
 
 function isDeletableGroup(group) {
   // A group is deletable if it contains at least one dynamically created page.
-  // The original RT and Soham pages remain protected.
+  // The original RT and Somda pages remain protected.
   return group.rows.some(row => !ORIGINAL_SLUGS.has(row.slug));
 }
 
@@ -77,7 +78,7 @@ function createStoryPage(row, number) {
   page.innerHTML = `
     <div class="page-inner">
       <div class="page-top">
-        <span>${String(number).padStart(2, "0")} · ${author === "RT" ? "HER SIDE" : "HIS SIDE"}</span>
+        <span>${String(number).padStart(2, "0")} · ${author === AARATI_DISPLAY_NAME ? "HER SIDE" : "HIS SIDE"}</span>
         <span>${escapeHtml(row.title || "OUR STORY")}</span>
       </div>
 
@@ -93,7 +94,7 @@ function createStoryPage(row, number) {
           spellcheck="true"
         >${renderContent(row.content || "")}</div>
 
-        <button class="story-save-button" data-slug="${escapeHtml(slug)}">Save this page</button>
+        <button class="story-save-button" data-slug="${escapeHtml(slug)}" ${editingUnlocked ? "" : "hidden"}>Save this page</button>
 
         <div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div>
       </div>
@@ -227,7 +228,7 @@ async function saveStory(button) {
     return;
   }
 
-  // Update only this row locally. RT and Soham remain independent.
+  // Update only this row locally. RT and Somda remain independent.
   row.content = content;
   button.textContent = "Saved ✓";
 
@@ -274,7 +275,7 @@ async function addNewPage() {
     {
       slug: `${base}-soham`,
       title: cleanTitle,
-      author: "Soham",
+      author: "Somda",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 2,
@@ -295,7 +296,7 @@ async function addNewPage() {
 
   storyRows.push(...(data || rows));
   buildPages();
-  alert(`“${cleanTitle}” has been added with RT's and Soham's pages ♡`);
+  alert(`“${cleanTitle}” has been added with Aaru's and Somda's pages ♡`);
 }
 
 async function deleteStoryEntry(title) {
@@ -312,7 +313,7 @@ async function deleteStoryEntry(title) {
   }
 
   const confirmed = confirm(
-    `Delete “${title}” completely?\n\nThis will delete both RT's and Soham's perspectives. This cannot be undone.`
+    `Delete “${title}” completely?\n\nThis will delete both Aaru's and Somda's perspectives. This cannot be undone.`
   );
 
   if (!confirmed) return;
@@ -321,14 +322,24 @@ async function deleteStoryEntry(title) {
   // This removes both perspectives together for dynamically created entries.
   const slugsToDelete = deletableRows.map(row => row.slug);
 
-  const { error } = await supabaseClient
+  const { data: deletedRows, error } = await supabaseClient
     .from("story_pages")
     .delete()
-    .in("slug", slugsToDelete);
+    .in("slug", slugsToDelete)
+    .select("slug");
 
   if (error) {
     console.error(error);
-    alert("Could not delete this story entry. Check the Supabase DELETE policy.");
+    alert("Could not delete this story entry. The Supabase DELETE policy may need to be enabled.");
+    return;
+  }
+
+  const deletedSlugs = (deletedRows || []).map(row => row.slug);
+  const allDeleted = slugsToDelete.every(slug => deletedSlugs.includes(slug));
+
+  if (!allDeleted) {
+    console.error("Delete did not remove all expected rows.", { slugsToDelete, deletedRows });
+    alert("The delete request did not remove both database rows. Please check the Supabase DELETE policy.");
     return;
   }
 
@@ -340,7 +351,10 @@ async function deleteStoryEntry(title) {
 }
 
 function unlockEditing() {
-  if (editingUnlocked) return;
+  if (editingUnlocked) {
+    lockEditing();
+    return;
+  }
 
   const pin = prompt("Enter the private PIN:");
   if (pin !== STORY_EDIT_PIN) {
@@ -350,12 +364,34 @@ function unlockEditing() {
 
   editingUnlocked = true;
   $("addPageBtn").hidden = false;
+  $("editStoryBtn").textContent = "Lock editing 🔒";
+
   document.querySelectorAll(".contenteditable-area").forEach(el => {
     el.contentEditable = "true";
   });
-  $("editStoryBtn").textContent = "Editing unlocked ✓";
+
+  document.querySelectorAll(".story-save-button").forEach(button => {
+    button.hidden = false;
+  });
 
   // Rebuild the index so Delete buttons appear only after unlocking.
+  buildIndex();
+}
+
+function lockEditing() {
+  editingUnlocked = false;
+  $("addPageBtn").hidden = true;
+  $("editStoryBtn").textContent = "Edit Story";
+
+  document.querySelectorAll(".contenteditable-area").forEach(el => {
+    el.contentEditable = "false";
+  });
+
+  document.querySelectorAll(".story-save-button").forEach(button => {
+    button.hidden = true;
+  });
+
+  // Rebuild the index so Delete buttons disappear when locked.
   buildIndex();
 }
 
@@ -368,8 +404,16 @@ function showPage(index) {
   });
 
   $("pageCounter").textContent = `Page ${currentPage + 2} of ${readerPages.length + 1}`;
-  $("prevBtn").disabled = currentPage === 0;
+  // Previous from the index returns to the cover page.
+  $("prevBtn").disabled = false;
   $("nextBtn").disabled = currentPage === readerPages.length - 1;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function returnToCover() {
+  $("reader").style.display = "none";
+  $("coverPage").style.display = "flex";
+  $("coverPage").classList.remove("cover-opening");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -397,7 +441,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 450);
   });
 
-  $("prevBtn").addEventListener("click", () => showPage(currentPage - 1));
+  $("prevBtn").addEventListener("click", () => {
+    if (currentPage === 0) {
+      returnToCover();
+    } else {
+      showPage(currentPage - 1);
+    }
+  });
   $("nextBtn").addEventListener("click", () => showPage(currentPage + 1));
   $("bottomIndexBtn").addEventListener("click", () => showPage(0));
   $("indexToggle").addEventListener("click", openOverlay);
