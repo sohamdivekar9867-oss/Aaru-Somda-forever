@@ -13,6 +13,14 @@ const supabaseClient = window.supabase.createClient(
 );
 
 
+// ==========================================
+// STORY EDITOR SETTINGS
+// ==========================================
+
+// Change this PIN whenever you want.
+const STORY_EDIT_PIN = "RT2026";
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // =========================
@@ -49,8 +57,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Cover is visible first.
   // Reader remains hidden until the book is opened.
+
   if (reader) {
     reader.style.display = "none";
+  }
+
+
+  // =========================
+  // HELPER:
+  // RENDER TEXT INTO STORY AREA
+  // =========================
+
+  function renderStoryContent(elementId, content) {
+
+    const element = document.getElementById(elementId);
+
+    if (!element || !content) return;
+
+    // Clear existing content
+    element.innerHTML = "";
+
+    // Split into paragraphs using blank lines
+    const paragraphs = content
+      .trim()
+      .split(/\n\s*\n/);
+
+    paragraphs.forEach(text => {
+
+      const paragraph = document.createElement("p");
+
+      paragraph.textContent = text.trim();
+
+      element.appendChild(paragraph);
+
+    });
+
   }
 
 
@@ -77,22 +118,23 @@ document.addEventListener("DOMContentLoaded", () => {
         .eq("published", true)
         .order("display_order", { ascending: true });
 
+
       if (error) {
         console.error("Error loading story pages:", error);
         return;
       }
+
 
       if (!data || data.length === 0) {
         console.log("No published story pages found.");
         return;
       }
 
+
       console.log("Story pages loaded:", data);
 
 
-      // =========================
-      // FIND INDIVIDUAL STORIES
-      // =========================
+      // Find individual stories
 
       const rtStory = data.find(
         page => page.slug === "rt-perspective"
@@ -103,43 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-      // =========================
-      // RENDER STORY CONTENT
-      // =========================
+      // Insert database content
 
-      function renderStoryContent(elementId, content) {
-
-        const element = document.getElementById(elementId);
-
-        if (!element || !content) return;
-
-        // Clear existing placeholder content
-        element.innerHTML = "";
-
-        // Split content into paragraphs wherever there is
-        // an empty line between paragraphs.
-        const paragraphs = content
-          .trim()
-          .split(/\n\s*\n/);
-
-        paragraphs.forEach(text => {
-
-          const paragraph = document.createElement("p");
-
-          paragraph.textContent = text.trim();
-
-          element.appendChild(paragraph);
-
-        });
-
-      }
-
-
-      // =========================
-      // INSERT DATABASE CONTENT
-      // =========================
-
-      if (rtStory) {
+      if (rtStory && rtStory.content) {
 
         renderStoryContent(
           "rtStoryContent",
@@ -148,7 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       }
 
-      if (sohamStory) {
+
+      if (sohamStory && sohamStory.content) {
 
         renderStoryContent(
           "sohamStoryContent",
@@ -156,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
       }
+
 
     } catch (error) {
 
@@ -166,8 +176,177 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  // Load the stories immediately
+  // =========================
+  // GET EDITABLE CONTENT
+  // =========================
+
+  function getStoryText(contentElement) {
+
+    if (!contentElement) return "";
+
+    // Read paragraphs
+    const paragraphs = Array.from(
+      contentElement.querySelectorAll("p")
+    )
+      .map(paragraph => paragraph.innerText.trim())
+      .filter(text => text.length > 0);
+
+
+    let content = paragraphs.join("\n\n");
+
+
+    // Fallback for text entered without paragraph tags
+    if (!content) {
+      content = contentElement.innerText.trim();
+    }
+
+
+    return content;
+
+  }
+
+
+  // =========================
+  // SAVE STORY TO SUPABASE
+  // =========================
+
+  async function saveStory(button) {
+
+    const slug = button.dataset.storySlug;
+    const contentId = button.dataset.contentId;
+
+    const contentElement = document.getElementById(contentId);
+
+
+    if (!slug || !contentElement) {
+
+      console.error("Missing story slug or content element.");
+
+      return;
+
+    }
+
+
+    // Ask for PIN
+
+    const enteredPin = window.prompt(
+      "Enter the private PIN to save this story:"
+    );
+
+
+    if (enteredPin === null) {
+      return;
+    }
+
+
+    if (enteredPin !== STORY_EDIT_PIN) {
+
+      window.alert("Incorrect PIN ♡");
+
+      return;
+
+    }
+
+
+    // Get typed content
+
+    const content = getStoryText(contentElement);
+
+
+    if (!content) {
+
+      window.alert("Please write something before saving ♡");
+
+      return;
+
+    }
+
+
+    // Save button loading state
+
+    const originalText = button.textContent;
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+
+    try {
+
+      const { error } = await supabaseClient
+        .from("story_pages")
+        .update({
+          content: content,
+          updated_at: new Date().toISOString()
+        })
+        .eq("slug", slug);
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      console.log(`Story saved successfully: ${slug}`);
+
+
+      button.textContent = "Saved ✓";
+
+
+      setTimeout(() => {
+
+        button.textContent = originalText;
+        button.disabled = false;
+
+      }, 2000);
+
+
+    } catch (error) {
+
+      console.error("Error saving story:", error);
+
+      button.textContent = "Save failed";
+
+      window.alert(
+        "Couldn't save the story. Please try again."
+      );
+
+
+      setTimeout(() => {
+
+        button.textContent = originalText;
+        button.disabled = false;
+
+      }, 2000);
+
+    }
+
+  }
+
+
+  // =========================
+  // ATTACH SAVE BUTTONS
+  // =========================
+
+  const saveButtons = document.querySelectorAll(
+    ".story-save-button"
+  );
+
+
+  saveButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      saveStory(button);
+
+    });
+
+  });
+
+
+  // Load stories immediately
+
   loadStoryContent();
+
 
 
   // =========================
@@ -182,29 +361,37 @@ document.addEventListener("DOMContentLoaded", () => {
         coverPage.classList.add("cover-opening");
       }
 
+
       setTimeout(() => {
 
         if (coverPage) {
           coverPage.style.display = "none";
         }
 
+
         if (reader) {
+
           reader.style.display = "block";
           reader.classList.add("visible");
+
         }
 
+
         showPage(0);
+
 
         window.scrollTo({
           top: 0,
           behavior: "smooth"
         });
 
+
       }, 450);
 
     });
 
   }
+
 
 
   // =========================
@@ -215,11 +402,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!pages.length) return;
 
+
     // Keep index within valid range
+
     currentPage = Math.max(
       0,
       Math.min(index, pages.length - 1)
     );
+
 
     pages.forEach((page, i) => {
 
@@ -230,7 +420,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+
     // Update page counter
+
     if (pageCounter) {
 
       pageCounter.textContent =
@@ -238,15 +430,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+
     // Update navigation buttons
+
     if (prevBtn) {
       prevBtn.disabled = currentPage === 0;
     }
 
+
     if (nextBtn) {
+
       nextBtn.disabled =
         currentPage === pages.length - 1;
+
     }
+
 
     window.scrollTo({
       top: 0,
@@ -254,6 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   }
+
 
 
   // =========================
@@ -265,24 +464,30 @@ document.addEventListener("DOMContentLoaded", () => {
     nextBtn.addEventListener("click", () => {
 
       if (currentPage < pages.length - 1) {
+
         showPage(currentPage + 1);
+
       }
 
     });
 
   }
+
 
   if (prevBtn) {
 
     prevBtn.addEventListener("click", () => {
 
       if (currentPage > 0) {
+
         showPage(currentPage - 1);
+
       }
 
     });
 
   }
+
 
 
   // =========================
@@ -293,13 +498,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const targetPage = document.getElementById(targetId);
 
+
     if (!targetPage) return;
+
 
     const index = pages.indexOf(targetPage);
 
+
     if (index !== -1) {
+
       showPage(index);
+
     }
+
 
     closeOverlay();
 
@@ -307,6 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Main index entries
+
   indexEntries.forEach(entry => {
 
     entry.addEventListener("click", () => {
@@ -320,6 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
+
   // =========================
   // BUILD OVERLAY INDEX
   // =========================
@@ -330,17 +543,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const clone = entry.cloneNode(true);
 
+
       clone.addEventListener("click", () => {
 
         goToPage(entry.dataset.target);
 
       });
 
+
       overlayIndexList.appendChild(clone);
 
     });
 
   }
+
 
 
   // =========================
@@ -350,26 +566,38 @@ document.addEventListener("DOMContentLoaded", () => {
   function openOverlay() {
 
     if (indexOverlay) {
+
       indexOverlay.classList.add("open");
+
     }
 
   }
+
 
   function closeOverlay() {
 
     if (indexOverlay) {
+
       indexOverlay.classList.remove("open");
+
     }
 
   }
 
+
   if (indexToggle) {
+
     indexToggle.addEventListener("click", openOverlay);
+
   }
 
+
   if (closeIndexBtn) {
+
     closeIndexBtn.addEventListener("click", closeOverlay);
+
   }
+
 
   if (bottomIndexBtn) {
 
@@ -382,6 +610,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+
   // =========================
   // ESCAPE TO CLOSE OVERLAY
   // =========================
@@ -389,7 +618,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (event) => {
 
     if (event.key === "Escape") {
+
       closeOverlay();
+
     }
 
   });
