@@ -4,6 +4,8 @@ const EDIT_PIN = 'RT2026';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const staticLetter = {
+  id: 'static-love-letter',
+  title: 'An I Love You Letter',
   recipient: 'Aaru',
   content: `I don't think I will ever find words big enough to explain
 what you mean to me, but I want to spend a lifetime trying.
@@ -53,35 +55,125 @@ more ways than I will ever stop discovering.`,
 
 let editingUnlocked = false;
 let letters = [];
-const collection = document.getElementById('lettersCollection');
+let currentPage = 0; // 0 = index, 1 onward = letter pages
+const LETTERS_PER_PAGE = 2;
+
+const indexView = document.getElementById('indexView');
+const indexList = document.getElementById('letterIndexList');
+const emptyIndexMessage = document.getElementById('emptyIndexMessage');
+const letterPages = document.getElementById('letterPages');
 const editToggle = document.getElementById('editToggle');
 const addButton = document.getElementById('addLetterButton');
 const formPanel = document.getElementById('letterFormPanel');
+const previousButton = document.getElementById('previousButton');
+const nextButton = document.getElementById('nextButton');
+const pageIndicator = document.getElementById('pageIndicator');
 
 function escapeHtml(value = '') {
-  return value.replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[char]));
+  return String(value).replace(/[&<>'"]/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;'
+  }[char]));
 }
 
-function renderLetters() {
-  collection.innerHTML = '';
-  collection.appendChild(makeCard(staticLetter, true));
-  letters.forEach(letter => collection.appendChild(makeCard(letter, false)));
+function allLetters() {
+  return [staticLetter, ...letters];
+}
+
+function totalLetterPages() {
+  return Math.max(1, Math.ceil(allLetters().length / LETTERS_PER_PAGE));
+}
+
+function letterTitle(letter) {
+  const title = letter.title?.trim();
+  return (!title || title === 'A little letter') ? `A letter to ${letter.recipient || 'you'}` : title;
+}
+
+function renderIndex() {
+  const items = allLetters();
+  indexList.innerHTML = '';
+
+  items.forEach((letter, index) => {
+    const pageNumber = Math.floor(index / LETTERS_PER_PAGE) + 1;
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'index-entry';
+    item.innerHTML = `
+      <span class="index-number">${String(index + 1).padStart(2, '0')}</span>
+      <span class="index-title">${escapeHtml(letterTitle(letter))}</span>
+      <span class="index-page">${String(pageNumber + 1).padStart(2, '0')}</span>
+      ${!letter.id || letter.id === staticLetter.id ? '' : (editingUnlocked
+        ? `<span class="index-delete" data-delete-id="${escapeHtml(letter.id)}">Delete</span>` : '')}
+    `;
+
+    item.addEventListener('click', event => {
+      if (event.target.closest('[data-delete-id]')) return;
+      currentPage = pageNumber;
+      renderView();
+    });
+
+    const deleteButton = item.querySelector('[data-delete-id]');
+    if (deleteButton) {
+      deleteButton.addEventListener('click', event => {
+        event.stopPropagation();
+        deleteLetter(deleteButton.dataset.deleteId);
+      });
+    }
+
+    indexList.appendChild(item);
+  });
+
+  emptyIndexMessage.classList.toggle('hidden', items.length > 0);
 }
 
 function makeCard(letter, isStatic) {
   const card = document.createElement('article');
   card.className = `letter-card${isStatic ? ' static-letter' : ''}`;
   card.innerHTML = `
+    <div class="letter-card-number">${isStatic ? '01' : ''}</div>
     <div class="letter-recipient">Dear ${escapeHtml(letter.recipient || '')},</div>
     <div class="letter-content">${escapeHtml(letter.content || '')}</div>
     <div class="letter-signature">${escapeHtml(letter.signature || '')}</div>
     ${!isStatic && editingUnlocked ? `
       <div class="letter-actions">
-        <button class="small-button" data-action="edit" data-id="${letter.id}">Edit</button>
-        <button class="small-button delete" data-action="delete" data-id="${letter.id}">Delete</button>
+        <button class="small-button" data-action="edit" data-id="${escapeHtml(letter.id)}">Edit</button>
+        <button class="small-button delete" data-action="delete" data-id="${escapeHtml(letter.id)}">Delete</button>
       </div>` : ''}
   `;
   return card;
+}
+
+function renderLetterPage() {
+  const start = (currentPage - 1) * LETTERS_PER_PAGE;
+  const pageLetters = allLetters().slice(start, start + LETTERS_PER_PAGE);
+
+  letterPages.innerHTML = '';
+  const spread = document.createElement('div');
+  spread.className = 'letter-spread';
+
+  pageLetters.forEach((letter, offset) => {
+    spread.appendChild(makeCard(letter, start + offset === 0));
+  });
+
+  letterPages.appendChild(spread);
+}
+
+function renderView() {
+  const isIndex = currentPage === 0;
+  indexView.classList.toggle('hidden', !isIndex);
+  letterPages.classList.toggle('hidden', isIndex);
+
+  if (isIndex) {
+    renderIndex();
+    pageIndicator.textContent = 'Index';
+  } else {
+    renderLetterPage();
+    pageIndicator.textContent = `Page ${currentPage + 1} of ${totalLetterPages() + 1}`;
+  }
+
+  previousButton.disabled = currentPage === 0;
+  nextButton.disabled = currentPage >= totalLetterPages();
+  previousButton.classList.toggle('disabled', previousButton.disabled);
+  nextButton.classList.toggle('disabled', nextButton.disabled);
 }
 
 async function loadLetters() {
@@ -90,77 +182,127 @@ async function loadLetters() {
     .select('*')
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: true });
+
   if (error) {
     console.error(error);
     alert('The letters could not be loaded. Please check the Supabase table setup.');
     return;
   }
+
   letters = data || [];
-  renderLetters();
+  if (currentPage > totalLetterPages()) currentPage = 0;
+  renderView();
 }
 
 function unlockOrLock() {
   if (editingUnlocked) {
     editingUnlocked = false;
-    formPanel.classList.add('hidden');
+    closeForm();
     addButton.classList.add('hidden');
     editToggle.textContent = 'Edit Letters';
-    renderLetters();
+    renderView();
     return;
   }
+
   const pin = prompt('Enter the private PIN to edit letters:');
   if (pin !== EDIT_PIN) {
     if (pin !== null) alert('Incorrect PIN.');
     return;
   }
+
   editingUnlocked = true;
   editToggle.textContent = 'Lock editing 🔒';
   addButton.classList.remove('hidden');
-  renderLetters();
+  renderView();
 }
 
 function openForm() {
   formPanel.classList.remove('hidden');
-  document.getElementById('recipientInput').focus();
+  document.getElementById('titleInput').focus();
 }
+
 function closeForm() {
   formPanel.classList.add('hidden');
+  document.getElementById('titleInput').value = '';
   document.getElementById('recipientInput').value = '';
   document.getElementById('contentInput').value = '';
   document.getElementById('signatureInput').value = '';
 }
 
 async function createLetter() {
+  const title = document.getElementById('titleInput').value.trim();
   const recipient = document.getElementById('recipientInput').value.trim();
   const content = document.getElementById('contentInput').value.trim();
   const signature = document.getElementById('signatureInput').value.trim();
-  if (!recipient || !content || !signature) return alert('Please fill in all three fields.');
+
+  if (!title || !recipient || !content || !signature) {
+    alert('Please fill in the title, recipient, content, and signature.');
+    return;
+  }
+
   const { error } = await supabaseClient.from('love_letters').insert({
-    recipient, content, signature, display_order: letters.length + 1
+    title, recipient, content, signature, display_order: letters.length + 1
   });
-  if (error) return alert(`Could not create the letter: ${error.message}`);
+
+  if (error) {
+    alert(`Could not create the letter: ${error.message}`);
+    return;
+  }
+
   closeForm();
+  currentPage = totalLetterPages() + 1;
   await loadLetters();
 }
 
 async function editLetter(id) {
   const letter = letters.find(item => String(item.id) === String(id));
   if (!letter) return;
+
+  const title = prompt('Letter title:', letter.title || '');
+  if (title === null) return;
   const recipient = prompt('Dear...', letter.recipient || '');
   if (recipient === null) return;
   const content = prompt('Letter content:', letter.content || '');
   if (content === null) return;
   const signature = prompt('Signed by:', letter.signature || '');
   if (signature === null) return;
-  const { error } = await supabaseClient.from('love_letters').update({ recipient, content, signature, updated_at: new Date().toISOString() }).eq('id', id);
-  if (error) return alert(`Could not save the letter: ${error.message}`);
+
+  const { error } = await supabaseClient
+    .from('love_letters')
+    .update({
+      title, recipient, content, signature,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id);
+
+  if (error) {
+    alert(`Could not save the letter: ${error.message}`);
+    return;
+  }
+
   await loadLetters();
 }
 
 async function deleteLetter(id) {
   if (!confirm('Delete this entire letter?')) return;
-  const { error } = await supabaseClient.from('love_letters').delete().eq('id', id);
-  if (error) return alert(`Could not delete the letter: ${error.message}`);
+
+  const { data, error } = await supabaseClient
+    .from('love_letters')
+    .delete()
+    .eq('id', id)
+    .select('id');
+
+  if (error) {
+    alert(`Could not delete the letter: ${error.message}`);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    alert('The letter was not deleted. Please check the Supabase DELETE policy.');
+    return;
+  }
+
+  currentPage = 0;
   await loadLetters();
 }
 
@@ -168,10 +310,26 @@ editToggle.addEventListener('click', unlockOrLock);
 addButton.addEventListener('click', openForm);
 document.getElementById('cancelLetterButton').addEventListener('click', closeForm);
 document.getElementById('createLetterButton').addEventListener('click', createLetter);
-collection.addEventListener('click', event => {
+
+previousButton.addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage -= 1;
+    renderView();
+  }
+});
+
+nextButton.addEventListener('click', () => {
+  if (currentPage < totalLetterPages()) {
+    currentPage += 1;
+    renderView();
+  }
+});
+
+letterPages.addEventListener('click', event => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;
   if (button.dataset.action === 'edit') editLetter(button.dataset.id);
   if (button.dataset.action === 'delete') deleteLetter(button.dataset.id);
 });
+
 loadLetters();
