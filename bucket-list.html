@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Little Bucket List ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bucket-list.css">
+</head>
+<body>
+<main class="bucket-page">
+  <a class="back-link" href="index.html">← Back to our little world</a>
+  <header class="bucket-header">
+    <div class="eyebrow">A UNIVERSE OF LITTLE DREAMS <span>✦</span></div>
+    <h1>Our Little Bucket List <span>♡</span></h1>
+    <p>A universe full of things we'll do together.</p>
+    <div class="stats" aria-live="polite">
+      <span><strong id="totalCount">0</strong> dreams</span>
+      <span><strong id="completedCount">0</strong> completed</span>
+      <span><strong id="waitingCount">0</strong> still waiting</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <span id="progressText">0% of our dreams completed</span>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <button class="soft-button" id="addButton" hidden>＋ Add a dream</button>
+    <button class="outline-button" id="editButton">🔒 Edit list</button>
+  </section>
+
+  <section class="notes-grid" id="notesGrid">
+    <div class="loading">Gathering our little stars… ✦</div>
+  </section>
+
+  <p class="footer-note">Every dream is a little star waiting for its moment. ✦</p>
+</main>
+
+<div class="modal" id="itemModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalHeading">
+    <button class="modal-close" data-close-modal aria-label="Close">×</button>
+    <div class="modal-small">A NEW LITTLE DREAM</div>
+    <h2 id="modalHeading">Add to our bucket list</h2>
+    <form id="itemForm">
+      <label>What should we do?
+        <textarea id="itemText" required maxlength="180" placeholder="e.g. Watch the sunrise together…"></textarea>
+      </label>
+      <label>Expected date
+        <input type="date" id="expectedDate">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="outline-button" data-close-modal>Cancel</button>
+        <button type="submit" class="soft-button">Save dream</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="bucket-list.js"></script>
+</body>
+</html>
