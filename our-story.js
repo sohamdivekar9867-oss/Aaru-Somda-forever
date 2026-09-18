@@ -93,7 +93,7 @@ function createStoryPage(row, number) {
           spellcheck="true"
         >${renderContent(row.content || "")}</div>
 
-        <button class="story-save-button" data-slug="${escapeHtml(slug)}">Save this page</button>
+        <button class="story-save-button" data-slug="${escapeHtml(slug)}" ${editingUnlocked ? "" : "hidden"}>Save this page</button>
 
         <div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div>
       </div>
@@ -119,6 +119,7 @@ function buildPages() {
   });
 
   bindPageButtons();
+  applyEditingState();
   buildIndex();
   showPage(Math.min(currentPage, readerPages.length - 1));
 }
@@ -339,23 +340,38 @@ async function deleteStoryEntry(title) {
   alert(`“${title}” and both perspectives were deleted.`);
 }
 
+function applyEditingState() {
+  document.querySelectorAll(".contenteditable-area").forEach(el => {
+    el.contentEditable = editingUnlocked ? "true" : "false";
+    el.classList.toggle("editing-active", editingUnlocked);
+  });
+
+  document.querySelectorAll(".story-save-button").forEach(button => {
+    button.hidden = !editingUnlocked;
+  });
+
+  $("addPageBtn").hidden = !editingUnlocked;
+  $("editStoryBtn").textContent = editingUnlocked
+    ? "Lock editing 🔒"
+    : "Edit Story";
+}
+
 function unlockEditing() {
-  if (editingUnlocked) return;
+  if (editingUnlocked) {
+    editingUnlocked = false;
+    applyEditingState();
+    buildIndex();
+    return;
+  }
 
   const pin = prompt("Enter the private PIN:");
   if (pin !== STORY_EDIT_PIN) {
-    alert("Incorrect PIN ♡");
+    if (pin !== null) alert("Incorrect PIN ♡");
     return;
   }
 
   editingUnlocked = true;
-  $("addPageBtn").hidden = false;
-  document.querySelectorAll(".contenteditable-area").forEach(el => {
-    el.contentEditable = "true";
-  });
-  $("editStoryBtn").textContent = "Editing unlocked ✓";
-
-  // Rebuild the index so Delete buttons appear only after unlocking.
+  applyEditingState();
   buildIndex();
 }
 
