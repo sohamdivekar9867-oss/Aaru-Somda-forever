@@ -1,0 +1,624 @@
+:root {
+--bg: #180d12;
+--bg-soft: #211117;
+--paper: #f3e8df;
+--paper-dark: #e8d8ce;
+--ink: #342329;
+--muted-ink: #806b6d;
+--blush: #e7a9b5;
+--blush-light: #f2cbd1;
+--cream: #f5e9e0;
+--line: rgba(231, 169, 181, 0.28);
+--mono: "DM Mono", monospace;
+--serif: "Playfair Display", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  }
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+background: var(--bg);
+color: var(--cream);
+font-family: var(--mono);
+font-weight: 300;
+min-height: 100vh;
+}
+
+button,
+a {
+font: inherit;
+}
+
+button {
+cursor: pointer;
+}
+
+a {
+color: inherit;
+text-decoration: none;
+}
+
+/* =========================
+GENERAL
+========================= */
+
+.story-site {
+min-height: 100vh;
+overflow: hidden;
+}
+
+.eyebrow {
+color: var(--blush);
+font-family: var(--mono);
+font-size: 0.62rem;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+}
+
+.back-link {
+position: absolute;
+top: 28px;
+left: 34px;
+z-index: 10;
+color: rgba(245, 233, 224, 0.62);
+font-size: 0.62rem;
+letter-spacing: 0.04em;
+transition: color 0.3s ease;
+}
+
+.back-link span {
+color: var(--blush);
+margin-right: 8px;
+font-size: 0.9rem;
+}
+
+.back-link:hover {
+color: var(--cream);
+}
+
+/* =========================
+BOOK COVER
+========================= */
+
+.book-cover {
+align-items: center;
+background:
+radial-gradient(
+ellipse at center,
+rgba(103, 40, 60, 0.2) 0%,
+transparent 65%
+),
+var(--bg);
+display: flex;
+flex-direction: column;
+justify-content: center;
+min-height: 100vh;
+padding: 80px 24px;
+position: relative;
+text-align: center;
+}
+
+.cover-decoration {
+color: rgba(231, 169, 181, 0.3);
+font-size: 1rem;
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+}
+
+.cover-decoration-left {
+left: 12%;
+}
+
+.cover-decoration-right {
+right: 12%;
+}
+
+.book-cover h1 {
+color: var(--cream);
+font-family: var(--serif);
+font-size: clamp(4rem, 10vw, 8.5rem);
+font-weight: 400;
+letter-spacing: -0.055em;
+line-height: 0.95;
+margin-top: 28px;
+}
+
+.book-cover h1 em {
+color: var(--blush-light);
+font-weight: 400;
+}
+
+.cover-subtitle {
+color: rgba(245, 233, 224, 0.64);
+font-family: var(--serif);
+font-size: clamp(1rem, 2vw, 1.3rem);
+font-style: italic;
+line-height: 1.7;
+margin-top: 34px;
+}
+
+.cover-line {
+background: var(--line);
+height: 1px;
+margin: 36px auto 22px;
+width: 90px;
+}
+
+.cover-date {
+color: rgba(245, 233, 224, 0.38);
+font-size: 0.58rem;
+letter-spacing: 0.2em;
+}
+
+.open-book-btn {
+align-items: center;
+background: transparent;
+border: 1px solid rgba(231, 169, 181, 0.45);
+color: var(--blush-light);
+display: flex;
+font-size: 0.62rem;
+gap: 28px;
+letter-spacing: 0.12em;
+margin-top: 52px;
+padding: 17px 22px;
+text-transform: uppercase;
+transition:
+background 0.3s ease,
+border-color 0.3s ease,
+transform 0.3s ease;
+}
+
+.open-book-btn:hover {
+background: rgba(231, 169, 181, 0.08);
+border-color: var(--blush);
+transform: translateY(-3px);
+}
+
+.btn-arrow {
+font-size: 1rem;
+transition: transform 0.3s ease;
+}
+
+.open-book-btn:hover .btn-arrow {
+transform: translateX(5px);
+}
+
+/* =========================
+BOOK CONTENT
+========================= */
+
+.book-content {
+display: none;
+opacity: 0;
+padding: 130px 5vw 0;
+transition: opacity 0.8s ease;
+}
+
+.book-content.visible {
+display: block;
+opacity: 1;
+}
+
+.book-heading {
+margin: 0 auto 60px;
+max-width: 700px;
+text-align: center;
+}
+
+.book-heading h2,
+.diary-heading h2 {
+color: var(--cream);
+font-family: var(--serif);
+font-size: clamp(2.7rem, 6vw, 5rem);
+font-weight: 400;
+letter-spacing: -0.045em;
+line-height: 1;
+margin-top: 20px;
+}
+
+.book-intro {
+color: rgba(245, 233, 224, 0.5);
+font-family: var(--serif);
+font-size: 1rem;
+font-style: italic;
+line-height: 1.7;
+margin-top: 24px;
+}
+
+/* =========================
+TWO-PAGE BOOK SPREAD
+========================= */
+
+.book-spread {
+display: grid;
+grid-template-columns: 1fr 1fr;
+margin: 0 auto;
+max-width: 1180px;
+position: relative;
+}
+
+.book-spread::before {
+background: linear-gradient(
+to right,
+transparent,
+rgba(40, 22, 27, 0.2),
+rgba(60, 32, 39, 0.45),
+rgba(40, 22, 27, 0.2),
+transparent
+);
+content: "";
+height: 100%;
+left: 50%;
+position: absolute;
+top: 0;
+transform: translateX(-50%);
+width: 30px;
+z-index: 2;
+}
+
+.book-page {
+background: var(--paper);
+color: var(--ink);
+min-height: 570px;
+padding: 38px 52px 30px;
+position: relative;
+}
+
+.page-left {
+border-radius: 3px 0 0 3px;
+box-shadow:
+inset -12px 0 20px rgba(70, 35, 42, 0.06),
+-4px 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.page-right {
+border-radius: 0 3px 3px 0;
+box-shadow:
+inset 12px 0 20px rgba(70, 35, 42, 0.06),
+4px 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.page-top,
+.page-bottom {
+align-items: center;
+color: var(--muted-ink);
+display: flex;
+font-size: 0.52rem;
+justify-content: space-between;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+
+.page-symbol {
+color: #bd7785;
+font-family: var(--serif);
+font-size: 1.15rem;
+}
+
+.page-body {
+padding: 82px 10px 50px;
+}
+
+.page-kicker {
+color: #a07e81;
+font-size: 0.56rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+}
+
+.page-body h3 {
+color: var(--ink);
+font-family: var(--serif);
+font-size: clamp(2rem, 4vw, 3.5rem);
+font-weight: 400;
+letter-spacing: -0.04em;
+line-height: 1;
+margin-top: 14px;
+}
+
+.page-rule {
+background: rgba(52, 35, 41, 0.18);
+height: 1px;
+margin: 28px 0;
+width: 52px;
+}
+
+.story-text {
+color: #5b484c;
+font-family: var(--serif);
+font-size: 1rem;
+line-height: 1.9;
+max-width: 390px;
+}
+
+.story-text + .story-text {
+margin-top: 20px;
+}
+
+.placeholder-note {
+color: #9a8182;
+font-size: 0.88rem;
+font-style: italic;
+}
+
+.page-bottom {
+bottom: 30px;
+left: 52px;
+position: absolute;
+right: 52px;
+}
+
+/* =========================
+CONTINUE
+========================= */
+
+.continue-area {
+align-items: center;
+display: flex;
+gap: 24px;
+justify-content: center;
+margin: 48px auto 140px;
+max-width: 1180px;
+}
+
+.continue-line {
+background: var(--line);
+flex: 1;
+height: 1px;
+}
+
+.continue-btn {
+background: transparent;
+border: 0;
+color: var(--blush-light);
+display: flex;
+font-size: 0.58rem;
+gap: 16px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+}
+
+.continue-btn span:last-child {
+font-size: 1rem;
+transition: transform 0.3s ease;
+}
+
+.continue-btn:hover span:last-child {
+transform: translateY(4px);
+}
+
+/* =========================
+DIARY
+========================= */
+
+.diary-section {
+margin: 0 auto;
+max-width: 1180px;
+padding-bottom: 100px;
+}
+
+.diary-heading {
+margin: 0 auto 70px;
+text-align: center;
+}
+
+.diary-heading p:last-child {
+color: rgba(245, 233, 224, 0.5);
+font-family: var(--serif);
+font-size: 1rem;
+font-style: italic;
+line-height: 1.8;
+margin-top: 24px;
+}
+
+.diary-date-heading {
+align-items: center;
+color: var(--blush);
+display: flex;
+font-size: 0.55rem;
+gap: 20px;
+justify-content: center;
+letter-spacing: 0.13em;
+margin-bottom: 25px;
+text-align: center;
+}
+
+.date-line {
+background: var(--line);
+height: 1px;
+max-width: 120px;
+width: 15%;
+}
+
+.diary-spread .book-page {
+min-height: 480px;
+}
+
+.diary-page-body {
+padding-top: 65px;
+}
+
+.diary-date {
+color: #a07e81;
+font-size: 0.58rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+}
+
+.diary-page-body h3 {
+font-size: clamp(1.7rem, 3vw, 2.8rem);
+line-height: 1.15;
+margin-top: 16px;
+}
+
+.empty-page-note {
+color: #a58d8d;
+font-family: var(--serif);
+font-size: 0.85rem;
+font-style: italic;
+margin-top: 40px;
+}
+
+.diary-cta {
+align-items: center;
+display: flex;
+flex-direction: column;
+gap: 18px;
+margin-top: 60px;
+text-align: center;
+}
+
+.diary-cta p {
+color: rgba(245, 233, 224, 0.55);
+font-family: var(--serif);
+font-size: 1rem;
+font-style: italic;
+}
+
+.add-memory-btn {
+background: transparent;
+border: 1px solid rgba(231, 169, 181, 0.35);
+color: var(--blush-light);
+font-size: 0.6rem;
+letter-spacing: 0.1em;
+padding: 15px 22px;
+text-transform: uppercase;
+transition: background 0.3s ease;
+}
+
+.add-memory-btn:hover {
+background: rgba(231, 169, 181, 0.08);
+}
+
+.add-memory-btn span {
+font-size: 1rem;
+margin-right: 6px;
+}
+
+.diary-cta small {
+color: rgba(245, 233, 224, 0.25);
+font-size: 0.5rem;
+}
+
+/* =========================
+FOOTER
+========================= */
+
+.story-footer {
+align-items: center;
+border-top: 1px solid rgba(231, 169, 181, 0.12);
+color: rgba(245, 233, 224, 0.35);
+display: flex;
+font-family: var(--serif);
+font-size: 0.9rem;
+font-style: italic;
+gap: 12px;
+justify-content: center;
+padding: 36px 20px;
+}
+
+.story-footer span {
+color: var(--blush);
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media (max-width: 800px) {
+.book-content {
+padding: 110px 18px 0;
+}
+
+.book-spread {
+grid-template-columns: 1fr;
+gap: 18px;
+}
+
+.book-spread::before {
+display: none;
+}
+
+.book-page {
+border-radius: 3px !important;
+min-height: 500px;
+padding: 30px 28px 28px;
+}
+
+.page-left,
+.page-right {
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
+}
+
+.page-body {
+padding: 65px 4px 55px;
+}
+
+.page-bottom {
+bottom: 28px;
+left: 28px;
+right: 28px;
+}
+
+.diary-spread .book-page {
+min-height: 430px;
+}
+
+.cover-decoration {
+display: none;
+}
+
+.back-link {
+left: 20px;
+top: 22px;
+}
+
+.continue-area {
+margin-bottom: 100px;
+}
+
+.date-line {
+max-width: 50px;
+}
+}
+
+@media (max-width: 480px) {
+.book-cover {
+padding: 70px 20px;
+}
+
+.book-cover h1 {
+font-size: clamp(3.5rem, 18vw, 5.5rem);
+}
+
+.cover-subtitle {
+font-size: 1rem;
+}
+
+.book-page {
+min-height: 470px;
+}
+
+.story-text {
+font-size: 0.95rem;
+line-height: 1.8;
+}
+
+.diary-heading h2,
+.book-heading h2 {
+font-size: 3rem;
+}
+
+.diary-date-heading {
+font-size: 0.48rem;
+gap: 10px;
+}
+}
