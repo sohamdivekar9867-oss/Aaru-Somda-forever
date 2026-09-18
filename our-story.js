@@ -39,7 +39,7 @@ function textFromEditor(element) {
 
 function normaliseAuthor(author, slug = "") {
   const value = `${author || ""} ${slug}`.toLowerCase();
-  return value.includes("soham") ? "Somda" : "Aaru";
+  return value.includes("soham") ? "Soham" : "RT";
 }
 
 function groupStories(rows) {
@@ -77,7 +77,7 @@ function createStoryPage(row, number) {
   page.innerHTML = `
     <div class="page-inner">
       <div class="page-top">
-        <span>${String(number).padStart(2, "0")} · ${author === "Aaru" ? "HER SIDE" : "HIS SIDE"}</span>
+        <span>${String(number).padStart(2, "0")} · ${author === "RT" ? "AARU'S SIDE" : "SOMDA'S SIDE"}</span>
         <span>${escapeHtml(row.title || "OUR STORY")}</span>
       </div>
 
@@ -265,7 +265,7 @@ async function addNewPage() {
     {
       slug: `${base}-rt`,
       title: cleanTitle,
-      author: "Aaru",
+      author: "RT",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 1,
@@ -274,7 +274,7 @@ async function addNewPage() {
     {
       slug: `${base}-soham`,
       title: cleanTitle,
-      author: "Somda",
+      author: "Soham",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 2,
@@ -289,7 +289,7 @@ async function addNewPage() {
 
   if (error) {
     console.error(error);
-    alert("Could not create the new pages. Check that INSEAaru permission is enabled in Supabase.");
+    alert("Could not create the new pages. Check that INSERT permission is enabled in Supabase.");
     return;
   }
 
@@ -321,24 +321,14 @@ async function deleteStoryEntry(title) {
   // This removes both perspectives together for dynamically created entries.
   const slugsToDelete = deletableRows.map(row => row.slug);
 
-  const { data: deletedRows, error } = await supabaseClient
+  const { error } = await supabaseClient
     .from("story_pages")
     .delete()
-    .in("slug", slugsToDelete)
-    .select("slug");
+    .in("slug", slugsToDelete);
 
   if (error) {
-    console.error("Delete error:", error);
-    alert("Could not delete this story entry. Please add the Supabase DELETE policy, then try again.");
-    return;
-  }
-
-  const deletedSlugs = (deletedRows || []).map(row => row.slug);
-  const allRowsDeleted = slugsToDelete.every(slug => deletedSlugs.includes(slug));
-
-  if (!allRowsDeleted) {
-    console.error("Delete incomplete:", { requested: slugsToDelete, deleted: deletedSlugs });
-    alert("Supabase did not confirm deletion of both perspectives. Please check the DELETE policy.");
+    console.error(error);
+    alert("Could not delete this story entry. Check the Supabase DELETE policy.");
     return;
   }
 
