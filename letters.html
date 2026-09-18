@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Things I Love About You — Aaru & Somda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="letters.css" />
+</head>
+<body>
+  <main class="letters-page">
+    <a class="back-link" href="index.html">← Back to our little world</a>
+    <header class="letters-header">
+      <div class="eyebrow">A COLLECTION OF LOVE LETTERS</div>
+      <h1>Things I Love<br><em>About You</em></h1>
+      <p>Words we write, feelings we keep, and little pieces of our hearts.</p>
+    </header>
+
+    <section class="letters-toolbar">
+      <button id="editToggle" class="outline-button">Edit Letters</button>
+      <button id="addLetterButton" class="outline-button hidden">＋ Add New Letter</button>
+    </section>
+
+    <section id="lettersCollection" class="letters-collection"></section>
+
+    <div id="letterFormPanel" class="letter-form-panel hidden">
+      <div class="form-heading">A new little letter</div>
+      <label>Dear <input id="recipientInput" type="text" placeholder="Aaru" /></label>
+      <label>Letter content
+        <textarea id="contentInput" rows="12" placeholder="Write your letter here..."></textarea>
+      </label>
+      <label>Signed, <input id="signatureInput" type="text" placeholder="Somda" /></label>
+      <div class="form-actions">
+        <button id="createLetterButton" class="solid-button">Create Letter</button>
+        <button id="cancelLetterButton" class="text-button">Cancel</button>
+      </div>
+    </div>
+
+    <footer class="letters-footer">Made with love, for Aaru. ♥</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="letters.js"></script>
+</body>
+</html>

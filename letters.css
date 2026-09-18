@@ -1,0 +1,53 @@
+:root {
+  --paper: #fffdfb;
+  --pink: #f7c8d9;
+  --rose: #c87891;
+  --ink: #30212a;
+  --muted: #876b76;
+  --line: rgba(80, 42, 58, .18);
+  --bg: #f7e9e4;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--bg); font-family: 'Playfair Display', Georgia, serif; }
+.letters-page { width: min(1100px, calc(100% - 36px)); margin: 0 auto; padding: 34px 0 55px; }
+.back-link { color: var(--muted); text-decoration: none; font: 12px 'DM Mono', monospace; letter-spacing: .04em; }
+.letters-header { text-align: center; padding: 58px 0 38px; }
+.eyebrow { font: 11px 'DM Mono', monospace; letter-spacing: .32em; color: var(--rose); }
+h1 { font-size: clamp(42px, 7vw, 82px); line-height: .98; font-weight: 400; margin: 22px 0; }
+h1 em { color: var(--rose); font-weight: 400; }
+.letters-header p { max-width: 520px; margin: 0 auto; color: var(--muted); font-style: italic; font-size: 17px; line-height: 1.7; }
+.letters-toolbar { display: flex; justify-content: center; gap: 12px; margin-bottom: 34px; }
+button { cursor: pointer; font: 12px 'DM Mono', monospace; }
+.outline-button, .solid-button { padding: 13px 18px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.outline-button:hover { background: rgba(255,255,255,.45); }
+.solid-button { background: var(--ink); color: white; border-color: var(--ink); }
+.hidden { display: none !important; }
+.letters-collection { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.letter-card { position: relative; padding: 35px 35px 30px; background: var(--paper); box-shadow: 0 18px 45px rgba(103, 54, 72, .11); border: 1px solid rgba(170, 105, 127, .2); overflow: hidden; }
+.letter-card::before { content: '♥'; position: absolute; right: 22px; top: 15px; color: var(--pink); font-size: 24px; }
+.letter-card::after { content: ''; position: absolute; inset: 10px; border: 1px solid rgba(200,120,145,.16); pointer-events: none; }
+.letter-card.static-letter { grid-column: 1 / -1; max-width: 760px; width: 100%; justify-self: center; padding: 55px 70px 45px; }
+.letter-recipient { position: relative; z-index: 1; font-family: Parisienne, cursive; font-size: clamp(32px, 4vw, 52px); margin-bottom: 25px; }
+.letter-content { position: relative; z-index: 1; white-space: pre-line; font-size: 16px; line-height: 1.8; color: #49353d; }
+.letter-signature { position: relative; z-index: 1; text-align: right; margin-top: 32px; font-family: Parisienne, cursive; font-size: 34px; color: var(--rose); }
+.letter-meta { position: relative; z-index: 1; margin-top: 20px; font: 10px 'DM Mono', monospace; color: var(--muted); letter-spacing: .08em; }
+.letter-actions { position: relative; z-index: 2; display: flex; gap: 8px; margin-top: 22px; }
+.small-button { border: 1px solid var(--line); background: transparent; padding: 8px 11px; color: var(--muted); }
+.small-button.delete { color: #a05268; }
+.letter-form-panel { max-width: 760px; margin: 30px auto 0; padding: 30px; background: rgba(255,255,255,.52); border: 1px solid var(--line); }
+.form-heading { font-size: 27px; margin-bottom: 22px; }
+.letter-form-panel label { display: block; margin: 17px 0; font: 12px 'DM Mono', monospace; color: var(--muted); }
+input, textarea { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.7); color: var(--ink); font: 16px 'Playfair Display', Georgia, serif; }
+textarea { resize: vertical; line-height: 1.6; }
+.form-actions { display: flex; align-items: center; gap: 15px; margin-top: 22px; }
+.text-button { border: 0; background: transparent; color: var(--muted); padding: 10px; }
+.letters-footer { text-align: center; color: var(--rose); margin-top: 55px; font-size: 14px; }
+@media (max-width: 700px) {
+  .letters-page { width: min(100% - 24px, 600px); padding-top: 24px; }
+  .letters-header { padding: 48px 0 28px; }
+  .letters-collection { grid-template-columns: 1fr; gap: 20px; }
+  .letter-card.static-letter { grid-column: auto; padding: 35px 24px 30px; }
+  .letter-card { padding: 30px 23px 25px; }
+  .letter-content { font-size: 15px; line-height: 1.7; }
+  .letters-toolbar { flex-wrap: wrap; }
+}
