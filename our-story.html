@@ -7,10 +7,12 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="our-story.css">
 </head>
+
 <body>
 
   <main class="story-site">
@@ -20,9 +22,11 @@
       <span>←</span> Back to our little world
     </a>
 
+
     <!-- =========================
          PAGE 1 — STATIC COVER
     ========================== -->
+
     <section class="book-page-screen cover-screen" id="coverPage">
 
       <div class="cover-decoration cover-decoration-left">✦</div>
@@ -55,14 +59,21 @@
     </section>
 
 
+
     <!-- =========================
          BOOK READER
     ========================== -->
+
     <section class="reader" id="reader">
 
+
       <!-- READER TOP BAR -->
+
       <header class="reader-header">
-        <a href="index.html" class="reader-back">← Our little world</a>
+
+        <a href="index.html" class="reader-back">
+          ← Our little world
+        </a>
 
         <div class="reader-title">
           <span>OUR STORY</span>
@@ -71,19 +82,28 @@
         <button class="index-toggle" id="indexToggle">
           ☰ <span>Index</span>
         </button>
+
       </header>
 
 
+
       <!-- PAGE COUNTER -->
+
       <div class="page-counter" id="pageCounter">
         Page 1 of 4
       </div>
 
 
+
       <!-- =========================
            PAGE 2 — INDEX
       ========================== -->
-      <section class="reader-page index-page" data-page="2" id="indexPage">
+
+      <section
+        class="reader-page index-page"
+        data-page="2"
+        id="indexPage"
+      >
 
         <div class="page-inner">
 
@@ -92,9 +112,12 @@
             <span>02</span>
           </div>
 
+
           <div class="index-content">
 
-            <p class="eyebrow page-eyebrow">Our little chapters</p>
+            <p class="eyebrow page-eyebrow">
+              Our little chapters
+            </p>
 
             <h2>Contents</h2>
 
@@ -105,38 +128,60 @@
               and all the pages still waiting to be written.
             </p>
 
-            <!-- DYNAMIC INDEX ENTRIES -->
+
+            <!-- INDEX ENTRIES -->
+
             <nav class="index-list" id="indexList">
 
-              <button class="index-entry" data-target="rtPage">
+              <button
+                class="index-entry"
+                data-target="rtPage"
+              >
                 <span class="index-number">01</span>
+
                 <span class="index-entry-text">
                   <strong>How It Began</strong>
                   <small>RT's perspective</small>
                 </span>
+
                 <span class="index-page-number">03</span>
               </button>
 
-              <button class="index-entry" data-target="sohamPage">
+
+              <button
+                class="index-entry"
+                data-target="sohamPage"
+              >
                 <span class="index-number">02</span>
+
                 <span class="index-entry-text">
                   <strong>How It Began</strong>
                   <small>Soham's perspective</small>
                 </span>
+
                 <span class="index-page-number">04</span>
               </button>
 
-              <div class="index-section-label">OUR DIARY</div>
 
-              <!-- These will become dynamic later -->
-              <button class="index-entry diary-index-entry" data-target="diaryPage">
+              <div class="index-section-label">
+                OUR DIARY
+              </div>
+
+
+              <button
+                class="index-entry diary-index-entry"
+                data-target="diaryPage"
+              >
                 <span class="index-number">03</span>
+
                 <span class="index-entry-text">
                   <strong>The Day We Became Us</strong>
                   <small>27 August 2026</small>
                 </span>
+
                 <span class="index-page-number">05</span>
               </button>
+
 
               <div class="index-coming-soon">
                 <span>♡</span>
@@ -146,6 +191,7 @@
             </nav>
 
           </div>
+
 
           <div class="page-bottom">
             <span>Our Story</span>
@@ -157,10 +203,16 @@
       </section>
 
 
+
       <!-- =========================
            PAGE 3 — RT'S PERSPECTIVE
       ========================== -->
-      <section class="reader-page story-page" data-page="3" id="rtPage">
+
+      <section
+        class="reader-page story-page"
+        data-page="3"
+        id="rtPage"
+      >
 
         <div class="page-inner">
 
@@ -169,15 +221,30 @@
             <span>HOW IT BEGAN</span>
           </div>
 
+
           <div class="story-page-content">
 
-            <p class="page-eyebrow">As remembered by</p>
+            <p class="page-eyebrow">
+              As remembered by
+            </p>
 
-            <h2>RT's<br><em>Perspective</em></h2>
+            <h2>
+              RT's<br>
+              <em>Perspective</em>
+            </h2>
 
             <div class="page-rule"></div>
 
-            <div class="editable-content" id="rtStoryContent">
+
+            <!-- EDITABLE RT CONTENT -->
+
+            <div
+              class="editable-content contenteditable-area"
+              id="rtStoryContent"
+              contenteditable="true"
+              spellcheck="true"
+            >
+
               <p>
                 This is where RT's version of the beginning
                 will live.
@@ -187,7 +254,9 @@
                 Her memories, her feelings, her little details
                 about how our story began.
               </p>
+
             </div>
+
 
             <div class="page-quote">
               “Some people enter your life quietly,
@@ -196,6 +265,7 @@
             </div>
 
           </div>
+
 
           <div class="page-bottom">
             <span>Written by RT</span>
@@ -207,10 +277,16 @@
       </section>
 
 
+
       <!-- =========================
            PAGE 4 — SOHAM'S PERSPECTIVE
       ========================== -->
-      <section class="reader-page story-page" data-page="4" id="sohamPage">
+
+      <section
+        class="reader-page story-page"
+        data-page="4"
+        id="sohamPage"
+      >
 
         <div class="page-inner">
 
@@ -219,15 +295,30 @@
             <span>HOW IT BEGAN</span>
           </div>
 
+
           <div class="story-page-content">
 
-            <p class="page-eyebrow">As remembered by</p>
+            <p class="page-eyebrow">
+              As remembered by
+            </p>
 
-            <h2>Soham's<br><em>Perspective</em></h2>
+            <h2>
+              Soham's<br>
+              <em>Perspective</em>
+            </h2>
 
             <div class="page-rule"></div>
 
-            <div class="editable-content" id="sohamStoryContent">
+
+            <!-- EDITABLE SOHAM CONTENT -->
+
+            <div
+              class="editable-content contenteditable-area"
+              id="sohamStoryContent"
+              contenteditable="true"
+              spellcheck="true"
+            >
+
               <p>
                 Some meetings seem ordinary when they happen.
                 Until, much later, you realise they were the
@@ -238,7 +329,9 @@
                 This is where your version of how you met,
                 what you noticed, and what you felt will live.
               </p>
+
             </div>
+
 
             <div class="page-quote">
               “And somehow, the ordinary became
@@ -247,6 +340,7 @@
             </div>
 
           </div>
+
 
           <div class="page-bottom">
             <span>Written by Soham</span>
@@ -258,10 +352,16 @@
       </section>
 
 
+
       <!-- =========================
            PAGE 5 — DIARY PLACEHOLDER
       ========================== -->
-      <section class="reader-page diary-page" data-page="5" id="diaryPage">
+
+      <section
+        class="reader-page diary-page"
+        data-page="5"
+        id="diaryPage"
+      >
 
         <div class="page-inner">
 
@@ -270,13 +370,20 @@
             <span>27 AUGUST 2026</span>
           </div>
 
+
           <div class="diary-page-content">
 
-            <p class="page-eyebrow">Our first diary entry</p>
+            <p class="page-eyebrow">
+              Our first diary entry
+            </p>
 
-            <h2>The day we<br><em>became us</em></h2>
+            <h2>
+              The day we<br>
+              <em>became us</em>
+            </h2>
 
             <div class="page-rule"></div>
+
 
             <p class="diary-placeholder">
               This is where our shared diary begins.
@@ -289,10 +396,13 @@
 
             <div class="diary-note">
               <span>♡</span>
-              <p>More memories are waiting to be written.</p>
+              <p>
+                More memories are waiting to be written.
+              </p>
             </div>
 
           </div>
+
 
           <div class="page-bottom">
             <span>Our Diary</span>
@@ -304,9 +414,11 @@
       </section>
 
 
+
       <!-- =========================
            READER NAVIGATION
       ========================== -->
+
       <footer class="reader-navigation">
 
         <button class="nav-button" id="prevBtn">
@@ -314,11 +426,17 @@
           <small>Previous</small>
         </button>
 
-        <button class="nav-index-button" id="bottomIndexBtn">
+        <button
+          class="nav-index-button"
+          id="bottomIndexBtn"
+        >
           ☰ &nbsp; Back to Index
         </button>
 
-        <button class="nav-button nav-next" id="nextBtn">
+        <button
+          class="nav-button nav-next"
+          id="nextBtn"
+        >
           <small>Next</small>
           <span>→</span>
         </button>
@@ -328,31 +446,51 @@
     </section>
 
 
+
     <!-- =========================
          INDEX OVERLAY
     ========================== -->
-    <aside class="index-overlay" id="indexOverlay">
+
+    <aside
+      class="index-overlay"
+      id="indexOverlay"
+    >
 
       <div class="overlay-header">
         <span>OUR STORY</span>
         <button id="closeIndexBtn">×</button>
       </div>
 
+
       <div class="overlay-content">
-        <p class="eyebrow">Navigate our pages</p>
+
+        <p class="eyebrow">
+          Navigate our pages
+        </p>
+
         <h2>Contents</h2>
 
-        <div class="overlay-index-list" id="overlayIndexList"></div>
+        <div
+          class="overlay-index-list"
+          id="overlayIndexList"
+        ></div>
+
       </div>
 
     </aside>
 
   </main>
 
-  <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Our Story JavaScript -->
-<script src="our-story.js"></script>
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- OUR STORY JAVASCRIPT -->
+
+  <script src="our-story.js"></script>
+
 </body>
 </html>
