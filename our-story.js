@@ -39,7 +39,7 @@ function textFromEditor(element) {
 
 function normaliseAuthor(author, slug = "") {
   const value = `${author || ""} ${slug}`.toLowerCase();
-  return value.includes("soham") ? "Soham" : "RT";
+  return value.includes("soham") ? "Somda" : "Aaru";
 }
 
 function groupStories(rows) {
@@ -77,7 +77,7 @@ function createStoryPage(row, number) {
   page.innerHTML = `
     <div class="page-inner">
       <div class="page-top">
-        <span>${String(number).padStart(2, "0")} · ${author === "RT" ? "AARU'S SIDE" : "SOMDA'S SIDE"}</span>
+        <span>${String(number).padStart(2, "0")} · ${author === "Aaru" ? "AARU'S SIDE" : "SOMDA'S SIDE"}</span>
         <span>${escapeHtml(row.title || "OUR STORY")}</span>
       </div>
 
@@ -266,7 +266,7 @@ async function addNewPage() {
     {
       slug: `${base}-rt`,
       title: cleanTitle,
-      author: "RT",
+      author: "Aaru",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 1,
@@ -275,7 +275,7 @@ async function addNewPage() {
     {
       slug: `${base}-soham`,
       title: cleanTitle,
-      author: "Soham",
+      author: "Somda",
       content: "",
       page_type: "perspective",
       display_order: maxOrder + 2,
@@ -384,7 +384,7 @@ function showPage(index) {
   });
 
   $("pageCounter").textContent = `Page ${currentPage + 2} of ${readerPages.length + 1}`;
-  $("prevBtn").disabled = currentPage === 0;
+  $("prevBtn").disabled = false;
   $("nextBtn").disabled = currentPage === readerPages.length - 1;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -413,7 +413,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 450);
   });
 
-  $("prevBtn").addEventListener("click", () => showPage(currentPage - 1));
+  $("prevBtn").addEventListener("click", () => {
+    if (currentPage === 0) {
+      window.location.href = "index.html";
+      return;
+    }
+    showPage(currentPage - 1);
+  });
   $("nextBtn").addEventListener("click", () => showPage(currentPage + 1));
   $("bottomIndexBtn").addEventListener("click", () => showPage(0));
   $("indexToggle").addEventListener("click", openOverlay);
