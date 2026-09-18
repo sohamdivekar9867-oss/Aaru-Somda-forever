@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="protect.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Things I Love About You — Aaru & Somda</title>
@@ -12,7 +15,6 @@
 <body>
   <main class="letters-page">
     <a class="back-link" href="index.html">← Back to our little world</a>
-
     <header class="letters-header">
       <div class="eyebrow">A COLLECTION OF LOVE LETTERS</div>
       <h1>Things I Love<br><em>About You</em></h1>
@@ -24,25 +26,10 @@
       <button id="addLetterButton" class="outline-button hidden">＋ Add New Letter</button>
     </section>
 
-    <section id="indexView" class="letter-index-view">
-      <div class="index-kicker">THE LETTER INDEX</div>
-      <div id="letterIndexList" class="letter-index-list"></div>
-      <p id="emptyIndexMessage" class="empty-index hidden">Our letters will find their place here.</p>
-    </section>
-
-    <section id="letterPages" class="letter-pages hidden"></section>
-
-    <nav class="letter-navigation" aria-label="Letter navigation">
-      <button id="previousButton" class="nav-button" type="button">← Previous</button>
-      <span id="pageIndicator">Index</span>
-      <button id="nextButton" class="nav-button" type="button">Next →</button>
-    </nav>
+    <section id="lettersCollection" class="letters-collection"></section>
 
     <div id="letterFormPanel" class="letter-form-panel hidden">
       <div class="form-heading">A new little letter</div>
-      <label>Letter title
-        <input id="titleInput" type="text" placeholder="A little reminder" />
-      </label>
       <label>Dear <input id="recipientInput" type="text" placeholder="Aaru" /></label>
       <label>Letter content
         <textarea id="contentInput" rows="12" placeholder="Write your letter here..."></textarea>
@@ -56,7 +43,6 @@
 
     <footer class="letters-footer">Made with love, for Aaru. ♥</footer>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="letters.js"></script>
 </body>
