@@ -472,3 +472,146 @@ button {
     font-size: 16px;
   }
 }
+
+
+/* =========================
+   BED — PRIVATE ROMANTIC CORNER
+========================= */
+
+.bed-hotspot {
+  /* Bed is on the right-hand side of the room. */
+  left: 60%;
+  top: 66%;
+  width: 35%;
+  height: 18%;
+}
+
+.bed-hotspot::after {
+  content: "Come here, Aaru… ♡";
+  bottom: auto;
+  top: calc(100% + 12px);
+}
+
+.kiss-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.kiss-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.kiss-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 10, 18, .72);
+  backdrop-filter: blur(5px);
+}
+
+.kiss-card {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 34px 28px 30px;
+  text-align: center;
+  border: 1px solid rgba(255, 190, 205, .28);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #24151f, #120d15);
+  box-shadow: 0 25px 80px rgba(0,0,0,.45);
+  transform: translateY(12px) scale(.97);
+  transition: transform .3s ease;
+}
+
+.kiss-modal.open .kiss-card {
+  transform: translateY(0) scale(1);
+}
+
+.kiss-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  color: #e8cbd1;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.kiss-sparkles {
+  color: #f5a8b7;
+  font-size: 18px;
+  letter-spacing: 5px;
+  margin-bottom: 12px;
+}
+
+.kiss-small {
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #c9a9b2;
+  margin-bottom: 12px;
+}
+
+.kiss-card h2 {
+  margin: 0 0 14px;
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  font-size: clamp(25px, 5vw, 34px);
+  color: #fff1f4;
+}
+
+.kiss-card p {
+  margin: 0 auto 22px;
+  max-width: 340px;
+  color: #e4c9d0;
+  font-family: "Playfair Display", serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.kiss-action {
+  border: 1px solid rgba(255, 194, 208, .45);
+  border-radius: 999px;
+  padding: 12px 20px;
+  background: rgba(255, 164, 184, .12);
+  color: #fff0f4;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.kiss-action:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 164, 184, .2);
+}
+
+.kiss-count {
+  min-height: 18px;
+  margin-top: 14px;
+  color: #f3b4c1;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .bed-hotspot {
+    left: 59%;
+    top: 65%;
+    width: 37%;
+    height: 20%;
+  }
+
+  .kiss-card {
+    padding: 30px 22px 26px;
+  }
+}
