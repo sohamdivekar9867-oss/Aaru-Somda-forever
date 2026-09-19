@@ -4,31 +4,76 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js" defer></script>
   <script src="protect.js" defer></script>
-
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Story · Aaru Somda</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="our-story.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story · Aaru Somda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="our-story.css">
 </head>
 <body>
 <main class="story-site">
 <a href="index.html" class="back-link"><span>←</span> Back to our little world</a>
+
 <section class="book-page-screen cover-screen" id="coverPage">
-<div class="cover-decoration cover-decoration-left">✦</div><div class="cover-decoration cover-decoration-right">✦</div>
-<p class="eyebrow">A little book about us</p><h1>Our <em>Story</em></h1><div class="cover-line"></div>
-<p class="cover-introduction">Somewhere between ordinary days and unexpected moments, we found something extraordinary in each other. This is our little story — of laughter, love, silly moments, deep conversations, and all the memories we’re yet to make. A story that began with two people, and slowly became <em>us.</em> ❤️</p>
-<p class="cover-names">SOMDA &amp; AARU</p><p class="cover-date">EST. 27 AUGUST 2026</p>
-<button class="book-button" id="startBookBtn"><span>Open our story</span><span>→</span></button>
+  <div class="cover-decoration cover-decoration-left">✦</div>
+  <div class="cover-decoration cover-decoration-right">✦</div>
+  <p class="eyebrow">A little book about us</p>
+  <h1>Our <em>Story</em></h1>
+  <div class="cover-line"></div>
+  <p class="cover-introduction">Somewhere between ordinary days and unexpected moments, we found something extraordinary in each other. This is our little story — of laughter, love, silly moments, deep conversations, and all the memories we’re yet to make. A story that began with two people, and slowly became <em>us.</em> ❤️</p>
+  <p class="cover-names">SOMDA &amp; AARU</p>
+  <p class="cover-date">EST. 27 AUGUST 2026</p>
+  <button class="book-button" id="startBookBtn"><span>Open our story</span><span>→</span></button>
 </section>
+
 <section class="reader" id="reader" style="display:none">
-<header class="reader-header"><a href="index.html" class="reader-back">← Our little world</a><div class="reader-title"><span>OUR STORY</span></div><button class="index-toggle" id="indexToggle">☰ <span>Index</span></button></header>
-<div class="page-counter" id="pageCounter">Page 1 of 2</div>
-<section class="reader-page index-page active-page" data-page="2" id="indexPage"><div class="page-inner"><div class="page-top"><span>CONTENTS</span><span>02</span></div><div class="index-content"><p class="eyebrow page-eyebrow">Our little chapters</p><h2>Contents</h2><div class="index-rule"></div><p class="index-intro">A collection of beginnings, memories, and all the pages still waiting to be written.</p><nav class="index-list" id="indexList"></nav><div class="private-controls"><button class="edit-story-button" id="editStoryBtn">Edit Story</button><button class="add-page-button" id="addPageBtn" hidden>＋ Add New Page</button></div></div><div class="page-bottom"><span>Our Story</span><span>02</span></div></div></section>
-<div id="dynamicStoryPages"></div>
-<footer class="reader-navigation"><button class="nav-button" id="prevBtn"><span>←</span><small>Previous</small></button><button class="nav-index-button" id="bottomIndexBtn">☰ &nbsp; Back to Index</button><button class="nav-button nav-next" id="nextBtn"><small>Next</small><span>→</span></button></footer>
+  <header class="reader-header">
+    <a href="index.html" class="reader-back">← Our little world</a>
+    <div class="reader-title"><span>OUR STORY</span></div>
+    <button class="index-toggle" id="indexToggle">☰ <span>Index</span></button>
+  </header>
+
+  <div class="page-counter" id="pageCounter">Page 1 of 2</div>
+
+  <section class="reader-page index-page active-page" data-page="2" id="indexPage">
+    <div class="page-inner">
+      <div class="page-top"><span>CONTENTS</span><span>02</span></div>
+      <div class="index-content">
+        <p class="eyebrow page-eyebrow">Our little chapters</p>
+        <h2>Contents</h2>
+        <div class="index-rule"></div>
+        <p class="index-intro">A collection of beginnings, memories, and all the pages still waiting to be written.</p>
+        <nav class="index-list" id="indexList"></nav>
+        <div class="private-controls">
+          <button class="edit-story-button" id="editStoryBtn">Edit Story</button>
+          <button class="add-page-button" id="addPageBtn" hidden>＋ Add New Page</button>
+        </div>
+      </div>
+      <div class="page-bottom"><span>Our Story</span><span>02</span></div>
+    </div>
+  </section>
+
+  <div id="dynamicStoryPages"></div>
+
+  <footer class="reader-navigation">
+    <button class="nav-button" id="prevBtn"><span>←</span><small>Previous</small></button>
+    <button class="nav-index-button" id="bottomIndexBtn">☰ &nbsp; Back to Index</button>
+    <button class="nav-button nav-next" id="nextBtn"><small>Next</small><span>→</span></button>
+  </footer>
 </section>
-<aside class="index-overlay" id="indexOverlay"><div class="overlay-header"><span>OUR STORY</span><button id="closeIndexBtn">×</button></div><div class="overlay-content"><p class="eyebrow">Navigate our pages</p><h2>Contents</h2><div class="overlay-index-list" id="overlayIndexList"></div></div></aside>
+
+<aside class="index-overlay" id="indexOverlay">
+  <div class="overlay-header"><span>OUR STORY</span><button id="closeIndexBtn">×</button></div>
+  <div class="overlay-content">
+    <p class="eyebrow">Navigate our pages</p>
+    <h2>Contents</h2>
+    <div class="overlay-index-list" id="overlayIndexList"></div>
+  </div>
+</aside>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="our-story.js"></script>
-</body></html>
+
+<script src="our-story.js"></script>
+</body>
+</html>
