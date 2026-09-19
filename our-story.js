@@ -1,6 +1,6 @@
 const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const storySupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const PEOPLE = {
   Aaru: "aaru.saru090901@gmail.com",
@@ -192,13 +192,21 @@ function bindStoryControls() {
 }
 
 async function loadCurrentUser() {
-  const { data: { user }, error } = await supabaseClient.auth.getUser();
-  if (error) console.error(error);
-  currentUser = user || null;
+  // Use the active browser session directly. This is more reliable here than
+  // calling getUser() during page initialization, especially with the
+  // sessionStorage-based login used by this site.
+  const { data, error } = await storySupabaseClient.auth.getSession();
+  if (error) {
+    console.error("Could not read Supabase session:", error);
+    currentUser = null;
+    return;
+  }
+  currentUser = data?.session?.user || null;
+  console.log("Our Story auth:", currentUser?.email || "no active session");
 }
 
 async function loadStories() {
-  const { data: chapterData, error: chapterError } = await supabaseClient
+  const { data: chapterData, error: chapterError } = await storySupabaseClient
     .from("story_chapters")
     .select("id,title,display_order,published,created_by,created_at,updated_at")
     .eq("published", true)
@@ -210,7 +218,7 @@ async function loadStories() {
     return;
   }
 
-  const { data: perspectiveData, error: perspectiveError } = await supabaseClient
+  const { data: perspectiveData, error: perspectiveError } = await storySupabaseClient
     .from("story_perspectives")
     .select("id,chapter_id,author,content,created_by,created_at,updated_at");
 
@@ -230,6 +238,7 @@ async function loadStories() {
 }
 
 async function savePerspective(button) {
+  await loadCurrentUser();
   if (!currentUser) return alert("Please log in first ♡");
 
   const author = authorForEmail(currentUser.email);
@@ -250,12 +259,12 @@ async function savePerspective(button) {
   let result;
 
   if (existing) {
-    result = await supabaseClient
+    result = await storySupabaseClient
       .from("story_perspectives")
       .update({ content, updated_at: new Date().toISOString() })
       .eq("id", existing.id);
   } else {
-    result = await supabaseClient
+    result = await storySupabaseClient
       .from("story_perspectives")
       .insert({ chapter_id: chapter.id, author, content, created_by: currentUser.id })
       .select()
@@ -278,6 +287,7 @@ async function savePerspective(button) {
 }
 
 async function addPerspective(chapterId) {
+  await loadCurrentUser();
   if (!currentUser) return alert("Please log in first ♡");
   const author = authorForEmail(currentUser.email);
   if (!author) return alert("This account is not authorized for Our Story.");
@@ -286,7 +296,7 @@ async function addPerspective(chapterId) {
   if (!chapter) return;
   if (getPerspective(chapter, author)) return buildPages();
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await storySupabaseClient
     .from("story_perspectives")
     .insert({ chapter_id: chapter.id, author, content: "", created_by: currentUser.id })
     .select()
@@ -303,6 +313,9 @@ async function addPerspective(chapterId) {
 }
 
 async function createChapter() {
+  // Refresh the local auth reference immediately before an insert so a
+  // freshly restored/renewed Supabase session is never treated as logged out.
+  await loadCurrentUser();
   if (!canEditChapter()) return alert("Please log in first ♡");
 
   const title = prompt("Enter the heading for this new chapter:");
@@ -315,7 +328,7 @@ async function createChapter() {
   }
 
   const maxOrder = chapters.reduce((max, c) => Math.max(max, Number(c.display_order) || 0), 0);
-  const { data: chapter, error } = await supabaseClient
+  const { data: chapter, error } = await storySupabaseClient
     .from("story_chapters")
     .insert({ title: cleanTitle, display_order: maxOrder + 1, published: true, created_by: currentUser.id })
     .select()
@@ -328,7 +341,7 @@ async function createChapter() {
   }
 
   const author = authorForEmail(currentUser.email);
-  const { data: perspective, error: perspectiveError } = await supabaseClient
+  const { data: perspective, error: perspectiveError } = await storySupabaseClient
     .from("story_perspectives")
     .insert({ chapter_id: chapter.id, author, content: "", created_by: currentUser.id })
     .select()
@@ -336,7 +349,7 @@ async function createChapter() {
 
   if (perspectiveError) {
     console.error(perspectiveError);
-    await supabaseClient.from("story_chapters").delete().eq("id", chapter.id);
+    await storySupabaseClient.from("story_chapters").delete().eq("id", chapter.id);
     alert("The chapter was created but your perspective could not be added. Please run STORY_SETUP.sql again.");
     return;
   }
@@ -349,6 +362,7 @@ async function createChapter() {
 }
 
 async function editHeading(chapterId) {
+  await loadCurrentUser();
   if (!canEditChapter()) return;
   const chapter = chapters.find(c => c.id === chapterId);
   if (!chapter) return;
@@ -362,7 +376,7 @@ async function editHeading(chapterId) {
     return;
   }
 
-  const { error } = await supabaseClient
+  const { error } = await storySupabaseClient
     .from("story_chapters")
     .update({ title: cleanTitle, updated_at: new Date().toISOString() })
     .eq("id", chapterId);
@@ -383,7 +397,7 @@ async function deleteChapter(chapterId) {
   if (!chapter) return;
   if (!confirm(`Delete “${chapter.title}” and both perspectives? This cannot be undone.`)) return;
 
-  const { error } = await supabaseClient.from("story_chapters").delete().eq("id", chapterId);
+  const { error } = await storySupabaseClient.from("story_chapters").delete().eq("id", chapterId);
   if (error) {
     console.error(error);
     alert("Could not delete this chapter.");
