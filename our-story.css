@@ -1098,3 +1098,34 @@ a {
     outline-offset: 6px;
   }
 }
+
+.private-controls { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.delete-page-button {
+  border:1px solid rgba(80, 49, 55, .28);
+  background:transparent;
+  color:#503137;
+  padding:12px 20px;
+  font:inherit;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.delete-page-button:hover { background:rgba(80,49,55,.07); }
+.delete-modal { position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center; }
+.delete-modal.open { display:flex; }
+.delete-modal-backdrop { position:absolute; inset:0; background:rgba(20,10,14,.62); backdrop-filter:blur(4px); }
+.delete-modal-card { position:relative; z-index:1; width:min(560px, calc(100vw - 32px)); max-height:80vh; overflow:auto; background:#f7ece4; color:#342127; padding:32px; box-shadow:0 24px 70px rgba(0,0,0,.28); }
+.delete-modal-close { position:absolute; right:16px; top:12px; border:0; background:transparent; font-size:28px; color:#503137; cursor:pointer; }
+.delete-modal-card h3 { margin:6px 0 12px; font-family:'Playfair Display',serif; font-size:30px; font-weight:400; }
+.delete-modal-intro { line-height:1.65; opacity:.78; margin-bottom:22px; }
+.delete-request-list { display:grid; gap:10px; }
+.delete-request-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:15px 0; border-top:1px solid rgba(80,49,55,.16); }
+.delete-request-title { font-family:'Playfair Display',serif; font-size:18px; }
+.delete-request-meta { font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.6; margin-top:4px; }
+.delete-request-action { border:1px solid rgba(80,49,55,.3); background:transparent; padding:9px 13px; cursor:pointer; color:#503137; font:inherit; white-space:nowrap; }
+.delete-request-action.primary { background:#503137; color:#f7ece4; }
+.delete-request-action:disabled { opacity:.45; cursor:default; }
+@media (max-width:600px) {
+  .delete-modal-card { padding:26px 20px; }
+  .delete-request-row { align-items:flex-start; flex-direction:column; }
+  .delete-request-action { width:100%; }
+}

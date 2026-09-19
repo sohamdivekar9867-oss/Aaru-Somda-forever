@@ -23,6 +23,7 @@ let readerPages = [];
 let currentPage = 0;
 let currentUser = null;
 let currentPerspective = "Aaru";
+let deleteRequests = [];
 
 const $ = id => document.getElementById(id);
 
@@ -253,6 +254,7 @@ async function loadStories() {
     perspectives: perspectives.filter(p => p.chapter_id === chapter.id)
   }));
 
+  await loadDeleteRequests();
   buildPages();
 }
 
@@ -460,21 +462,158 @@ async function editHeading(chapterId) {
   buildPages();
 }
 
-async function deleteChapter(chapterId) {
-  if (!canEditChapter()) return;
-  const chapter = chapters.find(c => c.id === chapterId);
-  if (!chapter) return;
-  if (!confirm(`Delete “${chapter.title}” and both perspectives? This cannot be undone.`)) return;
-
-  const { error } = await storySupabaseClient.from("story_chapters").delete().eq("id", chapterId);
+async function loadDeleteRequests() {
+  const { data, error } = await storySupabaseClient
+    .from("story_chapter_delete_requests")
+    .select("id,chapter_id,requester_email,approver_email,status,created_at")
+    .eq("status", "pending");
   if (error) {
-    console.error(error);
-    alert("Could not delete this chapter.");
+    console.warn("Could not load deletion requests:", error);
+    deleteRequests = [];
     return;
   }
-  chapters = chapters.filter(c => c.id !== chapterId);
+  deleteRequests = data || [];
+}
+
+function oppositePerson(author) {
+  return author === "Aaru" ? "Somda" : "Aaru";
+}
+
+function emailForAuthor(author) {
+  return author === "Aaru" ? PEOPLE.Aaru : PEOPLE.Somda;
+}
+
+function renderDeleteRequestList() {
+  const container = $("deleteRequestList");
+  if (!container) return;
+  if (!chapters.length) {
+    container.innerHTML = `<p class="delete-modal-intro">There are no chapters to delete.</p>`;
+    return;
+  }
+
+  const myEmail = String(currentUser?.email || "").toLowerCase();
+  const myAuthor = authorForEmail(myEmail);
+
+  container.innerHTML = chapters.map(chapter => {
+    const request = deleteRequests.find(r => r.chapter_id === chapter.id && r.status === "pending");
+    let action = `<button class="delete-request-action primary" data-delete-request="${escapeHtml(chapter.id)}">Request deletion</button>`;
+    let meta = "No deletion request";
+
+    if (request) {
+      if (String(request.approver_email).toLowerCase() === myEmail) {
+        action = `<button class="delete-request-action primary" data-approve-delete="${escapeHtml(request.id)}">Authorize deletion</button>`;
+        meta = `Requested by ${escapeHtml(authorForEmail(request.requester_email) || request.requester_email)}`;
+      } else if (String(request.requester_email).toLowerCase() === myEmail) {
+        action = `<button class="delete-request-action" disabled>Waiting for ${escapeHtml(oppositePerson(myAuthor))}</button>`;
+        meta = `Waiting for ${escapeHtml(oppositePerson(myAuthor))} to authorize`;
+      } else {
+        action = `<button class="delete-request-action" disabled>Pending approval</button>`;
+        meta = "Two-person authorization pending";
+      }
+    }
+
+    return `<div class="delete-request-row">
+      <div><div class="delete-request-title">${escapeHtml(chapter.title)}</div><div class="delete-request-meta">${meta}</div></div>
+      ${action}
+    </div>`;
+  }).join("");
+
+  container.querySelectorAll("[data-delete-request]").forEach(button => {
+    button.addEventListener("click", () => requestChapterDeletion(button.dataset.deleteRequest));
+  });
+  container.querySelectorAll("[data-approve-delete]").forEach(button => {
+    button.addEventListener("click", () => authorizeChapterDeletion(button.dataset.approveDelete));
+  });
+}
+
+async function openDeleteModal() {
+  await loadCurrentUser();
+  if (!currentUser || !authorForEmail(currentUser.email)) {
+    alert("Please log in first ♡");
+    return;
+  }
+  await loadDeleteRequests();
+  renderDeleteRequestList();
+  $("deleteModal").classList.add("open");
+  $("deleteModal").setAttribute("aria-hidden", "false");
+}
+
+function closeDeleteModal() {
+  $("deleteModal").classList.remove("open");
+  $("deleteModal").setAttribute("aria-hidden", "true");
+}
+
+async function requestChapterDeletion(chapterId) {
+  await loadCurrentUser();
+  const requesterEmail = String(currentUser?.email || "").toLowerCase();
+  const requester = authorForEmail(requesterEmail);
+  if (!requester) return alert("This account is not authorized for Our Story.");
+
+  const chapter = chapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+
+  const existing = deleteRequests.find(r => r.chapter_id === chapterId && r.status === "pending");
+  if (existing) {
+    renderDeleteRequestList();
+    return;
+  }
+
+  const approver = oppositePerson(requester);
+  const approverEmail = emailForAuthor(approver);
+  if (!confirm(`Request deletion of “${chapter.title}”? ${approver} must authorize it before anything is deleted.`)) return;
+
+  const { data, error } = await storySupabaseClient
+    .from("story_chapter_delete_requests")
+    .insert({
+      chapter_id: chapterId,
+      requester_id: currentUser.id,
+      requester_email: requesterEmail,
+      approver_email: approverEmail,
+      status: "pending"
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    alert("Could not create the deletion request. Please run the latest STORY_SETUP.sql in Supabase.");
+    return;
+  }
+
+  deleteRequests.push(data);
+  renderDeleteRequestList();
+}
+
+async function authorizeChapterDeletion(requestId) {
+  await loadCurrentUser();
+  const approverEmail = String(currentUser?.email || "").toLowerCase();
+  if (!authorForEmail(approverEmail)) return alert("This account is not authorized for Our Story.");
+
+  const request = deleteRequests.find(r => r.id === requestId);
+  const chapter = request ? chapters.find(c => c.id === request.chapter_id) : null;
+  if (!request || !chapter) return;
+
+  if (String(request.approver_email).toLowerCase() !== approverEmail) {
+    alert("Only the other person can authorize this deletion.");
+    return;
+  }
+
+  if (!confirm(`Authorize deletion of “${chapter.title}”? This will permanently remove the chapter and both perspectives.`)) return;
+
+  const { data, error } = await storySupabaseClient.rpc("authorize_story_chapter_deletion", {
+    p_request_id: requestId
+  });
+
+  if (error) {
+    console.error(error);
+    alert("Could not authorize the deletion. Please run the latest STORY_SETUP.sql in Supabase.");
+    return;
+  }
+
+  closeDeleteModal();
+  await loadStories();
   currentPage = 0;
-  buildPages();
+  showPage(0, false);
 }
 
 function buildPagesAndReturn(pageIndex) {
@@ -520,6 +659,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("indexToggle").addEventListener("click", openOverlay);
   $("closeIndexBtn").addEventListener("click", closeOverlay);
   $("addPageBtn").addEventListener("click", createChapter);
+  $("deletePageBtn").addEventListener("click", openDeleteModal);
+  $("deleteModalClose").addEventListener("click", closeDeleteModal);
+  $("deleteModalBackdrop").addEventListener("click", closeDeleteModal);
   document.addEventListener("keydown", event => { if (event.key === "Escape") closeOverlay(); });
 
   await loadCurrentUser();

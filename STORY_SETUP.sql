@@ -171,3 +171,105 @@ create trigger trg_remove_empty_story_chapter
 after delete on public.story_perspectives
 for each row
 execute function public.remove_empty_story_chapter();
+
+-- ============================================================
+-- TWO-PERSON CHAPTER DELETION
+-- A deletion is only a request until the other person authorizes it.
+-- ============================================================
+
+create table if not exists public.story_chapter_delete_requests (
+  id uuid primary key default gen_random_uuid(),
+  chapter_id uuid not null references public.story_chapters(id) on delete cascade,
+  requester_id uuid not null references auth.users(id) on delete cascade,
+  requester_email text not null,
+  approver_email text not null,
+  status text not null default 'pending' check (status in ('pending','approved','cancelled')),
+  created_at timestamptz not null default now(),
+  approved_at timestamptz
+);
+
+create unique index if not exists story_one_pending_delete_per_chapter
+on public.story_chapter_delete_requests (chapter_id)
+where status = 'pending';
+
+alter table public.story_chapter_delete_requests enable row level security;
+
+drop policy if exists "story delete requests read" on public.story_chapter_delete_requests;
+drop policy if exists "story delete requests insert" on public.story_chapter_delete_requests;
+
+create policy "story delete requests read"
+on public.story_chapter_delete_requests for select
+to authenticated
+using (
+  lower(auth.jwt() ->> 'email') in ('aaru.saru090901@gmail.com','sohamdivekar9867@gmail.com')
+);
+
+create policy "story delete requests insert"
+on public.story_chapter_delete_requests for insert
+to authenticated
+with check (
+  requester_id = auth.uid()
+  and lower(requester_email) = lower(auth.jwt() ->> 'email')
+  and lower(requester_email) in ('aaru.saru090901@gmail.com','sohamdivekar9867@gmail.com')
+  and (
+    (lower(requester_email) = 'aaru.saru090901@gmail.com' and lower(approver_email) = 'sohamdivekar9867@gmail.com')
+    or
+    (lower(requester_email) = 'sohamdivekar9867@gmail.com' and lower(approver_email) = 'aaru.saru090901@gmail.com')
+  )
+);
+
+-- The requester has NO direct chapter-delete capability.
+-- Only this SECURITY DEFINER function can perform the final deletion,
+-- and it verifies that the currently logged-in user is the designated approver.
+create or replace function public.authorize_story_chapter_deletion(p_request_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  req public.story_chapter_delete_requests%rowtype;
+  approver_email text := lower(auth.jwt() ->> 'email');
+  chapter_title text;
+begin
+  if approver_email not in ('aaru.saru090901@gmail.com','sohamdivekar9867@gmail.com') then
+    raise exception 'Not authorized';
+  end if;
+
+  select * into req
+  from public.story_chapter_delete_requests
+  where id = p_request_id
+    and status = 'pending'
+  for update;
+
+  if not found then
+    raise exception 'Deletion request is no longer pending';
+  end if;
+
+  if lower(req.approver_email) <> approver_email then
+    raise exception 'Only the designated second person can authorize this deletion';
+  end if;
+
+  select title into chapter_title
+  from public.story_chapters
+  where id = req.chapter_id;
+
+  if chapter_title is null then
+    update public.story_chapter_delete_requests
+    set status = 'approved', approved_at = now()
+    where id = req.id;
+    return jsonb_build_object('deleted', false, 'already_missing', true);
+  end if;
+
+  update public.story_chapter_delete_requests
+  set status = 'approved', approved_at = now()
+  where id = req.id;
+
+  delete from public.story_chapters where id = req.chapter_id;
+
+  return jsonb_build_object('deleted', true, 'chapter_id', req.chapter_id, 'title', chapter_title);
+end;
+$$;
+
+revoke all on function public.authorize_story_chapter_deletion(uuid) from public;
+grant execute on function public.authorize_story_chapter_deletion(uuid) to authenticated;

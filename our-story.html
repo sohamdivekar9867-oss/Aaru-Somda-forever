@@ -39,6 +39,7 @@
           <nav class="index-list" id="indexList"></nav>
           <div class="private-controls">
             <button class="add-page-button" id="addPageBtn">＋ Add New Chapter</button>
+            <button class="delete-page-button" id="deletePageBtn">⌫ Delete Chapter</button>
           </div>
         </div>
         <div class="page-bottom"><span>Our Story</span><span>02</span></div>
@@ -47,7 +48,18 @@
 
     <div id="dynamicStoryPages"></div>
 
-    <footer class="reader-navigation">
+    <div class="delete-modal" id="deleteModal" aria-hidden="true">
+    <div class="delete-modal-backdrop" id="deleteModalBackdrop"></div>
+    <div class="delete-modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <button class="delete-modal-close" id="deleteModalClose" aria-label="Close">×</button>
+      <p class="eyebrow">Two-person confirmation</p>
+      <h3 id="deleteModalTitle">Delete a chapter</h3>
+      <p class="delete-modal-intro">Deleting a chapter requires both of you. You can request deletion, but the other person must authorize it before the chapter is removed.</p>
+      <div class="delete-request-list" id="deleteRequestList"></div>
+    </div>
+  </div>
+
+  <footer class="reader-navigation">
       <button class="nav-button" id="prevBtn"><span>←</span><small>Previous</small></button>
       <button class="nav-index-button" id="bottomIndexBtn">☰ &nbsp; Back to Index</button>
       <button class="nav-button nav-next" id="nextBtn"><small>Next</small><span>→</span></button>
