@@ -1,6 +1,17 @@
 const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
-const storySupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const storySupabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      storage: window.sessionStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
 
 const PEOPLE = {
   Aaru: "aaru.saru090901@gmail.com",
