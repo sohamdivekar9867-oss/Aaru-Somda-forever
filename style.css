@@ -739,15 +739,6 @@ button {
   background: rgba(255, 164, 184, .22);
 }
 
-.mirror-count {
-  min-height: 16px;
-  margin-top: 11px;
-  color: #c9a9b2;
-  font-family: "DM Mono", monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-}
-
 @media (max-width: 600px) {
   .mirror-hotspot {
     left: 14%;
@@ -762,5 +753,40 @@ button {
 
   .mirror-compliment {
     font-size: 17px;
+  }
+}
+
+
+/* Floating kisses + hearts from the bed */
+.kiss-float-particle {
+  position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  font-size: 22px;
+  line-height: 1;
+  transform: translate(-50%, 0) scale(.7);
+  opacity: 0;
+  will-change: transform, opacity;
+  text-shadow: 0 2px 12px rgba(255, 130, 165, .35);
+  animation: kissFloatUp var(--kiss-duration, 1.6s) ease-out forwards;
+}
+
+@keyframes kissFloatUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(.65) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--kiss-drift)),
+      calc(-1 * var(--kiss-rise))
+    ) scale(1.05) rotate(var(--kiss-rotate));
   }
 }

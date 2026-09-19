@@ -114,6 +114,42 @@ const kissLines = [
   }
 ];
 
+
+function createKissParticles() {
+  if (!bedHotspot) return;
+
+  const rect = bedHotspot.getBoundingClientRect();
+  const symbols = ["💋", "♡", "♥", "💗", "💋", "♡", "❤️"];
+
+  for (let i = 0; i < 7; i++) {
+    const particle = document.createElement("span");
+    particle.className = "kiss-float-particle";
+    particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+
+    const startX = rect.left + rect.width * (0.25 + Math.random() * 0.5);
+    const startY = rect.top + rect.height * (0.45 + Math.random() * 0.35);
+
+    const drift = `${Math.round((Math.random() - 0.5) * 90)}px`;
+    const rise = `${Math.round(100 + Math.random() * 110)}px`;
+    const rotate = `${Math.round((Math.random() - 0.5) * 35)}deg`;
+    const duration = `${(1.25 + Math.random() * 0.8).toFixed(2)}s`;
+
+    particle.style.left = `${startX}px`;
+    particle.style.top = `${startY}px`;
+    particle.style.setProperty("--kiss-drift", drift);
+    particle.style.setProperty("--kiss-rise", rise);
+    particle.style.setProperty("--kiss-rotate", rotate);
+    particle.style.setProperty("--kiss-duration", duration);
+    particle.style.animationDelay = `${(Math.random() * 120).toFixed(0)}ms`;
+
+    document.body.appendChild(particle);
+
+    particle.addEventListener("animationend", () => {
+      particle.remove();
+    }, { once: true });
+  }
+}
+
 function openKissModal() {
   kissStep = 0;
   kissMessage.textContent = kissLines[0].message;
@@ -137,6 +173,7 @@ if (bedHotspot) {
 
 if (kissAction) {
   kissAction.addEventListener("click", () => {
+    createKissParticles();
     kissStep = Math.min(kissStep + 1, kissLines.length - 1);
 
     const line = kissLines[kissStep];
@@ -173,7 +210,6 @@ const mirrorClose = document.querySelector(".mirror-close");
 const mirrorBackdrop = document.querySelector(".mirror-backdrop");
 const mirrorNext = document.getElementById("mirrorNext");
 const mirrorCompliment = document.getElementById("mirrorCompliment");
-const mirrorCount = document.getElementById("mirrorCount");
 
 const mirrorCompliments = [
   "Yep. Still the most beautiful girl I know. ♡",
@@ -231,7 +267,6 @@ function nextMirrorCompliment() {
   mirrorSeen += 1;
 
   mirrorCompliment.textContent = text;
-  mirrorCount.textContent = `${mirrorSeen} / ${mirrorCompliments.length}`;
 
   mirrorCompliment.animate(
     [
