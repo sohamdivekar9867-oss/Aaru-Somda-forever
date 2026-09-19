@@ -84,12 +84,10 @@
           aria-label="Our Photos"
         ></button>
 
-        <!-- CAT -->
+        <!-- CAT — DATE PLANNER -->
         <button
           class="hotspot cat-hotspot"
-          data-title="I love u Aaru Baby ♡"
-          data-content="Just a tiny reminder from your sleepy little guardian."
-          aria-label="I love u Aaru Baby"
+          aria-label="Ask Date Cat to plan a date"
         ></button>
 
         <!-- MIRROR — COMPLIMENTS -->
@@ -120,6 +118,35 @@
 
 
 
+
+  <!-- DATE CAT — RPG-STYLE DATE PLANNER -->
+  <div class="date-cat-modal" id="dateCatModal" aria-hidden="true">
+    <div class="date-cat-backdrop"></div>
+    <div class="date-cat-card" role="dialog" aria-modal="true" aria-labelledby="dateCatTitle">
+      <button class="date-cat-close" id="dateCatClose" aria-label="Close">×</button>
+      <div class="date-cat-header">
+        <div class="date-cat-avatar">🐱</div>
+        <div>
+          <div class="date-cat-kicker">OFFICIAL DATE PLANNER</div>
+          <h2 class="date-cat-title" id="dateCatTitle">Date Cat</h2>
+        </div>
+      </div>
+      <div class="date-cat-progress" id="dateCatProgress"></div>
+      <div class="date-cat-bubble" id="dateCatBubble"></div>
+      <div class="date-cat-options" id="dateCatOptions"></div>
+      <div class="date-cat-thinking" id="dateCatThinking" hidden></div>
+      <div class="date-cat-quest" id="dateCatQuest" hidden></div>
+      <div class="date-cat-actions" id="dateCatActions" hidden>
+        <button class="date-cat-action primary" id="dateCatSave">❤️ Save to Our Dates</button>
+        <button class="date-cat-action secondary" id="dateCatAnother">🔄 Try Another</button>
+      </div>
+      <div class="date-cat-saved" id="dateCatSaved"></div>
+      <div class="date-cat-change" id="dateCatChange" hidden>
+        <button id="dateCatChangeButton">✏️ Something isn't quite right? Change it</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MIRROR COMPLIMENTS -->
   <div class="mirror-modal" id="mirrorModal" aria-hidden="true">
     <div class="mirror-backdrop"></div>
@@ -136,9 +163,6 @@
     </div>
   </div>
 
-
-  <!-- FULL-SCREEN KISS PARTICLE LAYER -->
-  <div id="kissParticleLayer" aria-hidden="true"></div>
 
   <!-- PRIVATE BED INTERACTION -->
   <div class="kiss-modal" id="kissModal" aria-hidden="true">
