@@ -333,8 +333,7 @@ document.addEventListener("keydown", (event) => {
   const catSave=document.getElementById('dateCatSave');
   const catAnother=document.getElementById('dateCatAnother');
   const catSaved=document.getElementById('dateCatSaved');
-  const catChange=document.getElementById('dateCatChange');
-  const catChangeButton=document.getElementById('dateCatChangeButton');
+  const catChangeTop=document.getElementById('dateCatChangeTop');
   if(!catHotspot||!catModal)return;
 
   // The cat speaks like an RPG NPC: one line, typewriter effect, then NEXT.
@@ -464,18 +463,33 @@ document.addEventListener("keydown", (event) => {
   function hideOptions(){catOptions.innerHTML='';}
   function setNext(label='NEXT ▶'){
     catOptions.innerHTML=`<button class="date-cat-next" id="dateCatNext">${label}</button>`;
-    document.getElementById('dateCatNext').onclick=()=>{if(pendingNext)pendingNext()};
+    document.getElementById('dateCatNext').onclick=()=>{
+      if(!typingDone){
+        finishTyping();
+        return;
+      }
+      if(pendingNext)pendingNext();
+    };
+  }
+  function finishTyping(){
+    clearTyping();
+    const el=catBubble.querySelector('.date-cat-typed');
+    if(el&&window.__dateCatTypingText!=null)el.textContent=window.__dateCatTypingText;
+    const cursor=catBubble.querySelector('.date-cat-cursor');
+    if(cursor)cursor.remove();
+    typingDone=true;
   }
   function typeLine(text,onDone){
-    clearTyping();typingDone=false;catBubble.innerHTML='<span class="date-cat-typed"></span><span class="date-cat-cursor">▋</span>';const el=catBubble.querySelector('.date-cat-typed');let i=0;const chars=Array.from(String(text));
+    clearTyping();typingDone=false;window.__dateCatTypingText=String(text);
+    catBubble.innerHTML='<span class="date-cat-typed"></span><span class="date-cat-cursor">▋</span>';const el=catBubble.querySelector('.date-cat-typed');let i=0;const chars=Array.from(String(text));
     typingTimer=setInterval(()=>{el.textContent+=chars[i++]||'';if(i>=chars.length){clearTyping();typingDone=true;const cursor=catBubble.querySelector('.date-cat-cursor');if(cursor)cursor.remove();onDone&&onDone();}},28);
   }
   function speak(text,next,label='NEXT ▶'){
-    hideOptions();pendingNext=null;typeLine(text,()=>{pendingNext=next;setNext(label)});
+    hideOptions();pendingNext=next;setNext(label);typeLine(text,()=>{});
   }
   function open(){catModal.classList.add('open');catModal.setAttribute('aria-hidden','false');reset()}
   function close(){clearTyping();catModal.classList.remove('open');catModal.setAttribute('aria-hidden','true')}
-  function reset(){clearTyping();category='';step=0;openingIndex=0;Object.keys(selected).forEach(k=>delete selected[k]);lastQuest=null;catThinking.hidden=true;catQuest.hidden=true;catActions.hidden=true;catChange.hidden=true;catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catProgress.innerHTML='';renderOpening()}
+  function reset(){clearTyping();category='';step=0;openingIndex=0;Object.keys(selected).forEach(k=>delete selected[k]);lastQuest=null;catThinking.hidden=true;catQuest.hidden=true;catActions.hidden=true;catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catProgress.innerHTML='';renderOpening()}
   function renderProgress(total){catProgress.innerHTML=Array.from({length:Math.max(total,1)},(_,i)=>`<span class="date-cat-dot ${i<=step?'active':''}"></span>`).join('')}
 
   function renderOpening(){
@@ -503,10 +517,27 @@ document.addEventListener("keydown", (event) => {
     step=0;renderQuestion();
   }
 
+  function getQuestions(){
+    const base=[...(data[category]?.questions||[])];
+    base.push({key:'date',type:'date',text:'Okay, one last thing before I build your quest. When are we actually going on this date? Pick the day below. And yes, I need a real date this time. I am a planner, not a mind reader.'});
+    return base;
+  }
   function renderQuestion(){
-    const qs=data[category]?.questions||[];
+    const qs=getQuestions();
     if(step>=qs.length){generate();return}
-    const q=qs[step];const opts=optsFor(q);renderProgress(qs.length);
+    const q=qs[step];renderProgress(qs.length);
+    if(q.type==='date'){
+      speak(q.text,()=>{
+        catOptions.innerHTML=`<div class="date-cat-calendar-wrap"><label for="dateCatDateInput">📅 Pick your date</label><input type="date" id="dateCatDateInput" class="date-cat-date-input" min="${new Date().toISOString().split('T')[0]}" value="${escapeHTML(selected.date||'')}"><button class="date-cat-option date-cat-date-submit" id="dateCatDateSubmit">SET DATE ▶</button></div>`;
+        const input=document.getElementById('dateCatDateInput');
+        document.getElementById('dateCatDateSubmit').onclick=()=>{
+          if(!input.value){input.focus();return}
+          selected.date=input.value;step++;renderQuestion();
+        };
+      },'NEXT ▶');
+      return;
+    }
+    const opts=optsFor(q);
     speak(q.text,()=>{
       catOptions.innerHTML=opts.map(([id,label])=>`<button class="date-cat-option" data-value="${escapeHTML(id)}">${label}</button>`).join('');
       catOptions.querySelectorAll('button').forEach(b=>b.onclick=()=>chooseAnswer(q,b.dataset.value));
@@ -523,14 +554,14 @@ document.addEventListener("keydown", (event) => {
   }
 
   function labelFor(key,val){
-    const qs=data[category]?.questions||[];
+    const qs=getQuestions();
     for(const q of qs){const opts=optsFor(q);const x=opts.find(o=>o[0]===val);if(x)return x[1].replace(/^\S+\s/,'')}
     return val;
   }
 
   function buildQuest(){
     const s=selected;const budgetMap={low:'Under ₹1,000',mid:'₹1,000–₹2,500',high:'₹2,500+'};
-    const q={title:'A Date Quest',location:'Mumbai',activity:'Spend time together',duration:'2–3 hours',budget:budgetMap[s.budget]||'Flexible',romance:3,objectives:[],note:''};
+    const q={title:'A Date Quest',location:'Mumbai',activity:'Spend time together',duration:'2–3 hours',budget:budgetMap[s.budget]||'Flexible',romance:3,objectives:[],note:'',date:s.date||''};
     const catNames={nature:'Green Escape',afteroffice:'After Office Escape',mumbai:'Mumbai Little Adventure',photos:'Camera Roll Date',getaway:'Little Escape',fun:'Chaos & Fun Date',movie:'Movie & More',food:'Eat, Talk, Repeat',cafe:'Coffee & Conversations',make:'Make Something Together',shopping:'Shopping & Snacks',evening:'After-Dark Date',romantic:'A Little More Romance'};
     q.title=catNames[category]||q.title;
     const locMap={ghatkopar:'Ghatkopar',andheri:'Andheri',lowerparel:'Lower Parel',thane:'Thane',decide:'Your choice',bandra:'Bandra',marine:'Marine Drive',fort:'Fort',lower:'Lower Parel',panvel:'Panvel',dombivli:'Dombivli',new:'Somewhere New',cat:'Cat chooses',park:'Park / Garden',lake:'Lake / Waterfront',hills:'Hills / Viewpoint',forest:'Greenery',beach:'Beach'};
@@ -574,11 +605,11 @@ document.addEventListener("keydown", (event) => {
     catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';await sleep(550);
     catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';await sleep(550);
     catThinking.innerHTML='<span class="paw">🐾</span>Checking Somda\'s wallet…';await sleep(650);
-    catThinking.innerHTML='<span class="paw">🐾</span><strong>Found something.</strong>';await sleep(500);generate();
+    catThinking.innerHTML='<span class="paw">🐾</span><strong>Found something.</strong>';await sleep(500);catThinking.hidden=true;step=data[category].questions.length;renderQuestion();
   }
 
   function generate(){
-    hideOptions();catThinking.hidden=false;catQuest.hidden=true;catActions.hidden=true;catChange.hidden=true;
+    hideOptions();catThinking.hidden=false;catQuest.hidden=true;catActions.hidden=true;
     catThinking.innerHTML='<span class="paw">🐾</span>Checking the date possibilities…';
     setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';},650);
     setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';},1250);
@@ -586,10 +617,12 @@ document.addEventListener("keydown", (event) => {
     setTimeout(()=>{lastQuest=buildQuest();catThinking.innerHTML='<span class="paw">🐾</span><strong>Okay… I THINK I\'VE GOT IT.</strong>';setTimeout(showQuest,700)},2450);
   }
 
+  function formatQuestDate(v){if(!v)return 'Not set';const d=new Date(`${v}T00:00:00`);return Number.isNaN(d.getTime())?v:d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}
+
   function showQuest(){
     const q=lastQuest;catThinking.hidden=true;catQuest.hidden=false;catActions.hidden=false;catChange.hidden=false;catSaved.textContent='';
     typeLine('Look. I actually did a good job. Don\'t get used to it.',()=>{});
-    catQuest.innerHTML=`<div class="date-cat-quest-label">❤️ DATE QUEST</div><h3>${escapeHTML(q.title)}</h3><div class="date-cat-quest-grid"><div class="date-cat-stat"><small>📍 DESTINATION</small><span>${escapeHTML(q.location)}</span></div><div class="date-cat-stat"><small>⏱️ TIME</small><span>${escapeHTML(q.duration)}</span></div><div class="date-cat-stat"><small>💰 ESTIMATED BUDGET</small><span>${escapeHTML(q.budget)}</span></div><div class="date-cat-stat"><small>💕 ROMANCE</small><span>${'❤️'.repeat(q.romance)}${'♡'.repeat(5-q.romance)}</span></div></div><div class="date-cat-objectives"><strong>🎯 QUEST OBJECTIVES</strong><ol>${q.objectives.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ol></div><div class="date-cat-note">${escapeHTML(q.note)}</div>`;
+    catQuest.innerHTML=`<div class="date-cat-quest-label">❤️ DATE QUEST</div><h3>${escapeHTML(q.title)}</h3><div class="date-cat-quest-grid"><div class="date-cat-stat"><small>📍 DESTINATION</small><span>${escapeHTML(q.location)}</span></div><div class="date-cat-stat"><small>📅 DATE</small><span>${escapeHTML(formatQuestDate(q.date))}</span></div><div class="date-cat-stat"><small>⏱️ TIME</small><span>${escapeHTML(q.duration)}</span></div><div class="date-cat-stat"><small>💰 ESTIMATED BUDGET</small><span>${escapeHTML(q.budget)}</span></div><div class="date-cat-stat"><small>💕 ROMANCE</small><span>${'❤️'.repeat(q.romance)}${'♡'.repeat(5-q.romance)}</span></div></div><div class="date-cat-objectives"><strong>🎯 QUEST OBJECTIVES</strong><ol>${q.objectives.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ol></div><div class="date-cat-note">${escapeHTML(q.note)}</div>`;
   }
 
   function saveQuest(){if(!lastQuest)return;const item={...lastQuest,id:'quest-'+Date.now(),createdAt:new Date().toISOString(),status:'planned'};const existing=JSON.parse(localStorage.getItem('aaruSomdaPlannedDates')||'[]');existing.unshift(item);localStorage.setItem('aaruSomdaPlannedDates',JSON.stringify(existing.slice(0,20)));catSaved.textContent='❤️ Added to your planned dates. It will appear in Our Dates.';catSave.textContent='❤️ Saved';catSave.disabled=true}
@@ -597,7 +630,8 @@ document.addEventListener("keydown", (event) => {
   catHotspot.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(typeof hotspots!=='undefined')hotspots.forEach(x=>x.classList.remove('active'));open()});
   catClose.addEventListener('click',close);catBackdrop.addEventListener('click',close);
   catAnother.addEventListener('click',()=>{catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';reset()});
+  function openChange(){catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catActions.hidden=true;catQuest.hidden=true;catThinking.hidden=true;step=0;renderQuestion()}
+  catChangeTop?.addEventListener('click',openChange);
   catSave.addEventListener('click',saveQuest);
-  catChangeButton.addEventListener('click',()=>{catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catActions.hidden=true;catChange.hidden=true;catQuest.hidden=true;catThinking.hidden=true;step=0;renderQuestion()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&catModal.classList.contains('open'))close()});
 })();

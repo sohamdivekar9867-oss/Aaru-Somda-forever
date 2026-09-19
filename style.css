@@ -835,3 +835,13 @@ button {
 .date-cat-next:hover{transform:translateY(-2px);background:#fff0ed;border-color:#c88995;box-shadow:0 8px 20px rgba(90,50,60,.1)}
 .date-cat-next:active{transform:translateY(0) scale(.98)}
 .date-cat-options{margin-top:2px}
+
+/* Date Cat calendar picker */
+.date-cat-calendar-wrap{display:grid;gap:10px;padding:4px 0 0}
+.date-cat-calendar-wrap label{font:600 10px/1.4 "DM Mono",monospace;letter-spacing:1.1px;color:#8c5962;text-transform:uppercase}
+.date-cat-date-input{width:100%;box-sizing:border-box;border:1px solid rgba(161,91,105,.25);background:#fff;border-radius:14px;padding:13px 14px;font:500 13px/1.35 "DM Mono",monospace;color:#634048;outline:none;cursor:pointer}
+.date-cat-date-input:focus{border-color:#c88995;box-shadow:0 0 0 3px rgba(200,137,149,.12)}
+.date-cat-date-submit{width:100%;text-align:center;margin-top:2px}
+.date-cat-actions{grid-template-columns:1fr 1fr 1fr}
+.date-cat-save-last{grid-column:1/-1}
+@media(max-width:560px){.date-cat-actions{grid-template-columns:1fr 1fr}.date-cat-save-last{grid-column:1/-1}}
