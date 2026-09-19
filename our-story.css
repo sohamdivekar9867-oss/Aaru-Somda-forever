@@ -938,164 +938,76 @@ a {
   }
 }
 
-
 /* =========================
-   OUR STORY V2 — EDITOR / PAGINATION
+   PERSPECTIVE DROPDOWN + OWNER EDITING
 ========================= */
-
-.perspective-corner {
-  color: #a07e81;
-  font-size: 0.5rem;
-  letter-spacing: 0.08em;
+.perspective-picker-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 9px;
+  margin: 2px 0 22px;
+}
+.perspective-picker-wrap label {
+  color: var(--muted-ink);
+  font-size: .48rem;
+  letter-spacing: .11em;
   text-transform: uppercase;
 }
-
-.story-page-content {
-  max-width: 650px;
-  padding-top: 68px;
-}
-
-.story-title {
-  color: var(--ink);
-  font-family: var(--serif);
-  font-size: clamp(2.35rem, 5vw, 4.4rem);
-  font-weight: 400;
-  letter-spacing: -0.05em;
-  line-height: 1.08;
-  margin-top: 18px;
-}
-
-.story-title-input {
+.perspective-picker {
+  appearance: auto;
   background: transparent;
   border: 0;
-  border-bottom: 1px dashed rgba(52, 35, 41, 0.3);
-  color: var(--ink);
-  display: block;
-  font-family: var(--serif);
-  font-size: clamp(2.35rem, 5vw, 4.4rem);
-  font-weight: 400;
-  letter-spacing: -0.05em;
-  line-height: 1.08;
-  margin-top: 18px;
-  outline: none;
-  padding: 0 0 5px;
-  width: 100%;
+  border-bottom: 1px solid rgba(52,35,41,.28);
+  color: #7e5f64;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: .56rem;
+  padding: 3px 2px;
 }
-
-.story-title-input:focus {
-  border-bottom-color: #a86e79;
+.perspective-picker:focus { outline: none; border-bottom-color: #a86e79; }
+.perspective-label {
+  color: #a07e81;
+  font-family: var(--mono);
+  font-size: .52rem;
+  letter-spacing: .12em;
+  margin: -18px 0 18px;
+  text-align: right;
+  text-transform: uppercase;
 }
-
-.story-editor {
-  max-width: 510px;
-  min-height: 395px;
-  max-height: 395px;
-  overflow: hidden;
-  padding: 2px 3px;
+.story-page-content h2 {
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+}
+.editable-content {
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
-  -webkit-hyphens: auto;
+  max-width: none;
 }
-
-.story-editor p {
-  margin: 0;
-  text-align: justify;
-  text-justify: inter-word;
+.editable-content.editing-active {
+  outline: 1px dashed rgba(168,110,121,.35);
+  outline-offset: 9px;
+  min-height: 220px;
 }
-
-.story-editor p + p {
-  margin-top: 22px;
-}
-
-.story-editor.editing-active {
-  border-radius: 3px;
-  outline: 1px dashed rgba(168, 110, 121, 0.28);
-  outline-offset: 7px;
-}
-
-.story-edit-actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 22px;
-}
-
+.story-edit-controls { margin-top: 22px; min-height: 32px; }
 .story-save-button {
+  border: 1px solid rgba(80,55,45,.35);
   background: transparent;
-  border: 1px solid rgba(80, 55, 45, 0.35);
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.58rem;
-  letter-spacing: 0.04em;
+  color: inherit;
   padding: 9px 13px;
+  font: inherit;
+  cursor: pointer;
 }
-
-.story-save-button:hover {
-  background: rgba(80, 55, 45, 0.08);
+.story-save-button:hover { background: rgba(80,55,45,.08); }
+.read-only-note {
+  color: #9a8182;
+  font-size: .5rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
-
-.story-save-button:disabled {
-  cursor: wait;
-  opacity: 0.55;
-}
-
-.editor-hint {
-  color: #a07e81;
-  font-size: 0.48rem;
-  letter-spacing: 0.02em;
-}
-
-.pagination-measurer {
-  color: #5b484c;
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  line-height: 1.9;
-  position: absolute;
-  left: -100000px;
-  top: 0;
-  visibility: hidden;
-  white-space: normal;
-}
-
-.pagination-measurer p {
-  margin: 0;
-  text-align: justify;
-}
-
-.pagination-measurer p + p {
-  margin-top: 22px;
-}
-
-@media (max-width: 700px) {
-  .perspective-corner {
-    font-size: 0.46rem;
-  }
-
-  .story-page-content {
-    padding-top: 58px;
-  }
-
-  .story-title,
-  .story-title-input {
-    font-size: 2.35rem;
-  }
-
-  .story-editor {
-    min-height: 310px;
-    max-height: 310px;
-    font-size: 0.98rem;
-    line-height: 1.85;
-  }
-
-  .story-editor p + p {
-    margin-top: 18px;
-  }
-
-  .editor-hint {
-    flex-basis: 100%;
-    font-size: 0.45rem;
-  }
+@media (max-width:700px) {
+  .perspective-picker-wrap { margin-bottom: 18px; }
+  .perspective-picker-wrap label, .perspective-picker { font-size: .48rem; }
+  .perspective-label { font-size: .46rem; }
+  .story-page-content h2 { font-size: 2.65rem; }
 }
