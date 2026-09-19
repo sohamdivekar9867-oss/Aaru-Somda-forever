@@ -82,8 +82,6 @@ alter table public.story_perspectives enable row level security;
 drop policy if exists "story chapters read" on public.story_chapters;
 drop policy if exists "story chapters insert" on public.story_chapters;
 drop policy if exists "story chapters update" on public.story_chapters;
-drop policy if exists "story chapters delete" on public.story_chapters;
-
 drop policy if exists "story perspectives read" on public.story_perspectives;
 drop policy if exists "story perspectives insert" on public.story_perspectives;
 drop policy if exists "story perspectives update" on public.story_perspectives;
@@ -105,11 +103,6 @@ on public.story_chapters for update
 to authenticated
 using (auth.uid() is not null)
 with check (auth.uid() is not null);
-
-create policy "story chapters delete"
-on public.story_chapters for delete
-to authenticated
-using (auth.uid() is not null);
 
 create policy "story perspectives read"
 on public.story_perspectives for select
@@ -149,3 +142,32 @@ using (
   or
   (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
 );
+
+-- IMPORTANT: a chapter is shared metadata. There is intentionally NO direct
+-- DELETE policy for story_chapters. A user can delete only their own
+-- perspective. If that was the last perspective, this trigger removes the
+-- now-empty chapter automatically, so it disappears from the index as well.
+create or replace function public.remove_empty_story_chapter()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not exists (
+    select 1
+    from public.story_perspectives
+    where chapter_id = old.chapter_id
+  ) then
+    delete from public.story_chapters
+    where id = old.chapter_id;
+  end if;
+  return old;
+end;
+$$;
+
+drop trigger if exists trg_remove_empty_story_chapter on public.story_perspectives;
+create trigger trg_remove_empty_story_chapter
+after delete on public.story_perspectives
+for each row
+execute function public.remove_empty_story_chapter();

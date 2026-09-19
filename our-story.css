@@ -878,9 +878,25 @@ a {
 .edit-story-button, .add-page-button, .story-delete-button { border:1px solid rgba(80,55,45,.35); background:transparent; color:inherit; padding:10px 14px; font:inherit; cursor:pointer; }
 .edit-story-button:hover, .add-page-button:hover, .story-delete-button:hover { background:rgba(80,55,45,.08); }
 .story-delete-button { margin-left:8px; opacity:.7; }
-.story-save-button[disabled] { opacity:.6; cursor:wait; }
+.story-edit-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+  align-items:center;
+}
+.story-save-button, .story-delete-button {
+  border:1px solid rgba(80,55,45,.35);
+  background:transparent;
+  color:inherit;
+  padding:10px 14px;
+  font:inherit;
+  cursor:pointer;
+}
+.story-save-button:hover, .story-delete-button:hover { background:rgba(80,55,45,.08); }
+.story-save-button[disabled], .story-delete-button[disabled] { opacity:.6; cursor:wait; }
 .index-entry-text small { display:none !important; }
-@media (max-width:600px) { .private-controls { gap:8px; } .edit-story-button, .add-page-button { font-size:11px; padding:9px 11px; } }
+@media (max-width:600px) { .private-controls { gap:8px; } .edit-story-button, .add-page-button { font-size:11px; padding:9px 11px; } .story-edit-actions { gap:8px; } .story-save-button, .story-delete-button { font-size:11px; padding:9px 11px; } }
 
 /* =========================
    DYNAMIC STORY ENTRY CONTROLS

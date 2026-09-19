@@ -117,7 +117,11 @@ function createStoryPage(chapter, number) {
         ${hasText ? `
           <div class="editable-content contenteditable-area ${editable ? "editing-active" : ""}"
                id="${editorId}" contenteditable="${editable ? "true" : "false"}" spellcheck="true">${renderContent(perspective.content)}</div>
-          ${editable ? `<button class="story-save-button" data-chapter-id="${escapeHtml(chapter.id)}" data-perspective="${currentPerspective}">Save this perspective</button>` : ""}
+          ${editable ? `
+            <div class="story-edit-actions">
+              <button class="story-save-button" data-chapter-id="${escapeHtml(chapter.id)}" data-perspective="${currentPerspective}">Save this perspective</button>
+              <button class="story-delete-button" data-chapter-id="${escapeHtml(chapter.id)}" data-perspective="${currentPerspective}">Delete my perspective</button>
+            </div>` : ""}
         ` : `
           <div class="perspective-empty">
             <p>This perspective hasn't been written yet.</p>
@@ -191,6 +195,10 @@ function bindStoryControls() {
 
   document.querySelectorAll(".story-save-button").forEach(button => {
     button.addEventListener("click", () => savePerspective(button));
+  });
+
+  document.querySelectorAll(".story-delete-button").forEach(button => {
+    button.addEventListener("click", () => deletePerspective(button));
   });
 
   document.querySelectorAll(".add-perspective-button").forEach(button => {
@@ -295,6 +303,56 @@ async function savePerspective(button) {
 
   button.textContent = "Saved ✓";
   setTimeout(() => { button.textContent = "Save this perspective"; button.disabled = false; }, 1600);
+}
+
+async function deletePerspective(button) {
+  await loadCurrentUser();
+  if (!currentUser) return alert("Please log in first ♡");
+
+  const author = authorForEmail(currentUser.email);
+  const requestedAuthor = button.dataset.perspective;
+  if (!author || author !== requestedAuthor) {
+    alert("You can only delete your own perspective ♡");
+    return;
+  }
+
+  const chapter = chapters.find(c => c.id === button.dataset.chapterId);
+  if (!chapter) return;
+
+  const perspective = getPerspective(chapter, author);
+  if (!perspective) return;
+
+  const label = author === "Aaru" ? "Aaru's" : "Somda's";
+  if (!confirm(`Delete ${label} perspective from “${chapter.title}”? This cannot be undone.`)) return;
+
+  button.disabled = true;
+  button.textContent = "Deleting...";
+
+  const { error } = await storySupabaseClient
+    .from("story_perspectives")
+    .delete()
+    .eq("id", perspective.id)
+    .eq("author", author);
+
+  if (error) {
+    console.error(error);
+    button.disabled = false;
+    button.textContent = "Delete my perspective";
+    alert("Could not delete your perspective. Please check the latest STORY_SETUP.sql.");
+    return;
+  }
+
+  // The database trigger removes the shared chapter automatically if this
+  // was the last remaining perspective. Otherwise the shared heading stays.
+  const chapterId = chapter.id;
+  await loadStories();
+
+  const remainingPageIndex = readerPages.findIndex(page => page.dataset.chapterId === chapterId);
+  if (remainingPageIndex >= 0) {
+    showPage(remainingPageIndex, false);
+  } else {
+    showPage(0, false);
+  }
 }
 
 async function addPerspective(chapterId) {
