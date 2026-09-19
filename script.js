@@ -118,31 +118,34 @@ const kissLines = [
 function createKissParticles() {
   if (!bedHotspot) return;
 
+  const layer = document.getElementById("kissParticleLayer");
+  if (!layer) return;
+
   const rect = bedHotspot.getBoundingClientRect();
+
+  // Start around the bed, then float visibly upward across the whole screen.
+  const originX = rect.left + rect.width * 0.5;
+  const originY = rect.top + rect.height * 0.55;
+
   const symbols = ["💋", "♡", "♥", "💗", "💋", "♡", "❤️"];
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 9; i++) {
     const particle = document.createElement("span");
     particle.className = "kiss-float-particle";
     particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
 
-    const startX = rect.left + rect.width * (0.25 + Math.random() * 0.5);
-    const startY = rect.top + rect.height * (0.45 + Math.random() * 0.35);
-
-    const drift = `${Math.round((Math.random() - 0.5) * 90)}px`;
-    const rise = `${Math.round(100 + Math.random() * 110)}px`;
-    const rotate = `${Math.round((Math.random() - 0.5) * 35)}deg`;
-    const duration = `${(1.25 + Math.random() * 0.8).toFixed(2)}s`;
+    const startX = originX + (Math.random() - 0.5) * Math.min(rect.width, 150);
+    const startY = originY + (Math.random() - 0.5) * Math.min(rect.height, 60);
 
     particle.style.left = `${startX}px`;
     particle.style.top = `${startY}px`;
-    particle.style.setProperty("--kiss-drift", drift);
-    particle.style.setProperty("--kiss-rise", rise);
-    particle.style.setProperty("--kiss-rotate", rotate);
-    particle.style.setProperty("--kiss-duration", duration);
-    particle.style.animationDelay = `${(Math.random() * 120).toFixed(0)}ms`;
+    particle.style.setProperty("--kiss-drift", `${Math.round((Math.random() - 0.5) * 180)}px`);
+    particle.style.setProperty("--kiss-rise", `${Math.round(220 + Math.random() * 260)}px`);
+    particle.style.setProperty("--kiss-rotate", `${Math.round((Math.random() - 0.5) * 50)}deg`);
+    particle.style.setProperty("--kiss-duration", `${(1.5 + Math.random() * 1.0).toFixed(2)}s`);
+    particle.style.animationDelay = `${Math.round(Math.random() * 160)}ms`;
 
-    document.body.appendChild(particle);
+    layer.appendChild(particle);
 
     particle.addEventListener("animationend", () => {
       particle.remove();
