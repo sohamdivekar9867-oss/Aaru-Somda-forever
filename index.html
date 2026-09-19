@@ -92,6 +92,12 @@
           aria-label="I love u Aaru Baby"
         ></button>
 
+        <!-- MIRROR — COMPLIMENTS -->
+        <button
+          class="hotspot mirror-hotspot"
+          aria-label="Look into the mirror"
+        ></button>
+
         <!-- BED — PRIVATE ROMANTIC CORNER -->
         <button
           class="hotspot bed-hotspot"
@@ -111,6 +117,25 @@
 
   </main>
 
+
+
+
+  <!-- MIRROR COMPLIMENTS -->
+  <div class="mirror-modal" id="mirrorModal" aria-hidden="true">
+    <div class="mirror-backdrop"></div>
+
+    <div class="mirror-card" role="dialog" aria-modal="true" aria-labelledby="mirrorTitle">
+      <button class="mirror-close" aria-label="Close">×</button>
+
+      <div class="mirror-small">A LITTLE LOOK IN THE MIRROR</div>
+      <h2 id="mirrorTitle">The Mirror says...</h2>
+
+      <div class="mirror-compliment" id="mirrorCompliment"></div>
+
+      <button class="mirror-next" id="mirrorNext">Awww ♡</button>
+      <div class="mirror-count" id="mirrorCount"></div>
+    </div>
+  </div>
 
 
   <!-- PRIVATE BED INTERACTION -->

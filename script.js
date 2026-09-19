@@ -161,3 +161,119 @@ if (kissBackdrop) kissBackdrop.addEventListener("click", closeKissModal);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeKissModal();
 });
+
+
+// =========================
+// MIRROR — 30 RANDOM COMPLIMENTS
+// =========================
+
+const mirrorHotspot = document.querySelector(".mirror-hotspot");
+const mirrorModal = document.getElementById("mirrorModal");
+const mirrorClose = document.querySelector(".mirror-close");
+const mirrorBackdrop = document.querySelector(".mirror-backdrop");
+const mirrorNext = document.getElementById("mirrorNext");
+const mirrorCompliment = document.getElementById("mirrorCompliment");
+const mirrorCount = document.getElementById("mirrorCount");
+
+const mirrorCompliments = [
+  "Yep. Still the most beautiful girl I know. ♡",
+  "You have no idea how lucky Somda feels.",
+  "Someone out there is completely, hopelessly in love with you.",
+  "Your smile is still my favourite view.",
+  "You make ordinary days feel like something worth remembering.",
+  "If I could freeze one moment, it'd be the moment you smile.",
+  "You look like someone's favourite person. Because you are.",
+  "Somehow, you get prettier every time I see you.",
+  "Awww. Look at you being adorable again.",
+  "Mirror report: dangerously cute today.",
+  "Yep. Certified sweetheart. ♡",
+  "That face deserves approximately 47 kisses.",
+  "You look very huggable today.",
+  "The mirror would like to officially compliment you.",
+  "Warning: excessive cuteness detected.",
+  "Did you really need the mirror to tell you you're pretty?",
+  "Okay, stop staring. You're making the mirror nervous.",
+  "Someone clearly woke up determined to be gorgeous.",
+  "Honestly? A little unfair to everyone else.",
+  "Breaking news: Aaru is still ridiculously pretty.",
+  "You came here for a compliment, didn't you? 😏",
+  "Fine. You're pretty. Happy now?",
+  "I would compliment you more, but your ego is already getting dangerous.",
+  "Somda is going to have a very hard time behaving around you.",
+  "That look? Yeah… absolutely not helping him behave.",
+  "You know exactly what you're doing with that face, don't you?",
+  "If Somda were here, that mirror probably wouldn't get much attention.",
+  "Pretty face. Dangerous effect. 😏",
+  "Honestly, Aaru… come closer. I think you deserve a kiss.",
+  "You look way too good tonight. Come here and let me admire you properly. ❤️"
+];
+
+let mirrorDeck = [];
+let mirrorSeen = 0;
+
+function shuffleMirrorDeck() {
+  mirrorDeck = [...mirrorCompliments];
+
+  for (let i = mirrorDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [mirrorDeck[i], mirrorDeck[j]] = [mirrorDeck[j], mirrorDeck[i]];
+  }
+
+  mirrorSeen = 0;
+}
+
+function nextMirrorCompliment() {
+  if (!mirrorDeck.length || mirrorSeen >= mirrorDeck.length) {
+    shuffleMirrorDeck();
+  }
+
+  const text = mirrorDeck[mirrorSeen];
+  mirrorSeen += 1;
+
+  mirrorCompliment.textContent = text;
+  mirrorCount.textContent = `${mirrorSeen} / ${mirrorCompliments.length}`;
+
+  mirrorCompliment.animate(
+    [
+      { opacity: 0, transform: "translateY(5px)" },
+      { opacity: 1, transform: "translateY(0)" }
+    ],
+    { duration: 260, easing: "ease-out" }
+  );
+
+  mirrorNext.textContent =
+    mirrorSeen === mirrorCompliments.length ? "More secrets ♡" : "Awww ♡";
+}
+
+function openMirrorModal() {
+  if (!mirrorDeck.length || mirrorSeen >= mirrorDeck.length) {
+    shuffleMirrorDeck();
+  }
+
+  mirrorModal.classList.add("open");
+  mirrorModal.setAttribute("aria-hidden", "false");
+  nextMirrorCompliment();
+}
+
+function closeMirrorModal() {
+  mirrorModal.classList.remove("open");
+  mirrorModal.setAttribute("aria-hidden", "true");
+}
+
+if (mirrorHotspot) {
+  mirrorHotspot.addEventListener("click", () => {
+    hotspots.forEach((item) => item.classList.remove("active"));
+    openMirrorModal();
+  });
+}
+
+if (mirrorNext) {
+  mirrorNext.addEventListener("click", nextMirrorCompliment);
+}
+
+if (mirrorClose) mirrorClose.addEventListener("click", closeMirrorModal);
+if (mirrorBackdrop) mirrorBackdrop.addEventListener("click", closeMirrorModal);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMirrorModal();
+});

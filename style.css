@@ -615,3 +615,152 @@ button {
     padding: 30px 22px 26px;
   }
 }
+
+
+/* =========================
+   MIRROR — RANDOM COMPLIMENTS
+========================= */
+
+.mirror-hotspot {
+  /* Position of the oval mirror in the approved room image. */
+  left: 15%;
+  top: 37%;
+  width: 18%;
+  height: 23%;
+}
+
+.mirror-hotspot::after {
+  content: "Click me ♡";
+  bottom: auto;
+  top: calc(100% + 10px);
+}
+
+.mirror-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.mirror-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mirror-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 10, 18, .68);
+  backdrop-filter: blur(5px);
+}
+
+.mirror-card {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 30px 26px 24px;
+  text-align: center;
+  border: 1px solid rgba(255, 194, 208, .35);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #24151f, #130d15);
+  box-shadow: 0 25px 80px rgba(0,0,0,.45);
+  transform: translateY(12px) scale(.97);
+  transition: transform .3s ease;
+}
+
+.mirror-modal.open .mirror-card {
+  transform: translateY(0) scale(1);
+}
+
+.mirror-close {
+  position: absolute;
+  top: 9px;
+  right: 13px;
+  border: 0;
+  background: transparent;
+  color: #e8cbd1;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mirror-small {
+  margin-bottom: 10px;
+  color: #c9a9b2;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.mirror-card h2 {
+  margin: 0 0 16px;
+  color: #fff1f4;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(25px, 5vw, 34px);
+  font-weight: 500;
+}
+
+.mirror-compliment {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 18px;
+  border-radius: 14px;
+  background: rgba(255, 164, 184, .10);
+  color: #f4dce1;
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.mirror-next {
+  margin-top: 18px;
+  border: 1px solid rgba(255, 194, 208, .42);
+  border-radius: 999px;
+  padding: 11px 22px;
+  background: rgba(255, 164, 184, .14);
+  color: #fff0f4;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.mirror-next:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 164, 184, .22);
+}
+
+.mirror-count {
+  min-height: 16px;
+  margin-top: 11px;
+  color: #c9a9b2;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 600px) {
+  .mirror-hotspot {
+    left: 14%;
+    top: 37%;
+    width: 20%;
+    height: 23%;
+  }
+
+  .mirror-card {
+    padding: 27px 20px 22px;
+  }
+
+  .mirror-compliment {
+    font-size: 17px;
+  }
+}
