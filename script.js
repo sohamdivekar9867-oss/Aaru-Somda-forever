@@ -336,7 +336,6 @@ document.addEventListener("keydown", (event) => {
   const catChangeTop=document.getElementById('dateCatChangeTop');
   if(!catHotspot||!catModal)return;
 
-  // The cat speaks like an RPG NPC: one line, typewriter effect, then NEXT.
   const opening=[
     'Ohhh. Look who\'s here.',
     'Planning another date, are we? I should\'ve known.',
@@ -349,172 +348,166 @@ document.addEventListener("keydown", (event) => {
     start:{options:[
       ['nature','🌳 Nature Date'],['afteroffice','💼 After Office Date'],['mumbai','🏙️ Explore Mumbai'],['photos','📸 Photo Date'],['getaway','🚗 Mini Getaway'],['fun','🎢 Fun & Activities'],['movie','🎬 Movie / Show'],['food','🍽️ Food Date'],['cafe','☕ Café Date'],['make','🎨 Make Something Together'],['shopping','🛍️ Shopping + Food'],['evening','🌙 Evening Date'],['romantic','❤️ Romantic Date'],['surprise','🎲 Surprise Us']
     ]},
-    nature:{
-      questions:[
-        {key:'type',text:'Nature? Wow. I didn\'t know you two were capable of leaving civilisation voluntarily. I\'m impressed. So… what kind of nature are we talking?',options:[['park','🌿 Park / Garden','Classic. Walk. Talk. Sit together. Pretend you weren\'t going to spend half the time looking at each other.'],['lake','🌊 Lake / Waterfront','Pretty. Peaceful. Excellent place for unnecessarily romantic conversations.'],['hills','🏞️ Hills / Viewpoint','Okay, someone has decided the date needs a view. I respect the ambition.'],['forest','🌳 Forest / Greenery','Very peaceful. Very cute. Potentially terrible for phone battery.'],['sunset','🌅 Nature + Sunset','Oh, we\'re combining things. Ambitious. I like it.'],['beach','🏖️ Beach','Sand. Sea. Sun. And probably someone complaining about the sand later.'],['food','🍽️ Nature + Food','You went into nature and somehow food followed. Honestly? Valid.']]},
-        {key:'walk',text:'How much walking are we making these poor legs do?',options:[['sit','🪑 Mostly Sitting','Ah. So we\'re technically doing nature. But from a chair.'],['some','🚶 Some Walking','Perfect. Enough walking to feel productive. Not enough to regret your life choices.'],['explore','🥾 Let\'s Actually Explore','OH. We\'re serious. Okay, shoes on. No complaining halfway through.']]},
-        {key:'add',text:'And what are we adding to make this an actual date?',options:[['cafe','☕ Café','Nature… followed by coffee. You two really cannot escape cafés.'],['food','🍽️ Food','Excellent. Walking creates hunger. I have studied this extensively.'],['photos','📸 Photos','Pretty place. Pretty people. Easy.'],['dessert','🍦 Dessert','Dessert after nature. You know what? I\'m starting to like your decision-making.'],['picnic','🧺 Picnic','PICNIC? Okay, this is adorable. Someone is getting extra romance points.'],['us','❤️ Just Us','Aww. No activity. No distraction. Just you two. Disgustingly cute.']]},
-        {key:'budget',text:'Finally, the important question. How much are we spending on our wholesome little escape?',options:'budget'}
-      ]
-    },
-    afteroffice:{
-      questions:[
-        {key:'meet',text:'After office, huh? So you two survived the workday and now want to escape it together. I approve. Where are we meeting?',options:[['ghatkopar','📍 Ghatkopar','Ah, Ghatkopar. Convenient. Efficient. Very Mumbai. Let\'s make the most of the evening.'],['andheri','📍 Andheri','Andheri? Okay. Someone is making me do Mumbai logistics now. Fine.'],['lowerparel','📍 Lower Parel','Lower Parel. Offices, malls, food, and approximately seventeen ways to accidentally spend money.'],['thane','📍 Thane','Thane! Look at you two travelling for love after a full workday. Respect.'],['decide','🎲 We\'ll Decide Ourselves','Keeping the meeting point flexible? Smart. I\'ll worry about the actual date.']]},
-        {key:'plan',text:'Good. You\'ve escaped the office. Now what are we actually doing with the evening?',options:[['food','🍽️ Dinner','Obviously. The workday has earned you food.'],['cafe','☕ Café','A post-office café date. Classic. You two really do have a type.'],['movie','🎬 Movie','Straight from spreadsheets to cinema. Excellent transition.'],['walk','🚶 Walk & Talk','No screens. No office talk. Just the two of you.'],['shopping','🛍️ Shopping + Food','Dangerous after payday. Extremely dangerous.'],['fun','🎢 Fun Activity','You survived work. Now go do something actually fun.'],['romantic','❤️ Romantic Evening','Ohhh. Someone wants the workday to end on a much better note.'],['surprise','🎲 Cat Chooses','You survived office and now you\'re surrendering the evening to me? Brave.']]},
-        {key:'time',text:'How much of the post-office evening are we stealing for ourselves?',options:[['short','⏰ 1–2 Hours','A little escape. Enough to reset before heading home.'],['medium','🌆 2–4 Hours','Now that\'s a proper after-office date.'],['long','🌙 Until Late','Oh. We\'re forgetting tomorrow\'s alarm exists. I see.']]},
-        {key:'budget',text:'Last thing. How much are we allowing Somda\'s wallet to suffer after surviving the workday?',options:'budget'}
-      ]
-    },
-    mumbai:{
-      questions:[
-        {key:'area',text:'Now THIS is interesting. You don\'t necessarily need a plan. You just need somewhere to start. So where are we sending you two?',options:[['bandra','🌊 Bandra','Walks, food, sea, cafés… very date-friendly.'],['marine','🌊 Marine Drive','Classic. Sea breeze, city lights, and absolutely no excuse not to sit together.'],['fort','🎨 Fort','Pretty streets, old buildings, good photographs. Let\'s pretend we\'re sophisticated.'],['lower','🏙️ Lower Parel','Food, malls, entertainment… and Somda\'s wallet quietly preparing itself.'],['andheri','🌆 Andheri','Busy, chaotic, full of options. Very Mumbai.'],['panvel','🚆 Panvel','PANVEL? 😂 You two really said “Explore Mumbai” and then left Mumbai. I respect the loophole.'],['dombivli','🚆 Dombivli','DOMBIVLI? 😂 Okay, this is personal. Someone has chosen chaos.'],['new','🗺️ Somewhere New','YES. No repeating the same old places. Let\'s discover something.'],['cat','🐱 Cat Chooses','Excellent. You have surrendered control to a cat.']]},
-        {key:'activity',text:'Okay, destination selected. What are we actually doing once we get there?',options:[['walk','🚶 Walk Around','No strict itinerary. Just wander and see what happens.'],['photos','📸 Take Photos','Camera ready. I expect at least one ridiculously cute picture.'],['food','🍽️ Find Food','Of course. I knew food would enter the conversation eventually.'],['cafe','☕ Café Hop','Again? Really? You two have a serious café addiction.'],['shop','🛍️ Shop','I\'ll alert Somda\'s bank account.'],['interesting','🎭 Find Something Interesting','Now THAT is my favourite option. No idea what you\'ll find. Let\'s find out.'],['everything','🎲 A Bit of Everything','Ah. The chaos option. My favourite.']]},
-        {key:'duration',text:'And how long are we letting Mumbai keep you?',options:[['short','⏰ 2–3 Hours','A neat little date. Enough time to have fun, not enough time to get lost.'],['half','🌤️ Half Day','Proper exploring. I approve.'],['full','🌅 Whole Day','Oh, we\'re making an EVENT out of this. Excellent.']]},
-        {key:'budget',text:'One final thing. How much chaos can Somda\'s wallet tolerate?',options:'budget'}
-      ]
-    },
-    photos:{
-      questions:[
-        {key:'style',text:'PHOTO DATE? Ohhh. Someone wants a new camera-roll dump. I support this. What kind of pictures are we hunting?',options:[['city','🌆 City Photos','City aesthetic. Very cinematic. Try not to look like you\'re posing.'],['sea','🌊 Sunset / Sea','Easy. Good lighting. Romantic background. Aaru does the pretty part. Somda just needs to show up.'],['nature','🌿 Nature','Pretty greenery. Pretty people. Easy.'],['architecture','🏛️ Pretty Architecture','Fancy. Let\'s make you two look like you\'re in a movie.'],['couple','❤️ Couple Photos','Oh? We\'re committing. I respect it.'],['candid','📸 Random Candid Photos','Excellent. No posing. No “wait, let me fix my hair.” Just catch the actual moments.']]},
-        {key:'who',text:'And who is taking these masterpieces?',options:[['turns','📱 Take Turns','Fair. Equal opportunity embarrassment.'],['selfies','🤳 Mostly Selfies','Classic. Foreheads together. Cheeks together. You know the drill.'],['better','😂 Whoever Takes Better Photos','Ohhh. Competition. I like this.'],['none','🎲 No Plan','Perfect. Let the camera do its thing.']]},
-        {key:'add',text:'Good. But we\'re not spending the entire date taking 47 versions of the same selfie. What else are we doing?',options:[['cafe','☕ Café','A little coffee break.'],['food','🍽️ Food','Photos require fuel. Obviously.'],['sunset','🌅 Sunset','Good light. Good choice.'],['walk','🚶 Walk','Keep wandering.'],['shop','🛍️ Explore / Shop','A little browsing never hurt anyone.'],['us','❤️ Just Us','Put the phone away for a bit.']]},
-        {key:'budget',text:'And what is the damage limit?',options:'budget'}
-      ]
-    },
-    getaway:{
-      questions:[
-        {key:'type',text:'WAIT. You\'re escaping Mumbai? This got serious very quickly. Okay, little travellers. What kind of escape are we planning?',options:[['beach','🏖️ Beach','Sand. Sea. Sun. And probably someone complaining about the sand later.'],['hills','🏞️ Hills','Fresh air, views, and at least one “wow, look at that” moment.'],['nature','🌳 Nature','Very wholesome. I\'m suspicious.'],['drive','🌅 Scenic Drive','Music. Road. Good company. Dangerous combination for catching feelings.'],['food','🍽️ Food Destination','You travelled outside Mumbai… for food. Honestly? Valid.'],['random','🎲 Surprise Me','You have surrendered the getaway to me. Brave.']]},
-        {key:'time',text:'How long are we disappearing for?',options:[['half','🌅 Half Day','Little escape. Back home before it becomes a full expedition.'],['full','🌄 Full Day','Okay. Proper date.'],['overnight','🧳 Overnight','Oh? We\'re really committing to the storyline.']]},
-        {key:'travel',text:'And how are we getting there?',options:[['train','🚆 Train','Classic. A little chaos. A little sharing snacks. Very Mumbai.'],['car','🚗 Car','Road trip mode. Playlist better be good.'],['bus','🚌 Bus','Respect. Maximum opportunity for sleeping on each other\'s shoulders.'],['any','🎲 Whatever Works','Excellent. You just want to get there.']]},
-        {key:'budget',text:'Last question before I start packing imaginary bags. What\'s the budget?',options:'budget'}
-      ]
-    },
-    fun:{
-      questions:[
-        {key:'activity',text:'Ahhh. So sitting quietly isn\'t enough today. You want CHAOS. What are we doing?',options:[['bowling','🎳 Bowling','Are we here to bowl… or discover who gets unbearably competitive?'],['arcade','🎮 Arcade / Gaming','Winner gets bragging rights. Loser buys dessert.'],['skating','⛸️ Skating','Potential for grace. Potential for disaster. Either way, entertaining.'],['escape','🧩 Escape Room','You two are going to solve puzzles together. Or blame each other. Probably both.'],['workshop','🎨 Workshop','Cute. You get to make something together.'],['competitive','🎯 Something Competitive','OH. May the better partner win.'],['cat','🐱 Cat Chooses','Excellent. Let the cat decide how chaotic this gets.']]},
-        {key:'after',text:'Excellent. And what happens after you inevitably get competitive?',options:[['food','🍽️ Food','Obviously. Chaos burns calories.'],['dessert','🍦 Dessert','Winner gets bragging rights. Loser also gets dessert. Everyone wins.'],['cafe','☕ Café','Time to recover.'],['movie','🎬 Movie','Something peaceful after all that chaos.'],['walk','🚶 Walk','Cool down together.'],['winner','😏 Winner Decides','Ohhhh. That\'s dangerous. I like it.']]},
-        {key:'budget',text:'Before you challenge each other to financial ruin, what\'s the budget?',options:'budget'}
-      ]
-    },
-    movie:{
-      questions:[
-        {key:'type',text:'Classic date. Lights down. Snacks ready. And someone inevitably says “I\'m not sleepy” before falling asleep. What are we watching?',options:[['movie','🎬 Movie','Easy. Classic.'],['theatre','🎭 Theatre / Play','Fancy. Someone dressed up, didn\'t they?'],['live','🎤 Live Event','Okay. Now we\'re making an evening of it.'],['concert','🎶 Concert','Music, crowd, and two people singing completely different lyrics. Beautiful.'],['random','🎲 Surprise Me','I\'ll choose. Don\'t blame me if it\'s weird.']]},
-        {key:'before',text:'And what are we doing before or after?',options:[['dinner','🍽️ Dinner','Dinner before the movie. Very responsible.'],['snacks','🍿 Snacks Only','Correct. Snacks are not optional.'],['cafe','☕ Café','Classic.'],['dessert','🍦 Dessert','Good.'],['walk','🚶 Walk','A little post-movie walk.'],['romantic','❤️ Something Romantic','Oh? Adding romance to the classic. Noted.']]},
-        {key:'budget',text:'Important question: how much are we spending on popcorn and romance?',options:'budget'}
-      ]
-    },
-    food:{
-      questions:[
-        {key:'type',text:'Finally. A date category that requires absolutely no explanation. We eat. We talk. We eat again. Beautiful. What are we eating?',options:[['pizza','🍕 Pizza / Casual','Safe. Reliable. Cheesy. Much like certain people I know.'],['italian','🍝 Italian','Fancy-ish. Romantic-ish. Potentially messy.'],['asian','🍜 Asian','Excellent. Let\'s get something you\'ve never tried.'],['indian','🍛 Indian','Comfort food. Approved.'],['different','🌮 Something Different','YES. Let\'s get weird.'],['dessert','🍰 Dessert','You skipped directly to the important part. Respect.'],['cafe','☕ Café','I knew we\'d end up here.'],['random','🎲 Surprise Me','Brave. Very brave.']]},
-        {key:'vibe',text:'And what kind of food date is this?',options:[['cute','🥰 Cute & Casual','No pressure. Just food and each other.'],['fancy','✨ Slightly Fancy','Okay. Someone\'s dressing up.'],['foodfirst','😋 Food Is The Main Event','Correct. No further questions.'],['dinner','❤️ Proper Dinner Date','Ah. We\'re serious.']]},
-        {key:'after',text:'One final ingredient: what happens after we\'ve eaten ourselves happy?',options:[['walk','🚶 Walk','Walk it off.'],['dessert','🍦 Dessert','You ate dinner to earn dessert. I understand.'],['movie','🎬 Movie','Food coma + cinema. Bold.'],['sunset','🌅 Sunset','Good. Let\'s make it pretty.'],['cafe','☕ Coffee','Because apparently one meal wasn\'t enough.'],['talk','❤️ Just Sit & Talk','Sweet. No distractions.']]},
-        {key:'budget',text:'Now tell me what we\'re doing to Somda\'s wallet.',options:'budget'}
-      ]
-    },
-    cafe:{
-      questions:[
-        {key:'type',text:'CAFÉ? You two really do love these, don\'t you? Fine. I\'ll allow one more. What kind?',options:[['aesthetic','🌿 Aesthetic','Pretty place. Pretty pictures. Pretty couple.'],['sea','🌊 Sea View','Coffee with a view. Hard to complain.'],['quiet','📚 Quiet','Perfect. Talk. Read. Sit close.'],['dessert','🍰 Dessert Café','You didn\'t come here for coffee. Don\'t lie.'],['coffee','☕ Coffee-Focused','Respect. Finally, someone actually wants coffee.'],['random','🎲 Surprise Me','I\'ll choose. And no complaining.']]},
-        {key:'after',text:'Coffee acquired. What happens next?',options:[['walk','🚶 Walk','Walk it off.'],['photos','📸 Photos','Camera time.'],['dinner','🍽️ Dinner','One meal wasn\'t enough. I understand.'],['sunset','🌅 Sunset','Ohhh. Now we\'re making it romantic.'],['shop','🛍️ Explore','Coffee first. Chaos later.'],['home','❤️ Go Home Happy','Simple. Sometimes that\'s enough.']]},
-        {key:'budget',text:'And what level of financial damage are we accepting?',options:'budget'}
-      ]
-    },
-    make:{
-      questions:[
-        {key:'activity',text:'You want to MAKE something? Together? This could be adorable. Or catastrophically funny. Either outcome is acceptable. What are we making?',options:[['paint','🎨 Painting','Please don\'t fight over the colours.'],['pottery','🏺 Pottery','Hands covered in clay. This is either cute or extremely messy.'],['bake','🧁 Baking','Excellent. Eat the evidence if it goes wrong.'],['diy','🎀 DIY / Craft','Cute. Make something you\'ll actually keep.'],['photo','📸 Photography','Back to pictures. You two are obsessed.'],['handmade','🌸 Something Handmade','Aww. That\'s going to mean more because you made it.'],['random','🎲 Surprise Me','I\'ll pick. Godspeed.']]},
-        {key:'vibe',text:'How seriously are we taking this?',options:[['cute','🥰 Cute','Obviously.'],['chaotic','😂 Chaotic','YES. Now we\'re talking.'],['serious','🎨 Actually Try','Oh. We\'re taking this seriously. No pressure. Except there is absolutely pressure.']]},
-        {key:'after',text:'And what are we doing after the creative disaster… I mean masterpiece?',options:[['food','🍽️ Food','Creative work requires fuel.'],['cafe','☕ Café','Sit down and admire your masterpiece.'],['walk','🚶 Walk','Get some air.'],['photos','📸 Photos','Document the evidence.'],['dessert','🍦 Dessert','A reward for your artistic suffering.']]},
-        {key:'budget',text:'How much are we willing to spend on becoming artists?',options:'budget'}
-      ]
-    },
-    shopping:{
-      questions:[
-        {key:'shop',text:'Shopping AND food? Dangerous. Very dangerous. Especially for one particular wallet. What are we shopping for?',options:[['clothes','👗 Clothes','Aaru chooses. Somda carries the bags. I don\'t make the rules.'],['gifts','🎁 Gifts','Aww. Secret little gifts?'],['couple','💍 Something Cute Together','Oh? Couple shopping. I approve.'],['browse','🛍️ Just Browse','The most dangerous words in shopping: “we\'re just browsing.”'],['random','🎲 Surprise Me','Let\'s see what catches your eye.']]},
-        {key:'food',text:'And after spending all that money… we obviously need food. What are we eating?',options:[['casual','🍕 Casual','Simple. Easy.'],['cafe','☕ Café','Coffee and recovery.'],['dinner','🍽️ Dinner','Proper meal.'],['dessert','🍰 Dessert','You shopped. You deserve sugar.']]},
-        {key:'after',text:'And once the bags are full and the food is gone?',options:[['walk','🚶 Walk','Walk around with your purchases like victorious little merchants.'],['movie','🎬 Movie','Sit down and recover.'],['photos','📸 Photos','Document the damage.'],['home','❤️ Head Home Happy','Simple ending.']]},
-        {key:'budget',text:'Okay. Let\'s establish financial boundaries before this gets out of hand.',options:'budget'}
-      ]
-    },
-    evening:{
-      questions:[
-        {key:'start',text:'Evening date? Excellent. Mumbai after sunset is basically free romance. How are we starting?',options:[['cafe','☕ Café','Soft start.'],['sunset','🌅 Sunset','Perfect timing.'],['shop','🛍️ Shopping','Of course.'],['movie','🎬 Movie','Classic.'],['walk','🚶 Walk','Simple.'],['dinner','🍽️ Dinner','Straight to the important part.']]},
-        {key:'end',text:'And how are we ending the evening?',options:[['lights','🌃 City Lights','Very cinematic.'],['sea','🌊 Sea','Very romantic.'],['dessert','🍰 Dessert','Very necessary.'],['drive','🚗 Drive','Playlist better be ready.'],['quiet','❤️ Quiet Time Together','Awww. Just you two. I\'ll leave you alone. Eventually.']]},
-        {key:'budget',text:'One little detail before I approve this: budget?',options:'budget'}
-      ]
-    },
-    romantic:{
-      questions:[
-        {key:'setting',text:'Ohhhhh. ROMANTIC? Okay. I suddenly feel like I should put on some music. Let me guess: someone wants butterflies, maybe a little hand-holding, maybe a lot of staring. I\'ll stop before Somda gets ideas. Where are we setting this up?',options:[['sea','🌊 By the Sea','Soft. Pretty. Dangerous levels of hand-holding.'],['lights','🌃 City Lights','Very movie-like.'],['quiet','🌙 Quiet Evening','No distractions. Just you two. That\'s usually when things get dangerously romantic.'],['dinner','🕯️ Dinner','Okay. We\'re dressing up.'],['peaceful','🌳 Somewhere Peaceful','Sweet.'],['sunset','🌅 Sunset','Classic romance.'],['random','🎲 Surprise Me','You want me to decide the romance? This is a lot of responsibility.']]},
+    nature:{questions:[
+      {key:'type',text:'Nature? Wow. I didn\'t know you two were capable of leaving civilisation voluntarily. I\'m impressed. So… what kind of nature are we talking?',options:[['park','🌿 Park / Garden','Classic. Walk. Talk. Sit together. Pretend you weren\'t going to spend half the time looking at each other.'],['lake','🌊 Lake / Waterfront','Pretty. Peaceful. Excellent place for unnecessarily romantic conversations.'],['hills','🏞️ Hills / Viewpoint','Okay, someone has decided the date needs a view. I respect the ambition.'],['forest','🌳 Forest / Greenery','Very peaceful. Very cute. Potentially terrible for phone battery.'],['sunset','🌅 Nature + Sunset','Oh, we\'re combining things. Ambitious. I like it.'],['beach','🏖️ Beach','Sand. Sea. Sun. And probably someone complaining about the sand later.'],['food','🍽️ Nature + Food','You went into nature and somehow food followed. Honestly? Valid.']]},
+      {key:'walk',text:'How much walking are we making these poor legs do?',options:[['sit','🪑 Mostly Sitting','Ah. So we\'re technically doing nature. But from a chair.'],['some','🚶 Some Walking','Perfect. Enough walking to feel productive. Not enough to regret your life choices.'],['explore','🥾 Let\'s Actually Explore','OH. We\'re serious. Okay, shoes on. No complaining halfway through.']]},
+      {key:'add',text:'And what are we adding to make this an actual date?',options:[['cafe','☕ Café','Nature… followed by coffee. You two really cannot escape cafés.'],['food','🍽️ Food','Excellent. Walking creates hunger. I have studied this extensively.'],['photos','📸 Photos','Pretty place. Pretty people. Easy.'],['dessert','🍦 Dessert','Dessert after nature. You know what? I\'m starting to like your decision-making.'],['picnic','🧺 Picnic','PICNIC? Okay, this is adorable. Someone is getting extra romance points.'],['us','❤️ Just Us','Aww. No activity. No distraction. Just you two. Disgustingly cute.']]},
+      {key:'budget',text:'Finally, the important question. How much are we spending on our wholesome little escape?',options:'budget'}
+    ]},
+    afteroffice:{questions:[
+      {key:'meet',text:'After office, huh? So you two survived the workday and now want to escape it together. I approve. Where are we meeting?',options:[['ghatkopar','📍 Ghatkopar','Ah, Ghatkopar. Convenient. Efficient. Very Mumbai. Let\'s make the most of the evening.'],['andheri','📍 Andheri','Andheri? Okay. Someone is making me do Mumbai logistics now. Fine.'],['lowerparel','📍 Lower Parel','Lower Parel. Offices, malls, food, and approximately seventeen ways to accidentally spend money.'],['thane','📍 Thane','Thane! Look at you two travelling for love after a full workday. Respect.'],['decide','🎲 We\'ll Decide Ourselves','Keeping the meeting point flexible? Smart. I\'ll worry about the actual date.']]},
+      {key:'plan',text:'Good. You\'ve escaped the office. Now what are we actually doing with the evening?',options:[['food','🍽️ Dinner','Obviously. The workday has earned you food.'],['cafe','☕ Café','A post-office café date. Classic. You two really do have a type.'],['movie','🎬 Movie','Straight from spreadsheets to cinema. Excellent transition.'],['walk','🚶 Walk & Talk','No screens. No office talk. Just the two of you.'],['shopping','🛍️ Shopping + Food','Dangerous after payday. Extremely dangerous.'],['fun','🎢 Fun Activity','You survived work. Now go do something actually fun.'],['romantic','❤️ Romantic Evening','Ohhh. Someone wants the workday to end on a much better note.'],['surprise','🎲 Cat Chooses','You survived office and now you\'re surrendering the evening to me? Brave.']]},
+      {key:'time',text:'How much of the post-office evening are we stealing for ourselves?',options:[['short','⏰ 1–2 Hours','A little escape. Enough to reset before heading home.'],['medium','🌆 2–4 Hours','Now that\'s a proper after-office date.'],['long','🌙 Until Late','Oh. We\'re forgetting tomorrow\'s alarm exists. I see.']]},
+      {key:'budget',text:'Last thing. How much are we allowing Somda\'s wallet to suffer after surviving the workday?',options:'budget'}
+    ]},
+    mumbai:{questions:[
+      {key:'area',text:'Now THIS is interesting. You don\'t necessarily need a plan. You just need somewhere to start. So where are we sending you two?',options:[['bandra','🌊 Bandra','Walks, food, sea, cafés… very date-friendly.'],['marine','🌊 Marine Drive','Classic. Sea breeze, city lights, and absolutely no excuse not to sit together.'],['fort','🎨 Fort','Pretty streets, old buildings, good photographs. Let\'s pretend we\'re sophisticated.'],['lower','🏙️ Lower Parel','Food, malls, entertainment… and Somda\'s wallet quietly preparing itself.'],['andheri','🌆 Andheri','Busy, chaotic, full of options. Very Mumbai.'],['panvel','🚆 Panvel','PANVEL? 😂 You two really said “Explore Mumbai” and then left Mumbai. I respect the loophole.'],['dombivli','🚆 Dombivli','DOMBIVLI? 😂 Okay, this is personal. Someone has chosen chaos.'],['new','🗺️ Somewhere New','YES. No repeating the same old places. Let\'s discover something.'],['cat','🐱 Cat Chooses','Excellent. You have surrendered control to a cat.']]},
+      {key:'activity',text:'Okay, destination selected. What are we actually doing once we get there?',options:[['walk','🚶 Walk Around','No strict itinerary. Just wander and see what happens.'],['photos','📸 Take Photos','Camera ready. I expect at least one ridiculously cute picture.'],['food','🍽️ Find Food','Of course. I knew food would enter the conversation eventually.'],['cafe','☕ Café Hop','Again? Really? You two have a serious café addiction.'],['shop','🛍️ Shop','I\'ll alert Somda\'s bank account.'],['interesting','🎭 Find Something Interesting','Now THAT is my favourite option. No idea what you\'ll find. Let\'s find out.'],['everything','🎲 A Bit of Everything','Ah. The chaos option. My favourite.']]},
+      {key:'duration',text:'And how long are we letting Mumbai keep you?',options:[['short','⏰ 2–3 Hours','A neat little date. Enough time to have fun, not enough time to get lost.'],['half','🌤️ Half Day','Proper exploring. I approve.'],['full','🌅 Whole Day','Oh, we\'re making an EVENT out of this. Excellent.']]},
+      {key:'budget',text:'One final thing. How much chaos can Somda\'s wallet tolerate?',options:'budget'}
+    ]},
+    photos:{questions:[
+      {key:'style',text:'PHOTO DATE? Ohhh. Someone wants a new camera-roll dump. I support this. What kind of pictures are we hunting?',options:[['city','🌆 City Photos','City aesthetic. Very cinematic. Try not to look like you\'re posing.'],['sea','🌊 Sunset / Sea','Easy. Good lighting. Romantic background. Aaru does the pretty part. Somda just needs to show up.'],['nature','🌿 Nature','Pretty greenery. Pretty people. Easy.'],['architecture','🏛️ Pretty Architecture','Fancy. Let\'s make you two look like you\'re in a movie.'],['couple','❤️ Couple Photos','Oh? We\'re committing. I respect it.'],['candid','📸 Random Candid Photos','Excellent. No posing. No “wait, let me fix my hair.” Just catch the actual moments.']]},
+      {key:'who',text:'And who is taking these masterpieces?',options:[['turns','📱 Take Turns','Fair. Equal opportunity embarrassment.'],['selfies','🤳 Mostly Selfies','Classic. Foreheads together. Cheeks together. You know the drill.'],['better','😂 Whoever Takes Better Photos','Ohhh. Competition. I like this.'],['none','🎲 No Plan','Perfect. Let the camera do its thing.']]},
+      {key:'add',text:'Good. But we\'re not spending the entire date taking 47 versions of the same selfie. What else are we doing?',options:[['cafe','☕ Café','A little coffee break.'],['food','🍽️ Food','Photos require fuel. Obviously.'],['sunset','🌅 Sunset','Good light. Good choice.'],['walk','🚶 Walk','Keep wandering.'],['shop','🛍️ Explore / Shop','A little browsing never hurt anyone.'],['us','❤️ Just Us','Put the phone away for a bit.']]},
+      {key:'budget',text:'And what is the damage limit?',options:'budget'}
+    ]},
+    getaway:{questions:[
+      {key:'type',text:'WAIT. You\'re escaping Mumbai? This got serious very quickly. Okay, little travellers. What kind of escape?',options:[['beach','🏖️ Beach','Sand. Sea. Sun. And probably someone complaining about the sand later.'],['hills','🏞️ Hills','Fresh air. Views. And at least one “wow, look at that” moment.'],['nature','🌳 Nature','Very wholesome. I\'m suspicious.'],['drive','🌅 Scenic Drive','Music. Road. Good company. Very dangerous combination for catching feelings.'],['food','🍽️ Food Destination','You travelled outside Mumbai… for food. Honestly? Valid.'],['random','🎲 Surprise Me','I choose the escape. Bold move.']]},
+      {key:'duration',text:'How long are we disappearing for?',options:[['half','🌅 Half Day','Little escape. Back home before it becomes a full expedition.'],['full','🌄 Full Day','Okay. Proper date.'],['overnight','🧳 Overnight','Oh? We\'re really committing to the storyline.']]},
+      {key:'travel',text:'And how are we getting there?',options:[['train','🚆 Train','Classic. A little chaos. A little sharing snacks. Very Mumbai.'],['car','🚗 Car','Road trip mode. Playlist better be good.'],['bus','🚌 Bus','Respect. Maximum opportunity for sleeping on each other\'s shoulders.'],['whatever','🎲 Whatever Works','Excellent. You just want to get there.']]},
+      {key:'budget',text:'Before I book this imaginary expedition, what are we telling Somda\'s wallet?',options:'budget'}
+    ]},
+    fun:{questions:[
+      {key:'activity',text:'Ahhh. So sitting quietly isn\'t enough today. You want CHAOS. What are we doing?',options:[['bowling','🎳 Bowling','Are we here to bowl… or discover who gets unbearably competitive?'],['arcade','🎮 Arcade / Gaming','Winner gets bragging rights. Loser buys dessert.'],['skating','⛸️ Skating','Potential for grace. Potential for disaster. Either way, entertaining.'],['escape','🧩 Escape Room','You two are going to solve puzzles together. Or blame each other. Probably both.'],['workshop','🎨 Workshop','Cute. You get to make something together and keep the questionable result forever.'],['competitive','🎯 Something Competitive','OH. May the better partner win.'],['cat','🐱 Cat Chooses','You want me to pick the chaos? Finally, a sensible decision.']]},
+      {key:'after',text:'And what happens after you inevitably become exhausted from all that fun?',options:[['food','🍽️ Food','Obviously.'],['dessert','🍦 Dessert','Winner gets dessert. Loser also gets dessert. Everyone wins.'],['cafe','☕ Café','Time to recover.'],['movie','🎬 Movie','Something peaceful after all that chaos.'],['walk','🚶 Walk','Cool down.'],['winner','😏 Winner Decides','Ohhhh. That\'s dangerous. I like it.']]},
+      {key:'budget',text:'Okay, final financial question before I unleash the chaos. Budget?',options:'budget'}
+    ]},
+    movie:{questions:[
+      {key:'show',text:'Classic date. Lights down. Snacks ready. And someone inevitably says “I\'m not sleepy” before falling asleep. What are we watching?',options:[['movie','🎬 Movie','Easy.'],['theatre','🎭 Theatre / Play','Fancy. Someone dressed up, didn\'t they?'],['live','🎤 Live Event','Okay. Now we\'re making an evening of it.'],['concert','🎶 Concert','Music. Crowd. Two people singing completely different lyrics. Beautiful.'],['random','🎲 Cat Chooses','I\'ll choose. Don\'t blame me if it\'s weird.']]},
+      {key:'after',text:'And what are we doing before or after?',options:[['dinner','🍽️ Dinner','Dinner before the movie. Very responsible.'],['snacks','🍿 Snacks Only','Correct. Snacks are not optional.'],['cafe','☕ Café','Classic.'],['dessert','🍦 Dessert','Good.'],['walk','🚶 Walk','A little post-movie walk.'],['romantic','❤️ Something Romantic','Oh? So we\'re adding romance to the classic. Noted.']]},
+      {key:'budget',text:'Last thing. What are we telling the wallet?',options:'budget'}
+    ]},
+    food:{questions:[
+      {key:'food',text:'Finally. A date category that requires absolutely no explanation. We eat. We talk. We eat again. Beautiful. What are we eating?',options:[['pizza','🍕 Pizza / Casual','Safe. Reliable. Cheesy. Much like certain people I know.'],['italian','🍝 Italian','Fancy-ish. Romantic-ish. Potentially messy.'],['asian','🍜 Asian','Excellent. Let\'s get something you\'ve never tried.'],['indian','🍛 Indian','Comfort food. Approved.'],['different','🌮 Something Different','YES. Let\'s get weird.'],['dessert','🍰 Dessert','You skipped directly to the important part. Respect.'],['cafe','☕ Café','I knew we\'d end up here.'],['random','🎲 Surprise Me','Brave. Very brave.']]},
+      {key:'vibe',text:'And what kind of food date are we having?',options:[['casual','🥰 Cute & Casual','No pressure. Just food and each other.'],['fancy','✨ Slightly Fancy','Okay. Someone\'s dressing up.'],['main','😋 Food Is The Main Event','Correct. No further questions.'],['dinner','❤️ Proper Dinner Date','Ah. Candles? Nice outfit? Someone\'s trying.']]},
+      {key:'after',text:'Food can\'t be the entire quest. What happens after?',options:[['walk','🚶 Walk','Walk it off.'],['dessert','🍦 Dessert','One more round. I respect it.'],['movie','🎬 Movie','Something chill.'],['sunset','🌅 Sunset','Now we\'re making it romantic.'],['coffee','☕ Coffee','Because apparently one beverage wasn\'t enough.'],['talk','❤️ Just Sit & Talk','Honestly? Sometimes that\'s the best part.']]},
+      {key:'budget',text:'And finally, what are we allowing Somda\'s wallet to survive?',options:'budget'}
+    ]},
+    cafe:{questions:[
+      {key:'type',text:'CAFÉ? You two really do love these, don\'t you? Fine. I\'ll allow one more. What kind of café?',options:[['aesthetic','🌿 Aesthetic','Pretty place. Pretty pictures. Pretty couple.'],['sea','🌊 Sea View','Coffee with a view. Hard to complain.'],['quiet','📚 Quiet','Talk. Read. Sit close.'],['dessert','🍰 Dessert Café','You didn\'t come here for coffee. Don\'t lie.'],['coffee','☕ Coffee-Focused','Respect. Finally, someone actually wants coffee.'],['random','🎲 Surprise Me','I\'ll choose. And no complaining.']]},
+      {key:'after',text:'And after café?',options:[['walk','🚶 Walk','Walk it off.'],['photos','📸 Photos','Camera time.'],['dinner','🍽️ Dinner','One meal wasn\'t enough. I understand.'],['sunset','🌅 Sunset','Ohhh. Now we\'re making it romantic.'],['explore','🛍️ Explore','Coffee first. Chaos later.'],['home','❤️ Go Home Happy','Simple. Sometimes that\'s enough.']]},
+      {key:'budget',text:'One last thing. Budget?',options:'budget'}
+    ]},
+    make:{questions:[
+      {key:'activity',text:'You want to MAKE something? Together? This could be adorable. Or catastrophically funny. Either outcome is acceptable. What are we making?',options:[['painting','🎨 Painting','Please don\'t fight over the colours.'],['pottery','🏺 Pottery','Hands covered in clay. This is either going to be cute or extremely messy.'],['baking','🧁 Baking','Excellent. Eat the evidence if it goes wrong.'],['diy','🎀 DIY / Craft','Cute. Make something you\'ll actually keep.'],['photo','📸 Photography','Back to pictures. You two are obsessed.'],['handmade','🌸 Something Handmade','Awww. That\'s going to mean more because you made it.'],['random','🎲 Surprise Me','I\'ll pick. Godspeed.']]},
+      {key:'vibe',text:'And what kind of creative chaos are we bringing?',options:[['cute','🥰 Cute','Obviously.'],['chaotic','😂 Chaotic','YES. Now we\'re talking.'],['serious','🎨 Actually Try','Oh. We\'re taking this seriously. No pressure. Except there is absolutely pressure.']]},
+      {key:'budget',text:'Final question before I hand you the glue gun. Budget?',options:'budget'}
+    ]},
+    shopping:{questions:[
+      {key:'shop',text:'Shopping AND food? Dangerous. Very dangerous. Especially for one particular wallet. What are we shopping for?',options:[['clothes','👗 Clothes','Aaru chooses. Somda carries the bags. I don\'t make the rules.'],['gifts','🎁 Gifts','Aww. Secret little gifts?'],['couple','💍 Something Cute Together','Oh? Couple shopping. I approve.'],['browse','🛍️ Just Browse','The most dangerous words in shopping: “we\'re just browsing.”'],['random','🎲 Surprise Me','Let\'s see what catches your eye.']]},
+      {key:'food',text:'And after spending all that money… we obviously need food. What are we eating?',options:[['casual','🍕 Casual','Simple. Easy.'],['cafe','☕ Café','Coffee and recovery.'],['dinner','🍽️ Dinner','Proper meal.'],['dessert','🍰 Dessert','You shopped. You deserve sugar.']]},
+      {key:'after',text:'And once the bags are full and the food is gone?',options:[['walk','🚶 Walk','Walk around with your purchases like victorious little merchants.'],['movie','🎬 Movie','Sit down and recover.'],['photos','📸 Photos','Document the damage.'],['home','❤️ Head Home Happy','Simple ending.']]},
+      {key:'budget',text:'Okay. Let\'s establish financial boundaries before this gets out of hand.',options:'budget'}
+    ]},
+    evening:{questions:[
+      {key:'start',text:'Evening date? Excellent. Mumbai after sunset is basically free romance. How are we starting?',options:[['cafe','☕ Café','Soft start.'],['sunset','🌅 Sunset','Perfect timing.'],['shop','🛍️ Shopping','Of course.'],['movie','🎬 Movie','Classic.'],['walk','🚶 Walk','Simple.'],['dinner','🍽️ Dinner','Straight to the important part.']]},
+      {key:'end',text:'And how are we ending the evening?',options:[['lights','🌃 City Lights','Very cinematic.'],['sea','🌊 Sea','Very romantic.'],['dessert','🍰 Dessert','Very necessary.'],['drive','🚗 Drive','Playlist better be ready.'],['quiet','❤️ Quiet Time Together','Awww. Just you two. I\'ll leave you alone. Eventually.']]},
+      {key:'budget',text:'One little detail before I approve this: budget?',options:'budget'}
+    ]},
+    romantic:{questions:[
+      {key:'setting',text:'Ohhhhh. ROMANTIC? Okay. I suddenly feel like I should put on some music. Let me guess: someone wants butterflies, maybe a little hand-holding, maybe a lot of staring. I\'ll stop before Somda gets ideas. Where are we setting this up?',options:[['sea','🌊 By the Sea','Soft. Pretty. Dangerous levels of hand-holding.'],['lights','🌃 City Lights','Very movie-like.'],['quiet','🌙 Quiet Evening','No distractions. Just you two. That\'s usually when things get dangerously romantic.'],['dinner','🕯️ Dinner','Okay. We\'re dressing up.'],['peaceful','🌳 Somewhere Peaceful','Sweet.'],['sunset','🌅 Sunset','Classic romance.'],['random','🎲 Surprise Me','You want me to decide the romance? This is a lot of responsibility.']]},
       {key:'level',text:'Now… how romantic are we actually being? Be honest. I can handle it. Probably.',options:[['sweet','🌸 Sweet','Aww. Cute. Little butterflies.'],['romantic','❤️ Romantic','Okay. We\'re committing. I like this.'],['very','💋 Very Romantic','…Oh. Someone\'s feeling brave tonight. Fine. I\'ll make the quest worthy of that choice.']]},
       {key:'special',text:'And because ordinary romance is apparently not enough, what little special thing are we adding?',options:[['letters','💌 Exchange Letters','A love letter? Oh, we\'re making future memories now.'],['gift','🎁 Small Gift','Little surprise? Very cute.'],['photos','📸 Couple Photos','Evidence of the romance.'],['flowers','🌹 Flowers','Classic.'],['dessert','🍰 Dessert','Romance requires sugar. It\'s science.'],['talk','🗣️ Just Talk','Honestly… sometimes that\'s the best one.'],['random','🎲 Cat Chooses','You really trust me with this? Interesting.']]},
       {key:'budget',text:'Last question. What are we telling Somda\'s wallet?',options:'budget'}
-      ]
-    }
+    ]}
   };
 
   const budgetOpts=[['low','💰 Under ₹1,000','Respectable. Cute date. Minimal financial damage.'],['mid','💰💰 ₹1,000–₹2,500','Okay. A little spending. Still survivable.'],['high','💰💰💰 ₹2,500+','…Somda? Are you sure? Blink twice if Aaru made you choose this.']];
   function optsFor(q){return q.options==='budget'?budgetOpts:q.options;}
 
-  const selected={};let category='';let step=0;let lastQuest=null;let typingTimer=null;let typingDone=false;let pendingNext=null;let openingIndex=0;
+  const selected={};
+  let category='',step=0,lastQuest=null,typingTimer=null,typingDone=false,advanceFn=null;
+  let openingIndex=0;
   const rand=a=>a[Math.floor(Math.random()*a.length)];
   const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
   function clearTyping(){if(typingTimer){clearInterval(typingTimer);typingTimer=null}}
-  function hideOptions(){catOptions.innerHTML='';}
+  function hideAllPanels(){
+    catThinking.hidden=true;catQuest.hidden=true;catActions.hidden=true;
+    catThinking.style.display='none';catQuest.style.display='none';catActions.style.display='none';
+  }
+  function showPanel(el){el.hidden=false;el.style.display='';}
+  function clearOptions(){catOptions.innerHTML='';}
+
   function setNext(label='NEXT ▶'){
-    catOptions.innerHTML=`<button class="date-cat-next" id="dateCatNext">${label}</button>`;
-    document.getElementById('dateCatNext').onclick=()=>{
-      if(!typingDone){
-        finishTyping();
-        return;
-      }
-      if(pendingNext)pendingNext();
+    catOptions.innerHTML=`<button class="date-cat-next" id="dateCatNext" type="button">${label}</button>`;
+    const btn=document.getElementById('dateCatNext');
+    btn.onclick=()=>{
+      if(!typingDone){finishTyping();return;}
+      const fn=advanceFn;advanceFn=null;if(fn)fn();
     };
   }
+
   function finishTyping(){
     clearTyping();
     const el=catBubble.querySelector('.date-cat-typed');
-    if(el&&window.__dateCatTypingText!=null)el.textContent=window.__dateCatTypingText;
-    const cursor=catBubble.querySelector('.date-cat-cursor');
-    if(cursor)cursor.remove();
+    if(el)el.textContent=window.__dateCatTypingText||'';
+    const cursor=catBubble.querySelector('.date-cat-cursor');if(cursor)cursor.remove();
     typingDone=true;
   }
-  function typeLine(text,onDone){
+
+  function typeLine(text){
     clearTyping();typingDone=false;window.__dateCatTypingText=String(text);
-    catBubble.innerHTML='<span class="date-cat-typed"></span><span class="date-cat-cursor">▋</span>';const el=catBubble.querySelector('.date-cat-typed');let i=0;const chars=Array.from(String(text));
-    typingTimer=setInterval(()=>{el.textContent+=chars[i++]||'';if(i>=chars.length){clearTyping();typingDone=true;const cursor=catBubble.querySelector('.date-cat-cursor');if(cursor)cursor.remove();onDone&&onDone();}},28);
+    catBubble.innerHTML='<span class="date-cat-typed"></span><span class="date-cat-cursor">▋</span>';
+    const el=catBubble.querySelector('.date-cat-typed');
+    const chars=Array.from(String(text));let i=0;
+    typingTimer=setInterval(()=>{
+      el.textContent+=chars[i++]||'';
+      if(i>=chars.length){clearTyping();typingDone=true;const cursor=catBubble.querySelector('.date-cat-cursor');if(cursor)cursor.remove();}
+    },24);
   }
-  function speak(text,next,label='NEXT ▶'){
-    hideOptions();pendingNext=next;setNext(label);typeLine(text,()=>{});
+
+  // One RPG dialogue line. NEXT is visible for the whole typing animation.
+  function dialogue(text,onAdvance,nextLabel='NEXT ▶'){
+    clearOptions();
+    advanceFn=onAdvance||null;
+    setNext(nextLabel);
+    typeLine(text);
   }
+
   function open(){catModal.classList.add('open');catModal.setAttribute('aria-hidden','false');reset()}
-  function close(){clearTyping();catModal.classList.remove('open');catModal.setAttribute('aria-hidden','true')}
-  function reset(){clearTyping();category='';step=0;openingIndex=0;Object.keys(selected).forEach(k=>delete selected[k]);lastQuest=null;catThinking.hidden=true;catQuest.hidden=true;catActions.hidden=true;catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catProgress.innerHTML='';renderOpening()}
-  function renderProgress(total){catProgress.innerHTML=Array.from({length:Math.max(total,1)},(_,i)=>`<span class="date-cat-dot ${i<=step?'active':''}"></span>`).join('')}
+  function close(){clearTyping();advanceFn=null;catModal.classList.remove('open');catModal.setAttribute('aria-hidden','true')}
+
+  function reset(){
+    clearTyping();advanceFn=null;category='';step=0;openingIndex=0;lastQuest=null;
+    Object.keys(selected).forEach(k=>delete selected[k]);
+    hideAllPanels();catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';
+    catProgress.innerHTML='';catBubble.innerHTML='';clearOptions();renderOpening();
+  }
+
+  function renderProgress(total){catProgress.innerHTML=Array.from({length:Math.max(total,1)},(_,i)=>`<span class="date-cat-dot ${i<=step?'active':''}></span>`).join('')}
 
   function renderOpening(){
-    renderProgress(5);const line=opening[openingIndex];
-    speak(line,()=>{
+    renderProgress(5);
+    const line=opening[openingIndex];
+    dialogue(line,()=>{
       openingIndex++;
       if(openingIndex<opening.length)renderOpening();
       else renderStartOptions();
     });
   }
+
   function renderStartOptions(){
-    hideOptions();
-    setNext('SHOW OPTIONS ▶');
-    pendingNext=()=>{
-      hideOptions();
-      catOptions.innerHTML=data.start.options.map(([id,label])=>`<button class="date-cat-option" data-value="${escapeHTML(id)}">${label}</button>`).join('');
-      catOptions.querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCategory(b.dataset.value));
-    };
+    clearOptions();advanceFn=null;
+    catOptions.innerHTML=data.start.options.map(([id,label])=>`<button class="date-cat-option" type="button" data-value="${escapeHTML(id)}">${label}</button>`).join('');
+    catOptions.querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCategory(b.dataset.value));
   }
 
   function chooseCategory(id){
-    category=id;
-    Object.keys(selected).forEach(k=>delete selected[k]);
-    if(id==='surprise'){runSurprise();return}
-    step=0;renderQuestion();
+    category=id;Object.keys(selected).forEach(k=>delete selected[k]);step=0;lastQuest=null;catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';hideAllPanels();
+    if(id==='surprise'){runSurprise();return;}
+    renderQuestion();
   }
 
   function getQuestions(){
@@ -522,70 +515,67 @@ document.addEventListener("keydown", (event) => {
     base.push({key:'date',type:'date',text:'Okay, one last thing before I build your quest. When are we actually going on this date? Pick the day below. And yes, I need a real date this time. I am a planner, not a mind reader.'});
     return base;
   }
+
   function renderQuestion(){
     const qs=getQuestions();
-    if(step>=qs.length){generate();return}
+    if(step>=qs.length){generate();return;}
     const q=qs[step];renderProgress(qs.length);
+    hideAllPanels();
+
     if(q.type==='date'){
-      // The date is ALWAYS the final question. Do not generate the quest until
-      // the user explicitly picks a date and presses SET DATE.
-      catThinking.hidden=true;
-      catQuest.hidden=true;
-      catActions.hidden=true;
-      catOptions.innerHTML='';
-      pendingNext=null;
-      speak(q.text,()=>{
-        catOptions.innerHTML=`<div class="date-cat-calendar-wrap"><label for="dateCatDateInput">📅 Pick your date</label><input type="date" id="dateCatDateInput" class="date-cat-date-input" min="${new Date().toISOString().split('T')[0]}" value="${escapeHTML(selected.date||'')}"><button class="date-cat-option date-cat-date-submit" id="dateCatDateSubmit">SET DATE ▶</button></div>`;
-        const input=document.getElementById('dateCatDateInput');
-        const submit=document.getElementById('dateCatDateSubmit');
-        submit.onclick=()=>{
-          if(!input.value){
-            input.focus();
-            return;
-          }
-          selected.date=input.value;
-          step=qs.length;
-          catOptions.innerHTML='';
-          generate();
-        };
-        input.addEventListener('keydown',e=>{
-          if(e.key==='Enter') submit.click();
-        });
-      },'NEXT ▶');
+      // The date picker is revealed ONLY after the user advances past the cat's final line.
+      dialogue(q.text,()=>showDatePicker());
       return;
     }
-    const opts=optsFor(q);
-    speak(q.text,()=>{
-      catOptions.innerHTML=opts.map(([id,label])=>`<button class="date-cat-option" data-value="${escapeHTML(id)}">${label}</button>`).join('');
+
+    dialogue(q.text,()=>{
+      const opts=optsFor(q);
+      clearOptions();
+      catOptions.innerHTML=opts.map(([id,label])=>`<button class="date-cat-option" type="button" data-value="${escapeHTML(id)}">${label}</button>`).join('');
       catOptions.querySelectorAll('button').forEach(b=>b.onclick=()=>chooseAnswer(q,b.dataset.value));
-    },'CHOOSE ▶');
+    },'NEXT ▶');
+  }
+
+  function showDatePicker(){
+    clearOptions();advanceFn=null;
+    const today=new Date();
+    const min=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    catOptions.innerHTML=`<div class="date-cat-calendar-wrap"><label for="dateCatDateInput">📅 PICK YOUR DATE</label><input type="date" id="dateCatDateInput" class="date-cat-date-input" min="${min}" value="${escapeHTML(selected.date||'')}"><button class="date-cat-option date-cat-date-submit" id="dateCatDateSubmit" type="button">SET DATE ▶</button></div>`;
+    const input=document.getElementById('dateCatDateInput');
+    const submit=document.getElementById('dateCatDateSubmit');
+    submit.onclick=()=>{
+      if(!input.value){input.focus();return;}
+      selected.date=input.value;step=getQuestions().length;generate();
+    };
+    input.addEventListener('keydown',e=>{if(e.key==='Enter')submit.click()});
   }
 
   function chooseAnswer(q,val){
     selected[q.key]=val;
-    const opts=optsFor(q);const option=opts.find(x=>x[0]===val);step++;
+    const option=optsFor(q).find(x=>x[0]===val);
+    step++;
     if(option){
-      renderProgress((data[category]?.questions||[]).length);
-      speak(option[2],()=>renderQuestion());
+      renderProgress(getQuestions().length);
+      dialogue(option[2],()=>renderQuestion());
     }else renderQuestion();
   }
 
   function labelFor(key,val){
     const qs=getQuestions();
-    for(const q of qs){const opts=optsFor(q);const x=opts.find(o=>o[0]===val);if(x)return x[1].replace(/^\S+\s/,'')}
+    for(const q of qs){const x=optsFor(q).find(o=>o[0]===val);if(x)return x[1].replace(/^\S+\s/,'')}
     return val;
   }
 
   function buildQuest(){
     const s=selected;const budgetMap={low:'Under ₹1,000',mid:'₹1,000–₹2,500',high:'₹2,500+'};
     const q={title:'A Date Quest',location:'Mumbai',activity:'Spend time together',duration:'2–3 hours',budget:budgetMap[s.budget]||'Flexible',romance:3,objectives:[],note:'',date:s.date||''};
-    const catNames={nature:'Green Escape',afteroffice:'After Office Escape',mumbai:'Mumbai Little Adventure',photos:'Camera Roll Date',getaway:'Little Escape',fun:'Chaos & Fun Date',movie:'Movie & More',food:'Eat, Talk, Repeat',cafe:'Coffee & Conversations',make:'Make Something Together',shopping:'Shopping & Snacks',evening:'After-Dark Date',romantic:'A Little More Romance'};
+    const catNames={nature:'Green Escape',afteroffice:'After Office Escape',mumbai:'Mumbai Little Adventure',photos:'Camera Roll Date',getaway:'Little Escape',fun:'Chaos & Fun Date',movie:'Movie & More',food:'Eat, Talk & Repeat',cafe:'Coffee & Conversations',make:'Make Something Together',shopping:'Shopping & Snacks',evening:'After-Dark Date',romantic:'A Little More Romance'};
     q.title=catNames[category]||q.title;
-    const locMap={ghatkopar:'Ghatkopar',andheri:'Andheri',lowerparel:'Lower Parel',thane:'Thane',decide:'Your choice',bandra:'Bandra',marine:'Marine Drive',fort:'Fort',lower:'Lower Parel',panvel:'Panvel',dombivli:'Dombivli',new:'Somewhere New',cat:'Cat chooses',park:'Park / Garden',lake:'Lake / Waterfront',hills:'Hills / Viewpoint',forest:'Greenery',beach:'Beach'};
+    const locMap={ghatkopar:'Ghatkopar',andheri:'Andheri',lowerparel:'Lower Parel',thane:'Thane',decide:'Your choice',bandra:'Bandra',marine:'Marine Drive',fort:'Fort',lower:'Lower Parel',panvel:'Panvel 😂',dombivli:'Dombivli 😂',new:'Somewhere New',cat:'Cat chooses',park:'Park / Garden',lake:'Lake / Waterfront',hills:'Hills / Viewpoint',forest:'Greenery',beach:'Beach'};
     q.location=locMap[s.meet]||locMap[s.area]||locMap[s.type]||locMap[s.setting]||'Mumbai';
     const acts=[];
     for(const [k,v] of Object.entries(s)){
-      if(['budget','meet','area','type','walk','time','travel','level','duration'].includes(k))continue;
+      if(['budget','meet','area','type','walk','time','travel','level','duration','date'].includes(k))continue;
       const l=labelFor(k,v);if(l)acts.push(l);
     }
     q.activity=acts.slice(0,3).join(' → ')||'Spend time together';
@@ -596,67 +586,72 @@ document.addEventListener("keydown", (event) => {
     if(category==='fun')q.objectives=[q.activity,'Choose a winner','Let the loser choose dessert','Laugh at least once'];
     if(category==='romantic')q.objectives=[q.activity,'Do the special little thing you chose','Find a quiet moment together','Tell each other something you mean'];
     if(category==='afteroffice')q.objectives=[q.activity,'Leave office talk behind','Get one proper laugh out of the evening','Go home with a better day than you started with'];
-    const notes=[
-      'Strong potential for hand-holding. Proceed carefully.',
-      'Date Cat approved. Please do not turn this into another café date.',
-      'Possible side effect: falling in love with each other again.',
-      'Mandatory: at least one moment where you both forget to check your phones.',
-      'Somda\'s wallet has been notified. It is pretending to be calm.',
-      'This one has excellent memory-making potential.',
-      'The cat has spoken. Now go make it cute.'
-    ];q.note=rand(notes);return q;
+    const notes=['Strong potential for hand-holding. Proceed carefully.','Date Cat approved. Please do not turn this into another café date.','Possible side effect: falling in love with each other again.','Mandatory: at least one moment where you both forget to check your phones.','Somda\'s wallet has been notified. It is pretending to be calm.','This one has excellent memory-making potential.','The cat has spoken. Now go make it cute.'];
+    q.note=rand(notes);return q;
   }
 
-  async function runSurprise(){
-    category='surprise';hideOptions();catProgress.innerHTML='';catThinking.hidden=false;catThinking.innerHTML='';
+  function surpriseSelections(){
+    const cats=['nature','afteroffice','mumbai','photos','getaway','fun','movie','food','cafe','make','shopping','evening','romantic'];
+    category=rand(cats);Object.keys(selected).forEach(k=>delete selected[k]);
+    for(const q of data[category].questions){const opts=optsFor(q);selected[q.key]=rand(opts)[0]}
+  }
+
+  function runSurprise(){
+    category='surprise';step=0;hideAllPanels();clearOptions();catProgress.innerHTML='';
     const lines=[
       'You want me to choose EVERYTHING?',
       'No budget? No category? No instructions?',
       'Aaru. Somda. You have made a terrible mistake.',
       'I love it.'
     ];
-    for(const line of lines){await new Promise(resolve=>typeLine(line,resolve));await sleep(250)}
-    catThinking.innerHTML='<span class="paw">🐾</span>Checking the date possibilities…';await sleep(550);
-    const cats=['nature','afteroffice','mumbai','photos','getaway','fun','movie','food','cafe','make','shopping','evening','romantic'];
-    category=rand(cats);const qs=data[category].questions;Object.keys(selected).forEach(k=>delete selected[k]);qs.forEach(q=>selected[q.key]=rand(optsFor(q))[0]);
-    catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';await sleep(550);
-    catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';await sleep(550);
-    catThinking.innerHTML='<span class="paw">🐾</span>Checking Somda\'s wallet…';await sleep(650);
-    catThinking.innerHTML='<span class="paw">🐾</span><strong>Found something.</strong>';await sleep(500);catThinking.hidden=true;step=data[category].questions.length;renderQuestion();
+    let i=0;
+    const next=()=>{
+      if(i<lines.length){dialogue(lines[i++],next);return;}
+      surpriseSelections();
+      step=data[category].questions.length;
+      // Surprise still gets the same final real-date question.
+      renderQuestion();
+    };
+    next();
   }
 
   function generate(){
-    hideOptions();
-    catThinking.hidden=false;
-    catQuest.hidden=true;
-    catActions.hidden=true;
-    catSaved.textContent='';
-    catThinking.innerHTML='<span class="paw">🐾</span>Checking the date possibilities…';
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';},350);
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';},700);
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Checking Somda\'s wallet…';},1050);
-    setTimeout(()=>{
+    // Clear the old date/question text so the generation screen can never sit under it.
+    clearOptions();advanceFn=null;catBubble.innerHTML='';catProgress.innerHTML='';hideAllPanels();
+    catThinking.hidden=false;catThinking.style.display='';
+    catThinking.innerHTML='<span class="paw">🐾</span>Okay… give me a second.';
+    window.setTimeout(()=>{
       lastQuest=buildQuest();
-      catThinking.innerHTML='<span class="paw">🐾</span><strong>Okay… I THINK I\'VE GOT IT.</strong>';
-      setTimeout(showQuest,450);
-    },1400);
+      catThinking.hidden=true;catThinking.style.display='none';
+      showQuest();
+    },550);
   }
 
   function formatQuestDate(v){if(!v)return 'Not set';const d=new Date(`${v}T00:00:00`);return Number.isNaN(d.getTime())?v:d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}
 
   function showQuest(){
-    const q=lastQuest;catThinking.hidden=true;catQuest.hidden=false;catActions.hidden=false;catChange.hidden=false;catSaved.textContent='';
-    typeLine('Look. I actually did a good job. Don\'t get used to it.',()=>{});
+    const q=lastQuest;
+    catThinking.hidden=true;catThinking.style.display='none';
     catQuest.innerHTML=`<div class="date-cat-quest-label">❤️ DATE QUEST</div><h3>${escapeHTML(q.title)}</h3><div class="date-cat-quest-grid"><div class="date-cat-stat"><small>📍 DESTINATION</small><span>${escapeHTML(q.location)}</span></div><div class="date-cat-stat"><small>📅 DATE</small><span>${escapeHTML(formatQuestDate(q.date))}</span></div><div class="date-cat-stat"><small>⏱️ TIME</small><span>${escapeHTML(q.duration)}</span></div><div class="date-cat-stat"><small>💰 ESTIMATED BUDGET</small><span>${escapeHTML(q.budget)}</span></div><div class="date-cat-stat"><small>💕 ROMANCE</small><span>${'❤️'.repeat(q.romance)}${'♡'.repeat(5-q.romance)}</span></div></div><div class="date-cat-objectives"><strong>🎯 QUEST OBJECTIVES</strong><ol>${q.objectives.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ol></div><div class="date-cat-note">${escapeHTML(q.note)}</div>`;
+    showPanel(catQuest);showPanel(catActions);catSaved.textContent='';catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';
+    // Final RPG line appears above the quest, not over the loading state.
+    dialogue('Look. I actually did a good job. Don\'t get used to it.',null,'DONE ▶');
+    // Keep the final quest visible while the line is being typed.
+    showPanel(catQuest);showPanel(catActions);
   }
 
-  function saveQuest(){if(!lastQuest)return;const item={...lastQuest,id:'quest-'+Date.now(),createdAt:new Date().toISOString(),status:'planned'};const existing=JSON.parse(localStorage.getItem('aaruSomdaPlannedDates')||'[]');existing.unshift(item);localStorage.setItem('aaruSomdaPlannedDates',JSON.stringify(existing.slice(0,20)));catSaved.textContent='❤️ Added to your planned dates. It will appear in Our Dates.';catSave.textContent='❤️ Saved';catSave.disabled=true}
+  function saveQuest(){
+    if(!lastQuest)return;
+    const item={...lastQuest,id:'quest-'+Date.now(),createdAt:new Date().toISOString(),status:'planned'};
+    const existing=JSON.parse(localStorage.getItem('aaruSomdaPlannedDates')||'[]');
+    existing.unshift(item);localStorage.setItem('aaruSomdaPlannedDates',JSON.stringify(existing.slice(0,20)));
+    catSaved.textContent='❤️ Added to your planned dates. It will appear in Our Dates.';catSave.textContent='❤️ Saved';catSave.disabled=true;
+  }
 
   catHotspot.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(typeof hotspots!=='undefined')hotspots.forEach(x=>x.classList.remove('active'));open()});
-  catClose.addEventListener('click',close);catBackdrop.addEventListener('click',close);
-  catAnother.addEventListener('click',()=>{catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';reset()});
-  function openChange(){catSave.disabled=false;catSave.textContent='❤️ Save to Our Dates';catActions.hidden=true;catQuest.hidden=true;catThinking.hidden=true;step=0;renderQuestion()}
-  catChangeTop?.addEventListener('click',openChange);
+  catClose.addEventListener('click',close);catBackdrop?.addEventListener('click',close);
+  catAnother.addEventListener('click',()=>reset());
+  catChangeTop?.addEventListener('click',()=>{catActions.hidden=true;catActions.style.display='none';catQuest.hidden=true;catQuest.style.display='none';step=0;renderQuestion()});
   catSave.addEventListener('click',saveQuest);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&catModal.classList.contains('open'))close()});
 })();
