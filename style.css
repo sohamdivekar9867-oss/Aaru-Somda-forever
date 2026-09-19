@@ -825,3 +825,13 @@ button {
 .date-cat-change{margin-top:12px}
 .date-cat-change button{width:100%;border:0;background:none;color:#a15f69;font:500 10px "DM Mono",monospace;cursor:pointer;text-decoration:underline}
 @media(max-width:560px){.date-cat-card{padding:23px 17px 18px;border-radius:22px}.date-cat-avatar{width:56px;height:56px;flex-basis:56px;font-size:32px}.date-cat-title{font-size:23px}.date-cat-options{grid-template-columns:1fr}.date-cat-quest-grid{grid-template-columns:1fr 1fr}.date-cat-actions{grid-template-columns:1fr}.date-cat-bubble{font-size:13px}}
+
+/* Date Cat RPG dialogue */
+.date-cat-bubble{min-height:56px;position:relative}
+.date-cat-typed{white-space:pre-wrap}
+.date-cat-cursor{display:inline-block;margin-left:2px;font-family:"DM Mono",monospace;font-size:.9em;animation:dateCatCursor .75s steps(1) infinite}
+@keyframes dateCatCursor{0%,45%{opacity:1}46%,100%{opacity:0}}
+.date-cat-next{width:100%;appearance:none;border:1px solid rgba(161,91,105,.28);background:#fff7f5;border-radius:14px;padding:13px 14px;text-align:center;font:600 11px/1.35 "DM Mono",monospace;letter-spacing:1px;color:#7a4b54;cursor:pointer;box-shadow:0 4px 14px rgba(90,50,60,.06);transition:.18s ease}
+.date-cat-next:hover{transform:translateY(-2px);background:#fff0ed;border-color:#c88995;box-shadow:0 8px 20px rgba(90,50,60,.1)}
+.date-cat-next:active{transform:translateY(0) scale(.98)}
+.date-cat-options{margin-top:2px}
