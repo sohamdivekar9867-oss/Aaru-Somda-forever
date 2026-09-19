@@ -836,6 +836,9 @@ button {
 .date-cat-next:active{transform:translateY(0) scale(.98)}
 .date-cat-options{margin-top:2px}
 
+/* Native hidden attribute must win over layout rules while the RPG is in a question state. */
+.date-cat-modal [hidden]{display:none !important;}
+
 /* Date Cat calendar picker */
 .date-cat-calendar-wrap{display:grid;gap:10px;padding:4px 0 0}
 .date-cat-calendar-wrap label{font:600 10px/1.4 "DM Mono",monospace;letter-spacing:1.1px;color:#8c5962;text-transform:uppercase}

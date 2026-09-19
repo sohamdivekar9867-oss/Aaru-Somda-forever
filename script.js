@@ -527,13 +527,30 @@ document.addEventListener("keydown", (event) => {
     if(step>=qs.length){generate();return}
     const q=qs[step];renderProgress(qs.length);
     if(q.type==='date'){
+      // The date is ALWAYS the final question. Do not generate the quest until
+      // the user explicitly picks a date and presses SET DATE.
+      catThinking.hidden=true;
+      catQuest.hidden=true;
+      catActions.hidden=true;
+      catOptions.innerHTML='';
+      pendingNext=null;
       speak(q.text,()=>{
         catOptions.innerHTML=`<div class="date-cat-calendar-wrap"><label for="dateCatDateInput">📅 Pick your date</label><input type="date" id="dateCatDateInput" class="date-cat-date-input" min="${new Date().toISOString().split('T')[0]}" value="${escapeHTML(selected.date||'')}"><button class="date-cat-option date-cat-date-submit" id="dateCatDateSubmit">SET DATE ▶</button></div>`;
         const input=document.getElementById('dateCatDateInput');
-        document.getElementById('dateCatDateSubmit').onclick=()=>{
-          if(!input.value){input.focus();return}
-          selected.date=input.value;step++;renderQuestion();
+        const submit=document.getElementById('dateCatDateSubmit');
+        submit.onclick=()=>{
+          if(!input.value){
+            input.focus();
+            return;
+          }
+          selected.date=input.value;
+          step=qs.length;
+          catOptions.innerHTML='';
+          generate();
         };
+        input.addEventListener('keydown',e=>{
+          if(e.key==='Enter') submit.click();
+        });
       },'NEXT ▶');
       return;
     }
@@ -609,12 +626,20 @@ document.addEventListener("keydown", (event) => {
   }
 
   function generate(){
-    hideOptions();catThinking.hidden=false;catQuest.hidden=true;catActions.hidden=true;
+    hideOptions();
+    catThinking.hidden=false;
+    catQuest.hidden=true;
+    catActions.hidden=true;
+    catSaved.textContent='';
     catThinking.innerHTML='<span class="paw">🐾</span>Checking the date possibilities…';
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';},650);
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';},1250);
-    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Checking Somda\'s wallet…';},1850);
-    setTimeout(()=>{lastQuest=buildQuest();catThinking.innerHTML='<span class="paw">🐾</span><strong>Okay… I THINK I\'VE GOT IT.</strong>';setTimeout(showQuest,700)},2450);
+    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Looking for somewhere interesting…';},350);
+    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Calculating romance levels…';},700);
+    setTimeout(()=>{catThinking.innerHTML='<span class="paw">🐾</span>Checking Somda\'s wallet…';},1050);
+    setTimeout(()=>{
+      lastQuest=buildQuest();
+      catThinking.innerHTML='<span class="paw">🐾</span><strong>Okay… I THINK I\'VE GOT IT.</strong>';
+      setTimeout(showQuest,450);
+    },1400);
   }
 
   function formatQuestDate(v){if(!v)return 'Not set';const d=new Date(`${v}T00:00:00`);return Number.isNaN(d.getTime())?v:d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}
