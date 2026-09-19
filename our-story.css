@@ -939,75 +939,146 @@ a {
 }
 
 /* =========================
-   PERSPECTIVE DROPDOWN + OWNER EDITING
+   SHARED CHAPTER / PERSPECTIVE UI
 ========================= */
-.perspective-picker-wrap {
-  display: flex;
-  justify-content: flex-end;
+.story-toolbar {
   align-items: center;
-  gap: 9px;
-  margin: 2px 0 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 30px;
 }
-.perspective-picker-wrap label {
+
+.perspective-control {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.perspective-control label {
   color: var(--muted-ink);
-  font-size: .48rem;
-  letter-spacing: .11em;
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.perspective-picker {
+
+.perspective-select {
   appearance: auto;
   background: transparent;
-  border: 0;
-  border-bottom: 1px solid rgba(52,35,41,.28);
-  color: #7e5f64;
-  cursor: pointer;
+  border: 1px solid rgba(80,55,45,.28);
+  color: var(--ink);
   font-family: var(--mono);
-  font-size: .56rem;
-  padding: 3px 2px;
+  font-size: 0.55rem;
+  letter-spacing: .03em;
+  max-width: 260px;
+  padding: 9px 12px;
 }
-.perspective-picker:focus { outline: none; border-bottom-color: #a86e79; }
-.perspective-label {
-  color: #a07e81;
+
+.perspective-select:focus {
+  outline: 1px solid rgba(168, 110, 121, .55);
+  outline-offset: 2px;
+}
+
+.chapter-edit-button,
+.add-perspective-button {
+  background: transparent;
+  border: 1px solid rgba(80,55,45,.28);
+  color: var(--ink);
   font-family: var(--mono);
-  font-size: .52rem;
-  letter-spacing: .12em;
-  margin: -18px 0 18px;
-  text-align: right;
-  text-transform: uppercase;
+  font-size: 0.52rem;
+  letter-spacing: .04em;
+  padding: 9px 12px;
 }
-.story-page-content h2 {
-  font-size: clamp(2.6rem, 5vw, 4.5rem);
+
+.chapter-edit-button:hover,
+.add-perspective-button:hover {
+  background: rgba(80,55,45,.07);
 }
+
+.chapter-heading-wrap {
+  margin-top: 8px;
+}
+
+.chapter-heading {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: -.04em;
+  line-height: 1.02;
+  max-width: 850px;
+}
+
 .editable-content {
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
-  max-width: none;
 }
+
+.editable-content p {
+  text-align: justify;
+}
+
 .editable-content.editing-active {
-  outline: 1px dashed rgba(168,110,121,.35);
-  outline-offset: 9px;
-  min-height: 220px;
+  outline: 1px dashed rgba(168, 110, 121, .35);
+  outline-offset: 10px;
 }
-.story-edit-controls { margin-top: 22px; min-height: 32px; }
-.story-save-button {
-  border: 1px solid rgba(80,55,45,.35);
-  background: transparent;
-  color: inherit;
-  padding: 9px 13px;
-  font: inherit;
-  cursor: pointer;
+
+.perspective-empty {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+  min-height: 310px;
+  text-align: center;
 }
-.story-save-button:hover { background: rgba(80,55,45,.08); }
-.read-only-note {
-  color: #9a8182;
-  font-size: .5rem;
+
+.perspective-empty p {
+  color: var(--muted-ink);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-style: italic;
+}
+
+.perspective-empty span {
+  color: var(--muted-ink);
+  font-size: .52rem;
   letter-spacing: .06em;
-  text-transform: uppercase;
 }
-@media (max-width:700px) {
-  .perspective-picker-wrap { margin-bottom: 18px; }
-  .perspective-picker-wrap label, .perspective-picker { font-size: .48rem; }
-  .perspective-label { font-size: .46rem; }
-  .story-page-content h2 { font-size: 2.65rem; }
+
+.empty-story {
+  color: var(--muted-ink);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+@media (max-width: 700px) {
+  .story-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 24px;
+  }
+
+  .perspective-control {
+    width: 100%;
+  }
+
+  .perspective-select {
+    flex: 1;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .chapter-edit-button {
+    align-self: flex-end;
+  }
+
+  .chapter-heading {
+    font-size: clamp(2.55rem, 12vw, 3.5rem);
+  }
+
+  .editable-content.editing-active {
+    outline-offset: 6px;
+  }
 }

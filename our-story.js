@@ -2,15 +2,16 @@ const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const AARU_EMAIL = "aaru.saru090901@gmail.com";
-const SOMDA_EMAIL = "sohamdivekar9867@gmail.com";
-const ORIGINAL_SLUGS = new Set(["rt-perspective", "soham-perspective"]);
+const PEOPLE = {
+  Aaru: "aaru.saru090901@gmail.com",
+  Somda: "sohamdivekar9867@gmail.com"
+};
 
-let currentUser = null;
-let storyRows = [];
+let chapters = [];
 let readerPages = [];
 let currentPage = 0;
-let selectedPerspective = "Aaru";
+let currentUser = null;
+let currentPerspective = "Aaru";
 
 const $ = id => document.getElementById(id);
 
@@ -20,111 +21,105 @@ function escapeHtml(value = "") {
   }[char]));
 }
 
-function normaliseAuthor(author, slug = "") {
-  const value = `${author || ""} ${slug}`.toLowerCase();
-  return value.includes("soham") ? "Somda" : "Aaru";
-}
-
-function perspectiveForRow(row) {
-  return normaliseAuthor(row.author, row.slug);
-}
-
-function canEditPerspective(perspective) {
-  if (!currentUser?.email) return false;
-  const email = currentUser.email.toLowerCase().trim();
-  return (perspective === "Aaru" && email === AARU_EMAIL) ||
-         (perspective === "Somda" && email === SOMDA_EMAIL);
+function authorForEmail(email) {
+  const value = String(email || "").trim().toLowerCase();
+  if (value === PEOPLE.Aaru) return "Aaru";
+  if (value === PEOPLE.Somda) return "Somda";
+  return null;
 }
 
 function renderContent(content = "") {
-  const text = String(content || "").trim();
-  if (!text) return `<p class="placeholder-text">Write your memories here...</p>`;
-  return text.split(/\n\s*\n/).map(part =>
+  const clean = String(content || "").trim();
+  if (!clean) return `<p class="empty-story">This perspective is waiting to be written.</p>`;
+  return clean.split(/\n\s*\n/).map(part =>
     `<p>${escapeHtml(part.trim()).replace(/\n/g, "<br>")}</p>`
   ).join("");
 }
 
 function textFromEditor(element) {
-  const paragraphs = Array.from(element.querySelectorAll("p"))
+  return Array.from(element.querySelectorAll("p"))
     .map(p => p.innerText.trim())
-    .filter(Boolean);
-  return paragraphs.join("\n\n") || element.innerText.trim();
+    .filter(Boolean)
+    .join("\n\n") || element.innerText.trim();
 }
 
-function groupStories(rows) {
-  const groups = [];
-  rows.forEach(row => {
-    const title = (row.title || "Untitled chapter").trim();
-    let group = groups.find(g => g.title.toLowerCase() === title.toLowerCase());
-    if (!group) {
-      group = { title, rows: [] };
-      groups.push(group);
-    }
-    group.rows.push(row);
-  });
-  return groups;
+function slugify(value) {
+  return String(value || "chapter")
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `chapter-${Date.now()}`;
 }
 
-function getPerspectiveRow(group, perspective = selectedPerspective) {
-  return group.rows.find(row => perspectiveForRow(row) === perspective) || group.rows[0];
+function getPerspective(chapter, author) {
+  return (chapter.perspectives || []).find(p => p.author === author) || null;
 }
 
-function isDeletableGroup(group) {
-  return group.rows.some(row => !ORIGINAL_SLUGS.has(row.slug));
+function canEditPerspective(author) {
+  return !!currentUser && authorForEmail(currentUser.email) === author;
 }
 
-function perspectiveDropdown(group, activePerspective) {
+function canEditChapter() {
+  return !!currentUser && !!authorForEmail(currentUser.email);
+}
+
+function buildPerspectiveSelect(chapter) {
+  const aaru = getPerspective(chapter, "Aaru");
+  const somda = getPerspective(chapter, "Somda");
   return `
-    <div class="perspective-picker-wrap">
-      <label for="perspective-${escapeHtml(group.title)}">Perspective</label>
-      <select class="perspective-picker" data-title="${escapeHtml(group.title)}" id="perspective-${escapeHtml(group.title)}">
-        <option value="Aaru" ${activePerspective === "Aaru" ? "selected" : ""}>Aaru's Perspective</option>
-        <option value="Somda" ${activePerspective === "Somda" ? "selected" : ""}>Somda's Perspective</option>
+    <div class="perspective-control">
+      <label for="perspective-${escapeHtml(chapter.id)}">View</label>
+      <select class="perspective-select" id="perspective-${escapeHtml(chapter.id)}" data-chapter-id="${escapeHtml(chapter.id)}">
+        <option value="Aaru" ${currentPerspective === "Aaru" ? "selected" : ""}>Aaru's Perspective${aaru ? "" : " · not written yet"}</option>
+        <option value="Somda" ${currentPerspective === "Somda" ? "selected" : ""}>Somda's Perspective${somda ? "" : " · not written yet"}</option>
       </select>
     </div>`;
 }
 
-function createStoryPage(group, number) {
-  const row = getPerspectiveRow(group, selectedPerspective);
-  const author = perspectiveForRow(row);
-  const editable = canEditPerspective(author);
+function createStoryPage(chapter, number) {
+  const perspective = getPerspective(chapter, currentPerspective);
+  const editable = canEditPerspective(currentPerspective);
+  const hasText = !!perspective;
   const page = document.createElement("section");
   page.className = "reader-page story-page";
-  page.dataset.title = group.title;
-  page.dataset.slug = row.slug;
+  page.dataset.chapterId = chapter.id;
+
+  const editorId = `editor-${chapter.id}`;
+  const titleId = `title-${chapter.id}`;
 
   page.innerHTML = `
     <div class="page-inner">
       <div class="page-top">
-        <span>${String(number).padStart(2, "0")} · OUR STORY</span>
-        <span>${escapeHtml(group.title)}</span>
+        <span>${String(number).padStart(2, "0")} · ${escapeHtml(currentPerspective.toUpperCase())}'S SIDE</span>
+        <span>OUR STORY</span>
       </div>
 
       <div class="story-page-content">
-        ${perspectiveDropdown(group, author)}
-        <p class="page-eyebrow">${escapeHtml(group.title)}</p>
-        <h2>${escapeHtml(group.title)}</h2>
+        <div class="story-toolbar">
+          ${buildPerspectiveSelect(chapter)}
+          ${canEditChapter() ? `<button class="chapter-edit-button" data-chapter-id="${escapeHtml(chapter.id)}">Edit heading</button>` : ""}
+        </div>
+
+        <div class="chapter-heading-wrap">
+          <p class="page-eyebrow">Chapter ${String(number - 2).padStart(2, "0")}</p>
+          <h2 class="chapter-heading" id="${titleId}">${escapeHtml(chapter.title)}</h2>
+        </div>
         <div class="page-rule"></div>
 
-        <div class="perspective-label">${author === "Aaru" ? "Aaru's Perspective" : "Somda's Perspective"}</div>
-
-        <div class="editable-content contenteditable-area ${editable ? "editing-active" : ""}"
-             id="editor-${escapeHtml(row.slug)}"
-             contenteditable="${editable ? "true" : "false"}"
-             spellcheck="true">${renderContent(row.content || "")}</div>
-
-        <div class="story-edit-controls">
-          ${editable ? `<button class="story-save-button" data-slug="${escapeHtml(row.slug)}">Save this page</button>` : `<span class="read-only-note">Read only · ${author}'s perspective</span>`}
-        </div>
+        ${hasText ? `
+          <div class="editable-content contenteditable-area ${editable ? "editing-active" : ""}"
+               id="${editorId}" contenteditable="${editable ? "true" : "false"}" spellcheck="true">${renderContent(perspective.content)}</div>
+          ${editable ? `<button class="story-save-button" data-chapter-id="${escapeHtml(chapter.id)}" data-perspective="${currentPerspective}">Save this perspective</button>` : ""}
+        ` : `
+          <div class="perspective-empty">
+            <p>This perspective hasn't been written yet.</p>
+            ${editable ? `<button class="add-perspective-button" data-chapter-id="${escapeHtml(chapter.id)}">＋ Add my perspective</button>` : `<span>Waiting for ${escapeHtml(currentPerspective)} to write this part of the story.</span>`}
+          </div>
+        `}
 
         <div class="page-quote">“Some people enter your life quietly, but stay forever.” <span>♡</span></div>
       </div>
 
-      <div class="page-bottom">
-        <span>Written by ${escapeHtml(author)}</span>
-        <span>${String(number).padStart(2, "0")}</span>
-      </div>
+      <div class="page-bottom"><span>${escapeHtml(currentPerspective)}'s perspective</span><span>${String(number).padStart(2, "0")}</span></div>
     </div>`;
+
   return page;
 }
 
@@ -133,215 +128,317 @@ function buildPages() {
   container.innerHTML = "";
   readerPages = [$("indexPage")];
 
-  groupStories(storyRows).forEach((group, index) => {
-    const page = createStoryPage(group, index + 3);
+  chapters.forEach((chapter, index) => {
+    const page = createStoryPage(chapter, index + 3);
     container.appendChild(page);
     readerPages.push(page);
   });
 
-  bindPageButtons();
-  bindPerspectivePickers();
+  bindStoryControls();
   buildIndex();
-  applyResponsivePagination();
-  showPage(Math.min(currentPage, readerPages.length - 1));
+  showPage(Math.min(currentPage, readerPages.length - 1), false);
+}
+
+function makeIndexEntry(chapter, index, overlay = false) {
+  const entryClass = overlay ? "overlay-entry" : "index-entry";
+  const numberClass = overlay ? "overlay-entry-number" : "index-number";
+  const textClass = overlay ? "overlay-entry-text" : "index-entry-text";
+  const pageClass = overlay ? "overlay-entry-page" : "index-page-number";
+  const number = String(index + 1).padStart(2, "0");
+  const pageNumber = String(index + 3).padStart(2, "0");
+
+  return `<button class="${entryClass}" data-target="${escapeHtml(chapter.id)}">
+    <span class="${numberClass}">${number}</span>
+    <span class="${textClass}"><strong>${escapeHtml(chapter.title)}</strong></span>
+    <span class="${pageClass}">${pageNumber}</span>
+  </button>`;
 }
 
 function buildIndex() {
-  const groups = groupStories(storyRows);
-  const makeEntry = (group, index, overlay = false) => {
-    const first = group.rows[0];
-    const target = `story-${encodeURIComponent(group.title)}`;
-    const number = String(index + 1).padStart(2, "0");
-    const pageNumber = String(index + 3).padStart(2, "0");
-    const deletable = isDeletableGroup(group);
-    const entryClass = overlay ? "overlay-entry" : "index-entry";
-    const numberClass = overlay ? "overlay-entry-number" : "index-number";
-    const textClass = overlay ? "overlay-entry-text" : "index-entry-text";
-    const pageClass = overlay ? "overlay-entry-page" : "index-page-number";
-    return `<div class="${entryClass}-wrapper">
-      <button class="${entryClass}" data-target="${escapeHtml(target)}">
-        <span class="${numberClass}">${number}</span>
-        <span class="${textClass}"><strong>${escapeHtml(group.title)}</strong></span>
-        <span class="${pageClass}">${pageNumber}</span>
-      </button>
-      ${deletable ? `<button class="entry-delete-button" data-title="${escapeHtml(group.title)}">Delete</button>` : ""}
-    </div>`;
-  };
-
   const empty = `<div class="index-coming-soon"><span>♡</span> Your first chapter is waiting to be written.</div>`;
-  $("indexList").innerHTML = groups.length ? groups.map((g,i)=>makeEntry(g,i)).join("") : empty;
-  $("overlayIndexList").innerHTML = groups.length ? groups.map((g,i)=>makeEntry(g,i,true)).join("") : empty;
+  $("indexList").innerHTML = chapters.length
+    ? chapters.map((c, i) => `<div class="index-entry-wrapper">${makeIndexEntry(c, i)}</div>`).join("")
+    : empty;
+  $("overlayIndexList").innerHTML = chapters.length
+    ? chapters.map((c, i) => `<div class="overlay-entry-wrapper">${makeIndexEntry(c, i, true)}</div>`).join("")
+    : empty;
 
-  document.querySelectorAll(".index-entry, .overlay-entry").forEach(btn => {
-    btn.addEventListener("click", () => goToTitle(decodeURIComponent(btn.dataset.target.replace(/^story-/, ""))));
-  });
-  document.querySelectorAll(".entry-delete-button").forEach(btn => {
-    btn.addEventListener("click", e => { e.stopPropagation(); deleteStoryEntry(btn.dataset.title); });
-  });
-}
-
-function bindPageButtons() {
-  document.querySelectorAll(".story-save-button").forEach(button => {
-    button.addEventListener("click", () => saveStory(button));
+  document.querySelectorAll(".index-entry, .overlay-entry").forEach(button => {
+    button.addEventListener("click", () => goToChapter(button.dataset.target));
   });
 }
 
-function bindPerspectivePickers() {
-  document.querySelectorAll(".perspective-picker").forEach(select => {
+function bindStoryControls() {
+  document.querySelectorAll(".perspective-select").forEach(select => {
     select.addEventListener("change", () => {
-      selectedPerspective = select.value;
-      const activeTitle = select.dataset.title;
-      const groups = groupStories(storyRows);
-      const index = groups.findIndex(g => g.title.toLowerCase() === activeTitle.toLowerCase());
-      if (index < 0) return;
-      buildPages();
-      showPage(index + 1);
+      currentPerspective = select.value;
+      const chapterId = select.dataset.chapterId;
+      const pageIndex = readerPages.findIndex(page => page.dataset.chapterId === chapterId);
+      if (pageIndex >= 0) buildPagesAndReturn(pageIndex);
     });
+  });
+
+  document.querySelectorAll(".story-save-button").forEach(button => {
+    button.addEventListener("click", () => savePerspective(button));
+  });
+
+  document.querySelectorAll(".add-perspective-button").forEach(button => {
+    button.addEventListener("click", () => addPerspective(button.dataset.chapterId));
+  });
+
+  document.querySelectorAll(".chapter-edit-button").forEach(button => {
+    button.addEventListener("click", () => editHeading(button.dataset.chapterId));
   });
 }
 
 async function loadCurrentUser() {
-  const { data, error } = await supabaseClient.auth.getUser();
-  if (error) {
-    console.error("Could not read current user", error);
-    currentUser = null;
-  } else {
-    currentUser = data.user || null;
-  }
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
+  if (error) console.error(error);
+  currentUser = user || null;
 }
 
 async function loadStories() {
-  const { data, error } = await supabaseClient
-    .from("story_pages")
-    .select("slug,title,author,content,subtitle,page_type,display_order,published")
+  const { data: chapterData, error: chapterError } = await supabaseClient
+    .from("story_chapters")
+    .select("id,title,display_order,published,created_by,created_at,updated_at")
     .eq("published", true)
     .order("display_order", { ascending: true });
 
-  if (error) {
-    console.error(error);
-    alert("Could not load the story pages.");
+  if (chapterError) {
+    console.error(chapterError);
+    alert("Could not load the story chapters. Please run STORY_SETUP.sql in Supabase first.");
     return;
   }
-  storyRows = data || [];
-  // The old placeholder chapter is removed from the UI even if it still exists in the DB.
-  storyRows = storyRows.filter(row => (row.title || "").trim().toLowerCase() !== "how it began");
+
+  const { data: perspectiveData, error: perspectiveError } = await supabaseClient
+    .from("story_perspectives")
+    .select("id,chapter_id,author,content,created_by,created_at,updated_at");
+
+  if (perspectiveError) {
+    console.error(perspectiveError);
+    alert("Could not load the story perspectives. Please run STORY_SETUP.sql in Supabase first.");
+    return;
+  }
+
+  const perspectives = perspectiveData || [];
+  chapters = (chapterData || []).map(chapter => ({
+    ...chapter,
+    perspectives: perspectives.filter(p => p.chapter_id === chapter.id)
+  }));
+
   buildPages();
 }
 
-async function saveStory(button) {
-  const row = storyRows.find(item => item.slug === button.dataset.slug);
-  if (!row) return;
-  const perspective = perspectiveForRow(row);
-  if (!canEditPerspective(perspective)) {
-    alert(`You can only edit ${currentUser?.email?.toLowerCase() === AARU_EMAIL ? "Aaru's" : "Somda's"} perspective.`);
+async function savePerspective(button) {
+  if (!currentUser) return alert("Please log in first ♡");
+
+  const author = authorForEmail(currentUser.email);
+  if (author !== button.dataset.perspective) {
+    alert("You can only edit your own perspective ♡");
     return;
   }
 
-  const editor = document.getElementById(`editor-${row.slug}`);
-  if (!editor) return;
+  const chapter = chapters.find(c => c.id === button.dataset.chapterId);
+  const editor = document.getElementById(`editor-${button.dataset.chapterId}`);
+  if (!chapter || !editor) return;
+
   const content = textFromEditor(editor);
   button.disabled = true;
   button.textContent = "Saving...";
 
-  const { error } = await supabaseClient
-    .from("story_pages")
-    .update({ content, updated_at: new Date().toISOString() })
-    .eq("slug", row.slug);
+  const existing = getPerspective(chapter, author);
+  let result;
+
+  if (existing) {
+    result = await supabaseClient
+      .from("story_perspectives")
+      .update({ content, updated_at: new Date().toISOString() })
+      .eq("id", existing.id);
+  } else {
+    result = await supabaseClient
+      .from("story_perspectives")
+      .insert({ chapter_id: chapter.id, author, content, created_by: currentUser.id })
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    console.error(result.error);
+    button.disabled = false;
+    button.textContent = "Save failed";
+    alert("Could not save this perspective. Check STORY_SETUP.sql / Supabase RLS.");
+    return;
+  }
+
+  if (existing) existing.content = content;
+  else chapter.perspectives.push(result.data);
+
+  button.textContent = "Saved ✓";
+  setTimeout(() => { button.textContent = "Save this perspective"; button.disabled = false; }, 1600);
+}
+
+async function addPerspective(chapterId) {
+  if (!currentUser) return alert("Please log in first ♡");
+  const author = authorForEmail(currentUser.email);
+  if (!author) return alert("This account is not authorized for Our Story.");
+
+  const chapter = chapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+  if (getPerspective(chapter, author)) return buildPages();
+
+  const { data, error } = await supabaseClient
+    .from("story_perspectives")
+    .insert({ chapter_id: chapter.id, author, content: "", created_by: currentUser.id })
+    .select()
+    .single();
 
   if (error) {
     console.error(error);
-    button.textContent = "Save failed";
-    button.disabled = false;
-    alert(`Could not save this page: ${error.message}`);
+    alert("Could not add your perspective. Check STORY_SETUP.sql / Supabase RLS.");
     return;
   }
 
-  row.content = content;
-  button.textContent = "Saved ✓";
-  setTimeout(() => { button.textContent = "Save this page"; button.disabled = false; }, 1600);
+  chapter.perspectives.push(data);
+  buildPagesAndReturn(currentPage);
 }
 
-async function addNewPage() {
-  if (!canEditPerspective("Aaru") && !canEditPerspective("Somda")) {
-    alert("Please log in with Aaru's or Somda's account to add a chapter.");
+async function createChapter() {
+  if (!canEditChapter()) return alert("Please log in first ♡");
+
+  const title = prompt("Enter the heading for this new chapter:");
+  if (!title || !title.trim()) return;
+  const cleanTitle = title.trim();
+
+  if (chapters.some(c => c.title.trim().toLowerCase() === cleanTitle.toLowerCase())) {
+    alert("A chapter with this heading already exists.");
     return;
   }
-  const title = prompt("Enter the heading for this new chapter:");
-  if (!title?.trim()) return;
-  const cleanTitle = title.trim();
-  if (storyRows.some(row => (row.title || "").trim().toLowerCase() === cleanTitle.toLowerCase())) {
-    alert("A chapter with this heading already exists."); return;
+
+  const maxOrder = chapters.reduce((max, c) => Math.max(max, Number(c.display_order) || 0), 0);
+  const { data: chapter, error } = await supabaseClient
+    .from("story_chapters")
+    .insert({ title: cleanTitle, display_order: maxOrder + 1, published: true, created_by: currentUser.id })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    alert("Could not create the chapter. Check STORY_SETUP.sql / Supabase RLS.");
+    return;
   }
-  const base = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || `chapter-${Date.now()}`;
-  const maxOrder = storyRows.reduce((m,r)=>Math.max(m, Number(r.display_order)||0),0);
-  const rows = [
-    { slug:`${base}-rt`, title:cleanTitle, author:"Aaru", content:"", page_type:"perspective", display_order:maxOrder+1, published:true },
-    { slug:`${base}-soham`, title:cleanTitle, author:"Somda", content:"", page_type:"perspective", display_order:maxOrder+2, published:true }
-  ];
-  const { data, error } = await supabaseClient.from("story_pages").insert(rows).select();
-  if (error) { console.error(error); alert(`Could not create the chapter: ${error.message}`); return; }
-  storyRows.push(...(data || rows));
+
+  const author = authorForEmail(currentUser.email);
+  const { data: perspective, error: perspectiveError } = await supabaseClient
+    .from("story_perspectives")
+    .insert({ chapter_id: chapter.id, author, content: "", created_by: currentUser.id })
+    .select()
+    .single();
+
+  if (perspectiveError) {
+    console.error(perspectiveError);
+    await supabaseClient.from("story_chapters").delete().eq("id", chapter.id);
+    alert("The chapter was created but your perspective could not be added. Please run STORY_SETUP.sql again.");
+    return;
+  }
+
+  chapter.perspectives = [perspective];
+  chapters.push(chapter);
+  currentPerspective = author;
+  buildPages();
+  goToChapter(chapter.id);
+}
+
+async function editHeading(chapterId) {
+  if (!canEditChapter()) return;
+  const chapter = chapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+
+  const nextTitle = prompt("Edit chapter heading:", chapter.title);
+  if (!nextTitle || !nextTitle.trim() || nextTitle.trim() === chapter.title) return;
+  const cleanTitle = nextTitle.trim();
+
+  if (chapters.some(c => c.id !== chapterId && c.title.trim().toLowerCase() === cleanTitle.toLowerCase())) {
+    alert("A chapter with this heading already exists.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("story_chapters")
+    .update({ title: cleanTitle, updated_at: new Date().toISOString() })
+    .eq("id", chapterId);
+
+  if (error) {
+    console.error(error);
+    alert("Could not update the chapter heading.");
+    return;
+  }
+
+  chapter.title = cleanTitle;
   buildPages();
 }
 
-async function deleteStoryEntry(title) {
-  const group = groupStories(storyRows).find(g => g.title.toLowerCase() === String(title).toLowerCase());
-  if (!group || !isDeletableGroup(group)) return;
-  const myPerspective = canEditPerspective("Aaru") ? "Aaru" : canEditPerspective("Somda") ? "Somda" : null;
-  if (!myPerspective) { alert("You are not allowed to manage story entries."); return; }
-  if (!confirm(`Delete “${title}” completely?\n\nThis will delete both perspectives.`)) return;
-  const slugs = group.rows.filter(r => !ORIGINAL_SLUGS.has(r.slug)).map(r=>r.slug);
-  const { error } = await supabaseClient.from("story_pages").delete().in("slug", slugs);
-  if (error) { alert(`Could not delete this story entry: ${error.message}`); return; }
-  storyRows = storyRows.filter(r => !slugs.includes(r.slug));
+async function deleteChapter(chapterId) {
+  if (!canEditChapter()) return;
+  const chapter = chapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+  if (!confirm(`Delete “${chapter.title}” and both perspectives? This cannot be undone.`)) return;
+
+  const { error } = await supabaseClient.from("story_chapters").delete().eq("id", chapterId);
+  if (error) {
+    console.error(error);
+    alert("Could not delete this chapter.");
+    return;
+  }
+  chapters = chapters.filter(c => c.id !== chapterId);
   currentPage = 0;
   buildPages();
-  closeOverlay();
 }
 
-function applyResponsivePagination() {
-  // CSS provides the Word-like page surface. Content itself remains editable as one continuous document.
-  document.querySelectorAll(".editable-content").forEach(el => {
-    el.style.textAlign = "justify";
-  });
+function buildPagesAndReturn(pageIndex) {
+  buildPages();
+  showPage(Math.max(0, Math.min(pageIndex, readerPages.length - 1)), false);
 }
 
-function showPage(index) {
+function showPage(index, smooth = true) {
   if (!readerPages.length) return;
   currentPage = Math.max(0, Math.min(index, readerPages.length - 1));
-  readerPages.forEach((page,i)=>page.classList.toggle("active-page", i===currentPage));
+  readerPages.forEach((page, i) => page.classList.toggle("active-page", i === currentPage));
   $("pageCounter").textContent = `Page ${currentPage + 2} of ${readerPages.length + 1}`;
   $("prevBtn").disabled = false;
   $("nextBtn").disabled = currentPage === readerPages.length - 1;
-  window.scrollTo({top:0, behavior:"smooth"});
+  window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
 }
 
-function goToTitle(title) {
-  const groups = groupStories(storyRows);
-  const index = groups.findIndex(g => g.title.toLowerCase() === title.toLowerCase());
-  if (index >= 0) showPage(index + 1);
+function goToChapter(chapterId) {
+  const index = readerPages.findIndex(page => page.dataset.chapterId === chapterId);
+  if (index >= 0) showPage(index);
   closeOverlay();
 }
 
-function openOverlay(){ $("indexOverlay").classList.add("open"); }
-function closeOverlay(){ $("indexOverlay").classList.remove("open"); }
+function openOverlay() { $("indexOverlay").classList.add("open"); }
+function closeOverlay() { $("indexOverlay").classList.remove("open"); }
 
 document.addEventListener("DOMContentLoaded", async () => {
   $("startBookBtn").addEventListener("click", () => {
     $("coverPage").classList.add("cover-opening");
-    setTimeout(()=>{ $("coverPage").style.display="none"; $("reader").style.display="block"; showPage(0); },450);
+    setTimeout(() => {
+      $("coverPage").style.display = "none";
+      $("reader").style.display = "block";
+      showPage(0, false);
+    }, 450);
   });
-  $("prevBtn").addEventListener("click", ()=> currentPage===0 ? window.location.href="index.html" : showPage(currentPage-1));
-  $("nextBtn").addEventListener("click", ()=>showPage(currentPage+1));
-  $("bottomIndexBtn").addEventListener("click", ()=>showPage(0));
+
+  $("prevBtn").addEventListener("click", () => {
+    if (currentPage === 0) window.location.href = "index.html";
+    else showPage(currentPage - 1);
+  });
+  $("nextBtn").addEventListener("click", () => showPage(currentPage + 1));
+  $("bottomIndexBtn").addEventListener("click", () => showPage(0));
   $("indexToggle").addEventListener("click", openOverlay);
   $("closeIndexBtn").addEventListener("click", closeOverlay);
-  $("addPageBtn").addEventListener("click", addNewPage);
-  document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeOverlay(); });
+  $("addPageBtn").addEventListener("click", createChapter);
+  document.addEventListener("keydown", event => { if (event.key === "Escape") closeOverlay(); });
 
   await loadCurrentUser();
   await loadStories();
-
-  // Show the add button only to authenticated owners.
-  $("addPageBtn").hidden = !(canEditPerspective("Aaru") || canEditPerspective("Somda"));
 });
