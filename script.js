@@ -1,9 +1,7 @@
 const hotspots = document.querySelectorAll(".hotspot");
 const SUPABASE_URL="https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY="sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
-// Shared relationship data: planned Date Cat quests live in Supabase so both Aaru and Somda see the same data.
-const PLANNED_QUESTS_API=`${SUPABASE_URL}/rest/v1/planned_date_quests`;
-function dateCatHeaders(extra={}){return {apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',...extra}}
+const dateCatClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 
 const modal = document.getElementById("memoryModal");
 const modalTitle = document.getElementById("modalTitle");
@@ -662,8 +660,8 @@ document.addEventListener("keydown", (event) => {
         date:lastQuest.date,
         status:'planned'
       };
-      const r=await fetch(PLANNED_QUESTS_API,{method:'POST',headers:dateCatHeaders({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
-      if(!r.ok)throw new Error(await r.text());
+      const {error}=await dateCatClient.from('planned_date_quests').insert(payload);
+      if(error)throw error;
       catSaved.textContent='❤️ Added to Our Dates. Both of you can see this planned date now.';
       catSave.textContent='❤️ Saved';
     }catch(err){

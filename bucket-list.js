@@ -1,6 +1,7 @@
 const SUPABASE_URL="https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_KEY="sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 const API=`${SUPABASE_URL}/rest/v1/bucket_list`;
+const dataClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const PIN="RT2026";
 let items=[];
 let editing=false;
@@ -12,21 +13,21 @@ const editButton=document.getElementById("editButton");
 const modal=document.getElementById("itemModal");
 const form=document.getElementById("itemForm");
 
-function headers(extra={}){return {"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`,"Content-Type":"application/json",...extra}}
 function escapeHTML(value=""){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function formatDate(value){if(!value)return "Not decided yet";const d=new Date(`${value}T00:00:00`);return d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}
 function today(){return new Date().toISOString().slice(0,10)}
 
 async function loadItems(){
   try{
-    const response=await fetch(`${API}?select=*&order=display_order.asc,created_at.asc`,{headers:headers()});
-    if(!response.ok)throw new Error(await response.text());
-    items=await response.json();
+    const {data,error}=await dataClient.from("bucket_list").select("*").order("display_order",{ascending:true}).order("created_at",{ascending:true});
+    if(error)throw error;
+    items=data||[];
     render();
   }catch(error){
     grid.innerHTML=`<div class="empty-state">Our stars couldn't be loaded right now.<br><small>${escapeHTML(error.message)}</small></div>`;
   }
 }
+
 function render(){
   const completed=items.filter(i=>i.completed).length;
   document.getElementById("totalCount").textContent=items.length;
@@ -88,16 +89,16 @@ function bindNoteControls(){
     };
     if(!payload.item){alert("Please add a dream first.");return}
     e.target.disabled=true;
-    const response=await fetch(`${API}?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",headers:headers({"Prefer":"return=minimal"}),body:JSON.stringify(payload)});
-    if(!response.ok){alert("Couldn't save this dream.");e.target.disabled=false;return}
+    const {error}=await dataClient.from("bucket_list").update(payload).eq("id",id);
+    if(error){alert(`Couldn't save this dream: ${error.message}`);e.target.disabled=false;return}
     await loadItems();
   }));
   grid.querySelectorAll(".delete-note").forEach(btn=>btn.addEventListener("click",async e=>{
     const note=e.target.closest(".note"),id=note.dataset.id;
     if(!confirm("Delete this dream from our bucket list?"))return;
     e.target.disabled=true;
-    const response=await fetch(`${API}?id=eq.${encodeURIComponent(id)}`,{method:"DELETE",headers:headers({"Prefer":"return=representation"})});
-    if(!response.ok){alert("Couldn't delete this dream. Check the Supabase DELETE policy.");e.target.disabled=false;return}
+    const {error}=await dataClient.from("bucket_list").delete().eq("id",id);
+    if(error){alert(`Couldn't delete this dream: ${error.message}`);e.target.disabled=false;return}
     items=items.filter(i=>i.id!==id);render();
   }));
 }
@@ -116,8 +117,8 @@ form.addEventListener("submit",async e=>{
   const item=document.getElementById("itemText").value.trim();
   if(!item)return;
   const payload={item,expected_date:document.getElementById("expectedDate").value||null,completed:false,completion_date:null,display_order:items.length};
-  const response=await fetch(API,{method:"POST",headers:headers({"Prefer":"return=representation"}),body:JSON.stringify(payload)});
-  if(!response.ok){alert("Couldn't add the dream. Check the Supabase table and policies.");return}
+  const {error}=await dataClient.from("bucket_list").insert(payload);
+  if(error){alert(`Couldn't add the dream: ${error.message}`);return}
   closeModal();await loadItems();
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});

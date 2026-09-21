@@ -1,20 +1,25 @@
-# Aaru & Somda — Shared Data Audit
+# Aaru & Somda — Shared Experience Audit
 
-This site is a shared two-person experience. Relationship content must be stored in Supabase, not browser-local storage.
+This build treats the website as one shared world for two authenticated accounts.
 
-## Shared Supabase data
-- Our Story: `story_chapters`, `story_perspectives`, `story_chapter_delete_requests`
-- Love Letters: `love_letters`
-- Our Dates: `date_entries` + date photo storage
-- Bucket List: `bucket_list`
-- Date Cat planned quests: `planned_date_quests`
+## Audited sections
 
-## Intentionally local
-- `sessionStorage` in `auth.js` / `protect.js`: temporary login session only.
-- UI state such as the current Date Cat conversation is local/temporary and is not relationship data.
+- **Our Story** — Supabase `story_chapters`, `story_perspectives`, and deletion-request tables. Shared between Aaru and Somda. Each person edits only their own perspective. Chapter deletion requires the other person to authorize it.
+- **Our Dates** — Supabase `date_entries`. Add/edit/delete/read are authenticated shared operations. Date photos use Supabase Storage; uploads/deletes require one of the two accounts.
+- **Planned Date Cat quests** — Supabase `planned_date_quests`. Saving from Date Cat and viewing/removing planned quests in Our Dates are shared backend operations.
+- **Bucket List** — Supabase `bucket_list`. All changes are shared backend operations.
+- **Love Letters** — Supabase `love_letters`. All letters are shared backend operations.
+- **Login/session** — `sessionStorage` is intentionally local to the current browser session. This is authentication state, not relationship content.
+- **Homepage / Date Cat UI** — temporary dialogue, current selections, and modal state are intentionally browser-local because they are not shared content. Saved quests go to Supabase.
 
-## Rule for future features
-If Aaru creates it and Somda should see it (or vice versa), store it in Supabase with appropriate RLS. Never use `localStorage` for shared relationship content.
+## Important architecture rule
 
-## Setup
-Run the SQL setup files included in this project in Supabase SQL Editor when required.
+If Aaru creates something that Somda should see, or Somda creates something Aaru should see, the data must be stored in Supabase. Browser `localStorage`/`sessionStorage` must not be used for relationship content.
+
+## RLS
+
+The final SQL changes the relationship tables from public/anon access to authenticated access restricted to the two configured couple accounts. This prevents the frontend's public Supabase key from being enough to read or write the shared content without a valid login session.
+
+## Date photo note
+
+The existing `date-photos` bucket remains public-read because existing date records store public image URLs. Upload and delete operations are restricted to the two authenticated accounts. Changing the bucket to private would require migrating stored photo URLs to paths/signed URLs.

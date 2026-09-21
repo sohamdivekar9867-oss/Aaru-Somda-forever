@@ -134,15 +134,6 @@ with check (
   (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
 );
 
-create policy "story perspectives delete"
-on public.story_perspectives for delete
-to authenticated
-using (
-  (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
-  or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
-);
-
 -- IMPORTANT: a chapter is shared metadata. There is intentionally NO direct
 -- DELETE policy for story_chapters. A user can delete only their own
 -- perspective. If that was the last perspective, this trigger removes the
@@ -171,6 +162,32 @@ create trigger trg_remove_empty_story_chapter
 after delete on public.story_perspectives
 for each row
 execute function public.remove_empty_story_chapter();
+
+-- Internal rollback helper: only removes a chapter that the current user
+-- just created and that still has no perspectives. It is not a user-facing delete.
+create or replace function public.cleanup_empty_story_chapter(p_chapter_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  ok boolean;
+begin
+  select exists(
+    select 1 from public.story_chapters c
+    where c.id = p_chapter_id
+      and c.created_by = auth.uid()
+      and not exists (select 1 from public.story_perspectives p where p.chapter_id = c.id)
+  ) into ok;
+  if ok then
+    delete from public.story_chapters where id = p_chapter_id;
+  end if;
+  return ok;
+end;
+$$;
+revoke all on function public.cleanup_empty_story_chapter(uuid) from public;
+grant execute on function public.cleanup_empty_story_chapter(uuid) to authenticated;
 
 -- ============================================================
 -- TWO-PERSON CHAPTER DELETION
