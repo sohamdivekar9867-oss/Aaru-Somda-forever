@@ -1,4 +1,9 @@
 const hotspots = document.querySelectorAll(".hotspot");
+const SUPABASE_URL="https://swqaakxywwajesuajflz.supabase.co";
+const SUPABASE_KEY="sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
+// Shared relationship data: planned Date Cat quests live in Supabase so both Aaru and Somda see the same data.
+const PLANNED_QUESTS_API=`${SUPABASE_URL}/rest/v1/planned_date_quests`;
+function dateCatHeaders(extra={}){return {apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',...extra}}
 
 const modal = document.getElementById("memoryModal");
 const modalTitle = document.getElementById("modalTitle");
@@ -640,12 +645,33 @@ document.addEventListener("keydown", (event) => {
     showPanel(catQuest);showPanel(catActions);
   }
 
-  function saveQuest(){
+  async function saveQuest(){
     if(!lastQuest)return;
-    const item={...lastQuest,id:'quest-'+Date.now(),createdAt:new Date().toISOString(),status:'planned'};
-    const existing=JSON.parse(localStorage.getItem('aaruSomdaPlannedDates')||'[]');
-    existing.unshift(item);localStorage.setItem('aaruSomdaPlannedDates',JSON.stringify(existing.slice(0,20)));
-    catSaved.textContent='❤️ Added to your planned dates. It will appear in Our Dates.';catSave.textContent='❤️ Saved';catSave.disabled=true;
+    catSave.disabled=true;
+    catSave.textContent='❤️ Saving…';
+    try{
+      const payload={
+        title:lastQuest.title,
+        location:lastQuest.location,
+        activity:lastQuest.activity,
+        duration:lastQuest.duration,
+        budget:lastQuest.budget,
+        romance:lastQuest.romance,
+        objectives:lastQuest.objectives,
+        note:lastQuest.note,
+        date:lastQuest.date,
+        status:'planned'
+      };
+      const r=await fetch(PLANNED_QUESTS_API,{method:'POST',headers:dateCatHeaders({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
+      if(!r.ok)throw new Error(await r.text());
+      catSaved.textContent='❤️ Added to Our Dates. Both of you can see this planned date now.';
+      catSave.textContent='❤️ Saved';
+    }catch(err){
+      console.error('Date Cat save failed:',err);
+      catSaved.textContent='Could not save this planned date. Please check the planned-date table setup in Supabase.';
+      catSave.disabled=false;
+      catSave.textContent='❤️ Save to Our Dates';
+    }
   }
 
   catHotspot.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(typeof hotspots!=='undefined')hotspots.forEach(x=>x.classList.remove('active'));open()});

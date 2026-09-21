@@ -1,7 +1,8 @@
 const SUPABASE_URL = "https://swqaakxywwajesuajflz.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G";
 
-// Use sessionStorage instead of localStorage so the login is temporary.
+// IMPORTANT: sessionStorage is intentionally used only for the temporary login session.
+// Shared relationship content must NEVER be stored here; it belongs in Supabase.
 // The session normally disappears when the browser tab/session is closed.
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,

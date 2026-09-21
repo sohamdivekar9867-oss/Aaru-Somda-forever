@@ -27,15 +27,30 @@ form.addEventListener('submit',async e=>{e.preventDefault();const status=documen
       closeModal();await loadDates()}catch(err){status.textContent='Could not save: '+err.message}finally{save.disabled=false}});
 editButton.addEventListener('click',()=>{if(editing){editing=false;addButton.hidden=true;editButton.textContent='🔒 Edit dates';render();return}const entered=prompt('Enter the editing PIN:');if(entered===PIN){editing=true;addButton.hidden=false;editButton.textContent='🔓 Lock editing';render()}else if(entered!==null)alert("That PIN doesn't match.")});addButton.addEventListener('click',()=>openModal());document.querySelectorAll('[data-close-modal]').forEach(x=>x.addEventListener('click',closeModal));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});loadDates();
 
-// Date Cat planned quests are stored locally so they can be saved instantly
-// without changing the existing Supabase memories schema.
-(function renderPlannedQuests(){
+// Date Cat planned quests are shared through Supabase so both Aaru and Somda see them.
+const PLANNED_QUESTS_API=`${SUPABASE_URL}/rest/v1/planned_date_quests`;
+async function renderPlannedQuests(){
   const box=document.getElementById('plannedQuests');
   if(!box)return;
-  const planned=JSON.parse(localStorage.getItem('aaruSomdaPlannedDates')||'[]');
-  if(!planned.length){box.hidden=true;return;}
-  box.hidden=false;
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  box.innerHTML=`<h2>Planned Little Adventures ♡</h2><p class="planned-sub">Date Cat's ideas that are waiting to become memories.</p><div class="planned-grid">${planned.map(x=>`<article class="planned-card"><div class="planned-label">🐱 DATE CAT QUEST</div><h3>${esc(x.title)}</h3><p>📅 ${esc(x.date ? new Date(`${x.date}T00:00:00`).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'Date not set')}</p><p>📍 ${esc(x.location)}</p><p>⏱️ ${esc(x.duration)}</p><p>💰 ${esc(x.budget)}</p><p>💕 ${'❤️'.repeat(Number(x.romance)||3)}${'♡'.repeat(5-(Number(x.romance)||3))}</p><button data-remove-planned="${esc(x.id)}">Remove plan</button></article>`).join('')}</div>`;
-  box.querySelectorAll('[data-remove-planned]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.removePlanned;const next=planned.filter(x=>x.id!==id);localStorage.setItem('aaruSomdaPlannedDates',JSON.stringify(next));renderPlannedQuests()}));
-})();
+  try{
+    const r=await fetch(`${PLANNED_QUESTS_API}?select=*&order=date.asc,created_at.desc`,{headers:headers()});
+    if(!r.ok)throw new Error(await r.text());
+    const planned=await r.json();
+    if(!planned.length){box.hidden=true;return;}
+    box.hidden=false;
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    box.innerHTML=`<h2>Planned Little Adventures ♡</h2><p class="planned-sub">Date Cat's ideas that are waiting to become memories.</p><div class="planned-grid">${planned.map(x=>`<article class="planned-card"><div class="planned-label">🐱 DATE CAT QUEST</div><h3>${esc(x.title)}</h3><p>📅 ${esc(x.date ? new Date(`${x.date}T00:00:00`).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'Date not set')}</p><p>📍 ${esc(x.location)}</p><p>🎯 ${esc(x.activity)}</p><p>⏱️ ${esc(x.duration)}</p><p>💰 ${esc(x.budget)}</p><p>💕 ${'❤️'.repeat(Number(x.romance)||3)}${'♡'.repeat(5-(Number(x.romance)||3))}</p><button data-remove-planned="${esc(x.id)}">Remove plan</button></article>`).join('')}</div>`;
+    box.querySelectorAll('[data-remove-planned]').forEach(btn=>btn.addEventListener('click',async()=>{
+      const id=btn.dataset.removePlanned;
+      if(!confirm('Remove this planned date?'))return;
+      const r=await fetch(`${PLANNED_QUESTS_API}?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:headers({'Prefer':'return=minimal'})});
+      if(!r.ok){alert('Could not remove this planned date.');return;}
+      renderPlannedQuests();
+    }));
+  }catch(e){
+    console.error('Could not load planned Date Cat quests:',e);
+    box.hidden=false;
+    box.innerHTML='<h2>Planned Little Adventures ♡</h2><p class="planned-sub">Date Cat plans could not be loaded. Make sure the planned-date table has been created in Supabase.</p>';
+  }
+}
+renderPlannedQuests();
