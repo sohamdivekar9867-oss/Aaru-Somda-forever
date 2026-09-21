@@ -950,9 +950,10 @@ button {
 .teddy-form[hidden] { display:none; }
 .teddy-form-title { margin-bottom:14px; font-family:"Playfair Display",serif; font-size:18px; }
 .teddy-form label { display:block; margin:10px 0; font-size:10px; color:#815b62; }
-.teddy-form input, .teddy-form textarea { display:block; width:100%; box-sizing:border-box; margin-top:6px; border:1px solid rgba(126,68,80,.16); border-radius:10px; background:#fff; color:#54363d; padding:10px 11px; font:12px "DM Mono",monospace; outline:none; }
+.teddy-form input, .teddy-form textarea, .teddy-form select { display:block; width:100%; box-sizing:border-box; margin-top:6px; border:1px solid rgba(126,68,80,.16); border-radius:10px; background:#fff; color:#54363d; padding:10px 11px; font:12px "DM Mono",monospace; outline:none; }
+.teddy-form select { appearance:auto; cursor:pointer; }
 .teddy-form textarea { resize:vertical; font-family:"Playfair Display",serif; line-height:1.5; }
-.teddy-form input:focus, .teddy-form textarea:focus { border-color:#c37b88; box-shadow:0 0 0 3px rgba(195,123,136,.1); }
+.teddy-form input:focus, .teddy-form textarea:focus, .teddy-form select:focus { border-color:#c37b88; box-shadow:0 0 0 3px rgba(195,123,136,.1); }
 .teddy-form-actions { display:flex; gap:9px; margin-top:12px; }
 .teddy-cancel, .teddy-save { flex:1; padding:11px 13px; border-radius:10px; font:10px "DM Mono",monospace; cursor:pointer; }
 .teddy-cancel { border:1px solid rgba(126,68,80,.16); background:#fff; color:#825963; }
