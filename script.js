@@ -679,3 +679,151 @@ document.addEventListener("keydown", (event) => {
   catSave.addEventListener('click',saveQuest);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&catModal.classList.contains('open'))close()});
 })();
+
+// =========================
+// TEDDY — IMPORTANT DATES
+// =========================
+(() => {
+  const teddyHotspot = document.querySelector('.teddy-hotspot');
+  const teddyModal = document.getElementById('teddyModal');
+  const teddyClose = document.getElementById('teddyClose');
+  const teddyBackdrop = document.querySelector('.teddy-backdrop');
+  const teddyList = document.getElementById('teddyList');
+  const teddyDaysNumber = document.getElementById('teddyDaysNumber');
+  const teddyDaysSub = document.getElementById('teddyDaysSub');
+  const teddyAdd = document.getElementById('teddyAdd');
+  const teddyForm = document.getElementById('teddyForm');
+  const teddyCancel = document.getElementById('teddyCancel');
+  const teddySave = document.getElementById('teddySave');
+  const teddyStatus = document.getElementById('teddyStatus');
+  const teddyEmoji = document.getElementById('teddyEmoji');
+  const teddyTitleInput = document.getElementById('teddyTitleInput');
+  const teddyDateInput = document.getElementById('teddyDateInput');
+  const teddyDescriptionInput = document.getElementById('teddyDescriptionInput');
+  const teddyMemoryInput = document.getElementById('teddyMemoryInput');
+  if (!teddyHotspot || !teddyModal) return;
+
+  const teddyClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
+  const START_DATE = '2026-08-27';
+  let teddyDates = [];
+
+  const esc = (v='') => String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const formatDate = v => { if (!v) return ''; const d = new Date(`${v}T00:00:00`); return Number.isNaN(d.getTime()) ? v : d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); };
+  const daysBetween = (a,b) => Math.max(0, Math.floor((new Date(`${b}T00:00:00`) - new Date(`${a}T00:00:00`)) / 86400000));
+
+  function relationshipStart() {
+    const start = teddyDates.find(x => x.is_relationship_start);
+    return start?.event_date || START_DATE;
+  }
+
+  function updateDays() {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const n = daysBetween(relationshipStart(), today);
+    teddyDaysNumber.textContent = n.toLocaleString('en-IN');
+    teddyDaysSub.textContent = `Together since ${formatDate(relationshipStart())}. And counting. ♡`;
+  }
+
+  function renderTeddyDates() {
+    updateDays();
+    if (!teddyDates.length) {
+      teddyList.innerHTML = '<div class="teddy-empty">No important dates yet. Add the first one below. ♡</div>';
+      return;
+    }
+    const sorted = [...teddyDates].sort((a,b) => new Date(a.event_date) - new Date(b.event_date));
+    teddyList.innerHTML = sorted.map(x => `
+      <div class="teddy-date-row" data-teddy-row="${esc(x.id)}">
+        <button class="teddy-date-main" type="button" data-teddy-open="${esc(x.id)}">
+          <span class="teddy-date-emoji">${esc(x.emoji || '❤️')}</span>
+          <span class="teddy-date-title">${esc(x.title)}</span>
+          <span class="teddy-date-value">${esc(formatDate(x.event_date))} <span class="teddy-date-chevron">⌄</span></span>
+        </button>
+        <div class="teddy-date-detail">
+          ${x.description ? `<div class="teddy-date-description">${esc(x.description)}</div>` : ''}
+          ${x.little_memory ? `<div class="teddy-date-memory">${esc(x.little_memory)}</div>` : ''}
+          <div class="teddy-detail-actions">
+            <button class="teddy-mini-action" type="button" data-teddy-edit="${esc(x.id)}">Edit</button>
+            ${!x.is_relationship_start ? `<button class="teddy-mini-action" type="button" data-teddy-delete="${esc(x.id)}">Delete</button>` : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  async function loadTeddyDates() {
+    teddyList.innerHTML = '<div class="teddy-empty">Opening the little date book…</div>';
+    const { data, error } = await teddyClient.from('important_dates').select('*').order('event_date', { ascending:true });
+    if (error) {
+      console.error('Could not load important dates:', error);
+      teddyList.innerHTML = '<div class="teddy-empty">I could not open the date book. Please run the Teddy setup SQL in Supabase.</div>';
+      updateDays();
+      return;
+    }
+    teddyDates = data || [];
+    renderTeddyDates();
+  }
+
+  function openTeddy() {
+    if (typeof hotspots !== 'undefined') hotspots.forEach(x => x.classList.remove('active'));
+    teddyModal.classList.add('open');
+    teddyModal.setAttribute('aria-hidden','false');
+    teddyForm.hidden = true;
+    loadTeddyDates();
+  }
+  function closeTeddy() { teddyModal.classList.remove('open'); teddyModal.setAttribute('aria-hidden','true'); }
+
+  function openForm(item=null) {
+    teddyForm.hidden = false;
+    teddyStatus.textContent = '';
+    teddyForm.dataset.editing = item?.id || '';
+    teddyEmoji.value = item?.emoji || '❤️';
+    teddyTitleInput.value = item?.title || '';
+    teddyDateInput.value = item?.event_date || '';
+    teddyDescriptionInput.value = item?.description || '';
+    teddyMemoryInput.value = item?.little_memory || '';
+    teddySave.textContent = item ? 'Update Date ♡' : 'Save Date ♡';
+    teddyForm.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  function resetForm() { teddyForm.hidden = true; teddyForm.dataset.editing=''; teddyStatus.textContent=''; }
+
+  async function saveTeddyDate() {
+    const title = teddyTitleInput.value.trim();
+    const event_date = teddyDateInput.value;
+    if (!title || !event_date) { teddyStatus.textContent = 'Give the date a title and choose the date first. ♡'; return; }
+    teddySave.disabled = true; teddyStatus.textContent = 'Saving…';
+    const payload = { emoji: teddyEmoji.value.trim() || '❤️', title, event_date, description: teddyDescriptionInput.value.trim() || null, little_memory: teddyMemoryInput.value.trim() || null };
+    const editing = teddyForm.dataset.editing;
+    let result;
+    if (editing) result = await teddyClient.from('important_dates').update(payload).eq('id', editing);
+    else result = await teddyClient.from('important_dates').insert({...payload, is_relationship_start:false});
+    teddySave.disabled = false;
+    if (result.error) { console.error(result.error); teddyStatus.textContent = 'Could not save this date. Please check the Teddy setup in Supabase.'; return; }
+    resetForm(); await loadTeddyDates();
+  }
+
+  teddyList.addEventListener('click', async e => {
+    const open = e.target.closest('[data-teddy-open]');
+    if (open) {
+      const row = open.closest('.teddy-date-row');
+      row.classList.toggle('open');
+      return;
+    }
+    const edit = e.target.closest('[data-teddy-edit]');
+    if (edit) { const item = teddyDates.find(x=>x.id===edit.dataset.teddyEdit); if(item) openForm(item); return; }
+    const del = e.target.closest('[data-teddy-delete]');
+    if (del) {
+      if (!confirm('Delete this important date?')) return;
+      const {error}=await teddyClient.from('important_dates').delete().eq('id',del.dataset.teddyDelete);
+      if(error){alert('Could not delete this date.');return;}
+      await loadTeddyDates();
+    }
+  });
+
+  teddyHotspot.addEventListener('click', openTeddy);
+  teddyClose.addEventListener('click', closeTeddy);
+  teddyBackdrop?.addEventListener('click', closeTeddy);
+  teddyAdd.addEventListener('click',()=>openForm());
+  teddyCancel.addEventListener('click',resetForm);
+  teddySave.addEventListener('click',saveTeddyDate);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && teddyModal.classList.contains('open')) closeTeddy(); });
+  updateDays();
+})();

@@ -35,3 +35,5 @@ Log in once as Aaru and once as Somda and test:
 ## 4. What is intentionally browser-local
 
 Only login/session state and temporary UI state are browser-local. Relationship content is backend-shared.
+
+- **Teddy / Important Dates** — configured by `MASTER_SHARED_SETUP.sql`; the setup seeds 27 August 2026 as the relationship start date used by the dynamic Days Together counter.

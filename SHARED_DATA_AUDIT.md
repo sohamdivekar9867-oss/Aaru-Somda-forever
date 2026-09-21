@@ -23,3 +23,5 @@ The final SQL changes the relationship tables from public/anon access to authent
 ## Date photo note
 
 The existing `date-photos` bucket remains public-read because existing date records store public image URLs. Upload and delete operations are restricted to the two authenticated accounts. Changing the bucket to private would require migrating stored photo URLs to paths/signed URLs.
+
+- **Teddy / Important Dates** — shared Supabase table `important_dates`. The Days Together counter uses the relationship-start row and updates dynamically from the current date. Important dates, descriptions, and little memories are shared between both accounts.

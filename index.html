@@ -90,6 +90,12 @@
           aria-label="Ask Date Cat to plan a date"
         ></button>
 
+        <!-- TEDDY — IMPORTANT DATES -->
+        <button
+          class="hotspot teddy-hotspot"
+          aria-label="Our important dates"
+        ></button>
+
         <!-- MIRROR — COMPLIMENTS -->
         <button
           class="hotspot mirror-hotspot"
@@ -142,6 +148,46 @@
         <button class="date-cat-action primary date-cat-save-last" id="dateCatSave">❤️ Save to Our Dates</button>
       </div>
       <div class="date-cat-saved" id="dateCatSaved"></div>
+    </div>
+  </div>
+
+
+
+  <!-- TEDDY — IMPORTANT DATES -->
+  <div class="teddy-modal" id="teddyModal" aria-hidden="true">
+    <div class="teddy-backdrop"></div>
+    <div class="teddy-card" role="dialog" aria-modal="true" aria-labelledby="teddyTitle">
+      <button class="teddy-close" id="teddyClose" aria-label="Close">×</button>
+      <div class="teddy-header">
+        <div class="teddy-avatar">🧸</div>
+        <div>
+          <div class="teddy-kicker">THE DATES WE KEEP</div>
+          <h2 id="teddyTitle">Our Important Dates</h2>
+        </div>
+      </div>
+
+      <div class="teddy-days">
+        <div class="teddy-days-number" id="teddyDaysNumber">0</div>
+        <div class="teddy-days-label">DAYS TOGETHER</div>
+        <div class="teddy-days-sub" id="teddyDaysSub">And counting. ♡</div>
+      </div>
+
+      <div class="teddy-list" id="teddyList"></div>
+
+      <button class="teddy-add" id="teddyAdd">＋ Add Important Date</button>
+      <div class="teddy-form" id="teddyForm" hidden>
+        <div class="teddy-form-title">Add a date you never want to forget.</div>
+        <label>Emoji <input id="teddyEmoji" maxlength="4" value="❤️" placeholder="❤️"></label>
+        <label>Title <input id="teddyTitleInput" maxlength="80" placeholder="The day we started dating"></label>
+        <label>Date <input id="teddyDateInput" type="date"></label>
+        <label>Description <textarea id="teddyDescriptionInput" rows="2" maxlength="240" placeholder="A short description…"></textarea></label>
+        <label>Little memory <textarea id="teddyMemoryInput" rows="3" maxlength="500" placeholder="Something you want to remember about this day…"></textarea></label>
+        <div class="teddy-form-actions">
+          <button class="teddy-cancel" id="teddyCancel">Cancel</button>
+          <button class="teddy-save" id="teddySave">Save Date ♡</button>
+        </div>
+        <div class="teddy-status" id="teddyStatus"></div>
+      </div>
     </div>
   </div>
 

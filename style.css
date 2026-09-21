@@ -848,3 +848,124 @@ button {
 .date-cat-actions{grid-template-columns:1fr 1fr 1fr}
 .date-cat-save-last{grid-column:1/-1}
 @media(max-width:560px){.date-cat-actions{grid-template-columns:1fr 1fr}.date-cat-save-last{grid-column:1/-1}}
+
+/* =========================
+   TEDDY — IMPORTANT DATES
+========================= */
+.teddy-hotspot {
+  left: 3%;
+  top: 18%;
+  width: 14%;
+  height: 13%;
+}
+.teddy-hotspot::after {
+  content: "Our important dates ♡";
+  bottom: auto;
+  top: calc(100% + 10px);
+  left: 0;
+  white-space: nowrap;
+}
+
+.teddy-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1180;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  font-family: "DM Mono", monospace;
+}
+.teddy-modal.open { display: flex; }
+.teddy-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 9, 18, .72);
+  backdrop-filter: blur(5px);
+}
+.teddy-card {
+  position: relative;
+  z-index: 1;
+  width: min(620px, 100%);
+  max-height: min(88vh, 760px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 28px;
+  background: #fff8f3;
+  border: 1px solid rgba(126, 68, 80, .16);
+  box-shadow: 0 28px 90px rgba(0,0,0,.38);
+  color: #4f3037;
+}
+.teddy-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.75);
+  color: #9b5e6a;
+  font-size: 26px;
+  cursor: pointer;
+}
+.teddy-header { display:flex; align-items:center; gap:16px; padding-right:42px; }
+.teddy-avatar {
+  width:70px; height:70px; border-radius:22px; display:grid; place-items:center;
+  background:#f5ddd6; font-size:38px; border:1px solid rgba(155,94,106,.16);
+}
+.teddy-kicker { font-size:10px; letter-spacing:2.2px; color:#b76b78; margin-bottom:4px; }
+.teddy-header h2 { margin:0; font-family:"Playfair Display",serif; font-size:30px; font-weight:500; color:#55353d; }
+.teddy-days {
+  margin:24px 0 22px; padding:20px; text-align:center; border-radius:20px;
+  background:linear-gradient(135deg,#f8e7e2,#fff4ee); border:1px solid rgba(183,107,120,.18);
+}
+.teddy-days-number { font-family:"Playfair Display",serif; font-size:54px; line-height:1; color:#b76575; }
+.teddy-days-label { margin-top:7px; font-size:11px; letter-spacing:2.4px; color:#8e5964; }
+.teddy-days-sub { margin-top:7px; font-family:"Playfair Display",serif; font-style:italic; color:#9c6c74; }
+.teddy-list { display:flex; flex-direction:column; gap:9px; }
+.teddy-empty { padding:20px 4px; text-align:center; color:#8e686e; font-family:"Playfair Display",serif; font-style:italic; }
+.teddy-date-row {
+  border:1px solid rgba(126,68,80,.14); border-radius:15px; background:#fffdfb; overflow:hidden;
+}
+.teddy-date-main {
+  width:100%; display:grid; grid-template-columns:44px 1fr auto; align-items:center; gap:10px;
+  padding:15px 16px; border:0; background:transparent; text-align:left; cursor:pointer; color:#55353d;
+}
+.teddy-date-main:hover { background:#fff6f2; }
+.teddy-date-emoji { font-size:23px; text-align:center; }
+.teddy-date-title { font-family:"Playfair Display",serif; font-size:18px; }
+.teddy-date-value { font-size:10px; letter-spacing:1px; color:#9b6c74; white-space:nowrap; }
+.teddy-date-chevron { color:#b76b78; transition:transform .2s ease; }
+.teddy-date-row.open .teddy-date-chevron { transform:rotate(180deg); }
+.teddy-date-detail { display:none; padding:0 18px 17px 70px; color:#72535b; }
+.teddy-date-row.open .teddy-date-detail { display:block; }
+.teddy-date-description { margin-bottom:10px; font-family:"Playfair Display",serif; font-size:15px; line-height:1.6; }
+.teddy-date-memory { padding:12px 14px; border-left:2px solid #c57b88; background:#fff4ef; border-radius:0 10px 10px 0; font-family:"Playfair Display",serif; line-height:1.65; }
+.teddy-date-memory::before { content:"♡  Little memory"; display:block; margin-bottom:4px; font-family:"DM Mono",monospace; font-size:9px; letter-spacing:1.5px; color:#a45f6d; }
+.teddy-detail-actions { margin-top:10px; display:flex; gap:8px; }
+.teddy-mini-action { border:1px solid rgba(126,68,80,.16); background:#fff; color:#8b5963; border-radius:999px; padding:7px 11px; font:10px "DM Mono",monospace; cursor:pointer; }
+.teddy-add { width:100%; margin-top:16px; padding:13px 16px; border:1px dashed #c98a95; border-radius:14px; background:#fff9f6; color:#985d69; font:11px "DM Mono",monospace; cursor:pointer; }
+.teddy-form { margin-top:14px; padding:17px; border-radius:16px; background:#fff3ee; border:1px solid rgba(126,68,80,.13); }
+.teddy-form[hidden] { display:none; }
+.teddy-form-title { margin-bottom:14px; font-family:"Playfair Display",serif; font-size:18px; }
+.teddy-form label { display:block; margin:10px 0; font-size:10px; color:#815b62; }
+.teddy-form input, .teddy-form textarea { display:block; width:100%; box-sizing:border-box; margin-top:6px; border:1px solid rgba(126,68,80,.16); border-radius:10px; background:#fff; color:#54363d; padding:10px 11px; font:12px "DM Mono",monospace; outline:none; }
+.teddy-form textarea { resize:vertical; font-family:"Playfair Display",serif; line-height:1.5; }
+.teddy-form input:focus, .teddy-form textarea:focus { border-color:#c37b88; box-shadow:0 0 0 3px rgba(195,123,136,.1); }
+.teddy-form-actions { display:flex; gap:9px; margin-top:12px; }
+.teddy-cancel, .teddy-save { flex:1; padding:11px 13px; border-radius:10px; font:10px "DM Mono",monospace; cursor:pointer; }
+.teddy-cancel { border:1px solid rgba(126,68,80,.16); background:#fff; color:#825963; }
+.teddy-save { border:0; background:#b96c7a; color:#fff8f4; }
+.teddy-status { min-height:16px; margin-top:9px; font-size:10px; color:#a45f6d; }
+@media (max-width:600px) {
+  .teddy-hotspot { left:2%; top:18%; width:17%; height:14%; }
+  .teddy-card { padding:24px 18px; border-radius:22px; }
+  .teddy-avatar { width:58px; height:58px; font-size:31px; border-radius:18px; }
+  .teddy-header h2 { font-size:25px; }
+  .teddy-days-number { font-size:48px; }
+  .teddy-date-main { grid-template-columns:36px 1fr auto; padding:13px 12px; }
+  .teddy-date-title { font-size:16px; }
+  .teddy-date-value { font-size:9px; }
+  .teddy-date-detail { padding-left:58px; }
+}

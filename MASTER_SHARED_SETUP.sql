@@ -451,3 +451,38 @@ $$;
 
 revoke all on function public.authorize_story_chapter_deletion(uuid) from public;
 grant execute on function public.authorize_story_chapter_deletion(uuid) to authenticated;
+
+-- TEDDY: SHARED IMPORTANT DATES
+create table if not exists public.important_dates (
+  id uuid primary key default gen_random_uuid(),
+  emoji text not null default '❤️',
+  title text not null,
+  event_date date not null,
+  description text,
+  little_memory text,
+  is_relationship_start boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.important_dates add column if not exists emoji text not null default '❤️';
+alter table public.important_dates add column if not exists title text;
+alter table public.important_dates add column if not exists event_date date;
+alter table public.important_dates add column if not exists description text;
+alter table public.important_dates add column if not exists little_memory text;
+alter table public.important_dates add column if not exists is_relationship_start boolean not null default false;
+alter table public.important_dates add column if not exists created_at timestamptz not null default now();
+alter table public.important_dates add column if not exists updated_at timestamptz not null default now();
+alter table public.important_dates enable row level security;
+drop policy if exists "Couple can view important dates" on public.important_dates;
+drop policy if exists "Couple can add important dates" on public.important_dates;
+drop policy if exists "Couple can update important dates" on public.important_dates;
+drop policy if exists "Couple can delete important dates" on public.important_dates;
+create policy "Couple can view important dates" on public.important_dates for select to authenticated using (public.is_couple_member());
+create policy "Couple can add important dates" on public.important_dates for insert to authenticated with check (public.is_couple_member());
+create policy "Couple can update important dates" on public.important_dates for update to authenticated using (public.is_couple_member()) with check (public.is_couple_member());
+create policy "Couple can delete important dates" on public.important_dates for delete to authenticated using (public.is_couple_member());
+
+-- Seed the relationship start date used by the dynamic "Days Together" counter.
+insert into public.important_dates (emoji,title,event_date,description,little_memory,is_relationship_start)
+select '❤️','The Day We Started Dating','2026-08-27','The day Aaru said yes.','The day everything changed. ❤️',true
+where not exists (select 1 from public.important_dates where is_relationship_start=true);
