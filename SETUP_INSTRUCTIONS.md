@@ -37,3 +37,10 @@ Log in once as Aaru and once as Somda and test:
 Only login/session state and temporary UI state are browser-local. Relationship content is backend-shared.
 
 - **Teddy / Important Dates** — configured by `MASTER_SHARED_SETUP.sql`; the setup seeds 27 August 2026 as the relationship start date used by the dynamic Days Together counter.
+
+
+## New: Our Music + To Do / Not To Do
+Run `MUSIC_RULES_SETUP.sql` once in Supabase SQL Editor (or use the appended section in `MASTER_SHARED_SETUP.sql`).
+- `couple_music` stores the shared playlist. Each person can edit/delete only songs they added.
+- `couple_rules` stores the To Do / Not To Do reminders. Somda writes the Aaru page; Aaru writes the Somda page. Each can edit/delete only their own additions.
+- The new room image is `assets/pixel-room v2.png`.

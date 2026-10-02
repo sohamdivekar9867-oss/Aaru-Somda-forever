@@ -18,8 +18,8 @@ hotspots.forEach((hotspot) => {
 
   hotspot.addEventListener("click", (event) => {
 
-    // Date Cat has its own RPG-style planner modal.
-    if (hotspot.classList.contains("cat-hotspot")) return;
+    // Some hotspots have their own dedicated interaction.
+    if (hotspot.classList.contains("cat-hotspot") || hotspot.classList.contains("rules-hotspot")) return;
 
     // If the object has a link, open that page instead of the popup
     const link = hotspot.dataset.link;
@@ -71,6 +71,30 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+
+
+// =========================
+// PARCHMENT — TO DO / NOT TO DO
+// =========================
+
+const rulesHotspot = document.querySelector('.rules-hotspot');
+if (rulesHotspot) {
+  rulesHotspot.addEventListener('click', async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    hotspots.forEach((item) => item.classList.remove('active'));
+
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      const email = (user?.email || '').toLowerCase();
+      window.location.href = email === 'aaru.saru090901@gmail.com'
+        ? 'for-somda.html'
+        : 'for-aaru.html';
+    } catch (_) {
+      window.location.href = 'for-aaru.html';
+    }
+  });
+}
 
 
 // =========================

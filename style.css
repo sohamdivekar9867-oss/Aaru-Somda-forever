@@ -240,12 +240,37 @@ button {
   height: 15%;
 }
 
-/* Photo frames — right wall */
-.photos-hotspot {
-  left: 87%;
+/* Music corner — vinyl records + record player on the right wall */
+.music-hotspot {
+  left: 84%;
   top: 10%;
-  width: 11%;
-  height: 30%;
+  width: 16%;
+  height: 43%;
+}
+
+.music-hotspot::after {
+  left: auto;
+  right: 0;
+  transform: translateY(5px);
+}
+
+.music-hotspot:hover::after,
+.music-hotspot:focus-visible::after,
+.music-hotspot.active::after {
+  transform: translateY(0);
+}
+
+/* Parchment on the carpet — To Do / Not To Do */
+.rules-hotspot {
+  left: 49%;
+  top: 82%;
+  width: 18%;
+  height: 9%;
+}
+
+.rules-hotspot::after {
+  bottom: auto;
+  top: calc(100% + 12px);
 }
 
 /* Cat — chair, lower left */
@@ -257,18 +282,6 @@ button {
 }
 
 /* Keep labels inside the room where necessary */
-.photos-hotspot::after {
-  left: auto;
-  right: 0;
-  transform: translateY(5px);
-}
-
-.photos-hotspot:hover::after,
-.photos-hotspot:focus-visible::after,
-.photos-hotspot.active::after {
-  transform: translateY(0);
-}
-
 .window-hotspot::after {
   bottom: auto;
   top: calc(100% + 12px);
@@ -609,6 +622,20 @@ button {
     top: 65%;
     width: 37%;
     height: 20%;
+  }
+
+  .music-hotspot {
+    left: 82%;
+    top: 10%;
+    width: 18%;
+    height: 45%;
+  }
+
+  .rules-hotspot {
+    left: 48%;
+    top: 82%;
+    width: 21%;
+    height: 10%;
   }
 
   .kiss-card {
