@@ -20,17 +20,12 @@
     <a class="bedroom-back" href="index.html" aria-label="Back to our room">←</a>
   </main>
 
-  <!-- First-version bed interaction. We can make this much deeper later. -->
   <section class="bed-interaction" id="bedInteraction" aria-hidden="true">
     <div class="bed-interaction-backdrop" id="bedInteractionBackdrop"></div>
 
     <div class="chibi-stage" aria-hidden="true">
-      <div class="chibi-character aaru-character" id="aaruCharacterWrap">
-        <img id="aaruCharacter" src="assets/aaru/aaru-idle.png" alt="Aaru">
-      </div>
-      <div class="chibi-character somo-character" id="somoCharacterWrap">
-        <img id="somoCharacter" src="assets/somo/somo-idle.png" alt="Somo">
-      </div>
+      <img id="chibiImageA" class="chibi-composite is-visible" src="assets/bed-chibis/1. First handhold.png" alt="Aaru and Somo">
+      <img id="chibiImageB" class="chibi-composite" src="assets/bed-chibis/1. First handhold.png" alt="">
     </div>
 
     <div class="bed-dialogue" role="dialog" aria-modal="true" aria-labelledby="bedDialogueTitle">
@@ -39,12 +34,7 @@
       <h2 id="bedDialogueTitle">A quiet little moment, just for us. ♡</h2>
       <p id="bedDialogueText">Come sit with me for a while.</p>
 
-      <div class="bed-actions" id="bedActions">
-        <button data-action="hold">🤝 Hold hands</button>
-        <button data-action="hug">🤗 Hug</button>
-        <button data-action="closer">🥰 Sit closer</button>
-        <button data-action="kiss">💋 Kiss</button>
-      </div>
+      <div class="bed-actions" id="bedActions"></div>
     </div>
   </section>
 
