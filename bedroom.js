@@ -323,12 +323,35 @@ function applyState(id, instant = false) {
 
   currentState = id;
   document.getElementById('chibiStage').classList.toggle('initial-state', id === 'initial');
-  if (id !== 'initial') hideSpeechBubbles();
   setChibi(data.asset, instant);
   name.textContent = data.name;
   title.textContent = data.title;
-  text.textContent = data.text;
+  text.textContent = id === 'initial' ? data.text : '';
   renderActions(data.next);
+
+  if (id === 'initial') {
+    hideSpeechBubbles();
+  } else if (data.dialogues) {
+    showDialoguePair(data.dialogues);
+  } else {
+    hideSpeechBubbles();
+  }
+}
+
+function showDialoguePair(dialogues) {
+  [
+    [aaruSpeech, dialogues.aaru],
+    [somoSpeech, dialogues.somo]
+  ].forEach(([bubble, line]) => {
+    bubble.textContent = line || '';
+    bubble.setAttribute('aria-hidden', line ? 'false' : 'true');
+    bubble.classList.remove('is-visible');
+  });
+
+  requestAnimationFrame(() => {
+    if (dialogues.aaru) aaruSpeech.classList.add('is-visible');
+    if (dialogues.somo) somoSpeech.classList.add('is-visible');
+  });
 }
 
 function openInteraction() {
@@ -360,12 +383,22 @@ bedHotspot.addEventListener('click', openInteraction);
 
 aaruHotspot.addEventListener('click', (event) => {
   event.stopPropagation();
-  showLoveLine('aaru');
+  if (currentState === 'initial') {
+    showLoveLine('aaru');
+  } else {
+    const data = actionData[currentState];
+    if (data?.dialogues) showDialoguePair(data.dialogues);
+  }
 });
 
 somoHotspot.addEventListener('click', (event) => {
   event.stopPropagation();
-  showLoveLine('somo');
+  if (currentState === 'initial') {
+    showLoveLine('somo');
+  } else {
+    const data = actionData[currentState];
+    if (data?.dialogues) showDialoguePair(data.dialogues);
+  }
 });
 
 actions.addEventListener('click', (event) => {
