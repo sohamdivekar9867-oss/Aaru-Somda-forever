@@ -136,7 +136,7 @@ body.dialogue-open { overflow: hidden; }
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 3;
 }
 
