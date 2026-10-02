@@ -160,6 +160,34 @@ body.dialogue-open { overflow: hidden; }
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
+.idle-pair {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(12px) scale(.985);
+  width: min(620px, 94vw);
+  height: 100%;
+  opacity: 0;
+  transition: opacity .36s ease, transform .36s cubic-bezier(.2,.75,.2,1);
+}
+
+.idle-pair.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.idle-chibi {
+  position: absolute;
+  bottom: 0;
+  width: auto;
+  height: min(285px, 82%);
+  object-fit: contain;
+  filter: drop-shadow(0 14px 14px rgba(25, 8, 15, .28));
+}
+
+.idle-aaru { left: 8%; }
+.idle-somo { right: 7%; height: min(315px, 91%); }
+
 .bed-dialogue {
   position: relative;
   width: min(720px, 100%);
@@ -259,6 +287,9 @@ body.dialogue-open { overflow: hidden; }
   .bed-interaction { padding: 0 10px max(10px, env(safe-area-inset-bottom)); }
   .chibi-stage { bottom: 205px; width: 100%; height: 235px; }
   .chibi-composite { width: min(560px, 100vw); max-height: 235px; }
+  .idle-pair { width: min(470px, 100vw); height: 235px; }
+  .idle-chibi { height: 195px; }
+  .idle-somo { height: 215px; }
   .bed-dialogue { padding: 18px 16px 15px; border-radius: 20px; }
   .bed-dialogue h2 { font-size: 20px; }
   .bed-dialogue p { font-size: 14px; }

@@ -9,6 +9,7 @@ const name = document.getElementById('bedDialogueName');
 const chibiImageA = document.getElementById('chibiImageA');
 const chibiImageB = document.getElementById('chibiImageB');
 const dialogue = document.querySelector('.bed-dialogue');
+const idlePair = document.getElementById('idlePair');
 
 const assetBase = 'assets/bed-chibis/';
 const transitionMs = 360;
@@ -17,7 +18,6 @@ let queuedTimer = null;
 
 // These are the user's latest revised interaction assets from Chibis.zip.
 const assets = {
-  initial: '1. First handhold.png',
   hold: '1. First handhold.png',
   holdInHand: '1.1 Hold hands tight.png',
   kissHands: '1.2 Kiss hands.png',
@@ -27,7 +27,10 @@ const assets = {
   cuddle: '2.2 Cuddle.png',
   pat: '2.3 Pat head.png',
   meTooPat: '2.4 Me too pat.png',
-  forehead: '3 Forehead kiss.png'
+  forehead: '3 Forehead kiss.png',
+  meTooForehead: '3.1 Me too Forehead kiss.png',
+  moreForehead: '3 Forehead kiss.png',
+  meAgainForehead: '3.1 Me too Forehead kiss.png'
 };
 
 const labels = {
@@ -40,14 +43,17 @@ const labels = {
   holdTight: '🫂 Hold tight',
   cuddle: '🥰 Cuddle',
   pat: '🤍 Pat',
-  meTooPat: '🥹 Me too'
+  meTooPat: '🥹 Me too',
+  meTooForehead: '🥰 Me too',
+  moreForehead: '💋 More',
+  meAgainForehead: '💕 Me again'
 };
 
 // Flow currently stops at the initial Forehead kiss pose.
 // More / Me again are intentionally not included yet.
 const actionData = {
   initial: {
-    asset: 'initial',
+    asset: null,
     name: 'Aaru & Somo',
     title: 'A quiet little moment, just for us. ♡',
     text: 'Come sit with me for a while.',
@@ -58,7 +64,7 @@ const actionData = {
     name: 'Aaru & Somo',
     title: 'Hold hands',
     text: 'Aaru keeps one hand on the bed. Somo keeps one on it.',
-    next: ['holdInHand', 'kissHands', 'biteHands']
+    next: ['holdInHand', 'kissHands', 'biteHands', 'hug', 'forehead', 'main']
   },
   holdInHand: {
     asset: 'holdInHand',
@@ -116,12 +122,40 @@ const actionData = {
     text: 'Aaru reaches up and pats Somo’s head too.',
     next: ['pat', 'cuddle', 'forehead']
   },
+  main: {
+    asset: null,
+    name: 'Aaru & Somo',
+    title: 'A quiet little moment, just for us. ♡',
+    text: 'Come sit with me for a while.',
+    next: ['hold', 'hug', 'forehead']
+  },
   forehead: {
     asset: 'forehead',
     name: 'Aaru & Somo',
     title: 'Forehead kiss',
     text: 'A soft little kiss, right on the forehead. ♡',
-    next: []
+    next: ['meTooForehead', 'moreForehead', 'meAgainForehead']
+  },
+  meTooForehead: {
+    asset: 'meTooForehead',
+    name: 'Aaru',
+    title: 'Me too',
+    text: 'Aaru gives Somo a little forehead kiss too. ♡',
+    next: ['moreForehead', 'meAgainForehead', 'forehead', 'main']
+  },
+  moreForehead: {
+    asset: 'moreForehead',
+    name: 'Somo',
+    title: 'More',
+    text: 'Somo gives Aaru another little forehead kiss. ♡',
+    next: ['meAgainForehead', 'meTooForehead', 'forehead', 'main']
+  },
+  meAgainForehead: {
+    asset: 'meAgainForehead',
+    name: 'Aaru',
+    title: 'Me again',
+    text: 'Aaru kisses Somo’s forehead again. ♡',
+    next: ['moreForehead', 'meTooForehead', 'forehead', 'main']
   }
 };
 
@@ -179,7 +213,15 @@ function applyState(id, instant = false) {
   const data = actionData[id];
   if (!data) return;
 
-  setChibi(data.asset, instant);
+  if (id === 'initial' || id === 'main') {
+    if (idlePair) idlePair.classList.add('is-visible');
+    chibiImageA.classList.remove('is-visible');
+    chibiImageB.classList.remove('is-visible');
+  } else {
+    if (idlePair) idlePair.classList.remove('is-visible');
+    setChibi(data.asset, instant);
+  }
+
   name.textContent = data.name;
   title.textContent = data.title;
   text.textContent = data.text;
