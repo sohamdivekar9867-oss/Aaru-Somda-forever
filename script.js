@@ -195,9 +195,11 @@ function closeKissModal() {
 }
 
 if (bedHotspot) {
-  bedHotspot.addEventListener("click", () => {
+  bedHotspot.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     hotspots.forEach((item) => item.classList.remove("active"));
-    openKissModal();
+    window.location.href = "bedroom.html";
   });
 }
 
