@@ -16,13 +16,13 @@ const transitionMs = 360;
 let activeLayer = chibiImageA;
 let queuedTimer = null;
 
-// These are the user's latest revised interaction assets from Chibis.zip.
+// These are the user's latest revised interaction assets from the current Chibis bundle.
 const assets = {
   hold: '1. First handhold.png',
   holdInHand: '1.1 Hold hands tight.png',
   kissHands: '1.2 Kiss hands.png',
   biteHands: '1.3 Bite fingers.png',
-  hug: '2.1 Hold tight.png',
+  hug: '2 Hug initial.png',
   holdTight: '2.1 Hold tight.png',
   cuddle: '2.2 Cuddle.png',
   pat: '2.3 Pat head.png',
@@ -46,7 +46,8 @@ const labels = {
   meTooPat: '🥹 Me too',
   meTooForehead: '🥰 Me too',
   moreForehead: '💋 More',
-  meAgainForehead: '💕 Me again'
+  meAgainForehead: '💕 Me again',
+  main: '↩️ Main options'
 };
 
 // Flow currently stops at the initial Forehead kiss pose.
@@ -71,56 +72,56 @@ const actionData = {
     name: 'Somo',
     title: 'Hold hands in hand',
     text: 'Somo gently takes Aaru’s hand and brings it close to his chest.',
-    next: ['kissHands', 'biteHands', 'hold']
+    next: ['kissHands', 'biteHands', 'hold', 'main']
   },
   kissHands: {
     asset: 'kissHands',
     name: 'Somo',
     title: 'Kiss hands',
     text: 'Somo gives Aaru’s hand a tiny, affectionate kiss. ♡',
-    next: ['biteHands', 'holdInHand', 'hold']
+    next: ['biteHands', 'holdInHand', 'hold', 'main']
   },
   biteHands: {
     asset: 'biteHands',
     name: 'Somo',
     title: 'Bite fingers',
     text: 'A tiny playful bite, just to make Aaru laugh.',
-    next: ['kissHands', 'holdInHand', 'hold']
+    next: ['kissHands', 'holdInHand', 'hold', 'main']
   },
   hug: {
     asset: 'hug',
     name: 'Aaru & Somo',
     title: 'Hug',
     text: 'Somo wraps his arm around Aaru and pulls her close.',
-    next: ['holdTight', 'cuddle', 'pat', 'meTooPat']
+    next: ['holdTight', 'cuddle', 'pat', 'meTooPat', 'main']
   },
   holdTight: {
     asset: 'holdTight',
     name: 'Somo',
     title: 'Hold tight',
     text: 'Somo wraps both arms around Aaru and holds her tightly.',
-    next: ['cuddle', 'pat', 'meTooPat', 'hug']
+    next: ['cuddle', 'pat', 'meTooPat', 'hug', 'main']
   },
   cuddle: {
     asset: 'cuddle',
     name: 'Aaru & Somo',
     title: 'Cuddle',
     text: 'Aaru buries her face in Somo’s chest and stays there.',
-    next: ['pat', 'meTooPat', 'forehead']
+    next: ['pat', 'meTooPat', 'forehead', 'main']
   },
   pat: {
     asset: 'pat',
     name: 'Somo',
     title: 'Pat',
     text: 'Somo gently pats Aaru’s head. ♡',
-    next: ['meTooPat', 'cuddle', 'forehead']
+    next: ['meTooPat', 'cuddle', 'forehead', 'main']
   },
   meTooPat: {
     asset: 'meTooPat',
     name: 'Aaru',
     title: 'Me too',
     text: 'Aaru reaches up and pats Somo’s head too.',
-    next: ['pat', 'cuddle', 'forehead']
+    next: ['pat', 'cuddle', 'forehead', 'main']
   },
   main: {
     asset: null,
@@ -134,7 +135,7 @@ const actionData = {
     name: 'Aaru & Somo',
     title: 'Forehead kiss',
     text: 'A soft little kiss, right on the forehead. ♡',
-    next: ['meTooForehead', 'moreForehead', 'meAgainForehead']
+    next: ['meTooForehead', 'moreForehead', 'meAgainForehead', 'main']
   },
   meTooForehead: {
     asset: 'meTooForehead',
