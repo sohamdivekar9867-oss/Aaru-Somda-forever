@@ -73,14 +73,19 @@ function render(){
     if(r.created_by===user?.id&&!pending&&!approved) actions+=`<button data-request-delete="${esc(r.id)}">Request delete</button>`;
     if(isOther(r)&&pending) actions+=`<button class="complete" data-approve-delete="${esc(r.id)}">Approve delete</button>`;
     if(approved) actions+=`<button data-final-delete="${esc(r.id)}">Delete together</button>`;
+    const videoMemory=ms.find(m=>m.media_type==='video');
+    const photoMemories=ms.filter(m=>m.media_type==='photo').slice(0,5);
+    const preview=videoMemory
+      ? `<div class="reel-preview our-video-preview"><video controls playsinline preload="metadata" data-preview-video-path="${esc(videoMemory.storage_path)}"></video><div class="reel-preview-label">OUR VERSION · VIDEO</div></div>`
+      : `<div class="reel-preview ${r.status==='done'?'done':''}"><div class="reel-preview-icon">▶</div><div class="reel-preview-label">INSTAGRAM REEL</div><div class="reel-preview-shine"></div></div>`;
     return `<article class="reel-card ${r.status==='done'?'done':''}">
       <div class="reel-post-head"><div class="reel-post-avatar">A♡S</div><div><strong>Aaru & Somo</strong><span>${r.status==='done'?'our memory':'saved a reel to try'}</span></div><span class="reel-dots">•••</span></div>
-      <div class="reel-preview ${r.status==='done'?'done':''}"><div class="reel-preview-icon">▶</div><div class="reel-preview-label">INSTAGRAM REEL</div><div class="reel-preview-shine"></div></div>
+      ${preview}
       <div class="reel-card-top"><div class="reel-badge ${r.status==='done'?'done':''}">${r.status==='done'?'✓ done together':'to try'}</div><span class="reel-meta">♡ ${memoryCount(r.id)} memories</span></div>
       <h2 class="reel-title">${esc(r.title)}</h2>
       <div class="reel-meta">added by ${esc(r.added_by==='Somda'?'Somo':r.added_by)}</div>
       <a class="reel-link" href="${esc(r.instagram_url)}" target="_blank" rel="noopener noreferrer">View original Reel ↗</a>
-      ${ms.length?`<div class="memory-strip">${ms.slice(0,5).map(m=>`<div class="memory-thumb" title="${esc(m.media_type)}">${m.media_type==='video'?`<video data-memory-path="${esc(m.storage_path)}" muted playsinline></video><span>video</span>`:`<img data-memory-path="${esc(m.storage_path)}" alt="Our reel memory">`}</div>`).join('')}</div>`:''}
+      ${photoMemories.length?`<div class="memory-strip">${photoMemories.map(m=>`<button class="memory-thumb photo-memory" type="button" data-open-memory="${esc(m.storage_path)}" title="Open photo"><img data-memory-path="${esc(m.storage_path)}" alt="Our reel memory"></button>`).join('')}</div>`:''}
       <div class="reel-actions">${actions}</div>
       ${pending?`<div class="delete-status">Delete requested. Aaru or Somo still needs to approve it.</div>`:''}
       ${approved?`<div class="delete-status">Both sides approved. Final delete is ready.</div>`:''}
@@ -90,10 +95,13 @@ function render(){
 }
 
 async function hydrateMemoryImages(){
-  const imgs=[...document.querySelectorAll('[data-memory-path]')];
-  for(const img of imgs){
-    const {data,error}=await client.storage.from('reel-memories').createSignedUrl(img.dataset.memoryPath,60*60);
-    if(!error&&data?.signedUrl)img.src=data.signedUrl;
+  const nodes=[...document.querySelectorAll('[data-memory-path],[data-preview-video-path]')];
+  for(const node of nodes){
+    const path=node.dataset.memoryPath||node.dataset.previewVideoPath;
+    const {data,error}=await client.storage.from('reel-memories').createSignedUrl(path,60*60);
+    if(error||!data?.signedUrl)continue;
+    if(node.tagName==='VIDEO') node.src=data.signedUrl;
+    else node.src=data.signedUrl;
   }
 }
 
@@ -120,7 +128,34 @@ document.querySelector('[data-close-memory]').addEventListener('click',()=>close
 
 document.querySelectorAll('.reel-tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.reel-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');filter=btn.dataset.filter;render();}));
 
+const mediaViewer=document.getElementById('mediaViewer');
+const mediaViewerImage=document.getElementById('mediaViewerImage');
+const closeMediaViewer=document.getElementById('closeMediaViewer');
+
+function openPhotoViewer(url){
+  if(!mediaViewer)return;
+  mediaViewerImage.src=url;
+  mediaViewer.classList.add('open');
+  mediaViewer.setAttribute('aria-hidden','false');
+}
+function closePhotoViewer(){
+  if(!mediaViewer)return;
+  mediaViewer.classList.remove('open');
+  mediaViewer.setAttribute('aria-hidden','true');
+  mediaViewerImage.src='';
+}
+
+closeMediaViewer?.addEventListener('click',closePhotoViewer);
+mediaViewer?.querySelector('[data-close-media-viewer]')?.addEventListener('click',closePhotoViewer);
+
 document.addEventListener('click',async e=>{
+  const photo=e.target.closest('[data-open-memory]');
+  if(photo){
+    const {data,error}=await client.storage.from('reel-memories').createSignedUrl(photo.dataset.openMemory,60*60);
+    if(!error&&data?.signedUrl)openPhotoViewer(data.signedUrl);
+    return;
+  }
+
   const edit=e.target.closest('[data-edit]');
   const complete=e.target.closest('[data-complete]');
   const memory=e.target.closest('[data-memory]');
