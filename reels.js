@@ -67,12 +67,14 @@ function render(){
     const approved=!!r.delete_approved_by;
     let actions='';
     if(r.status!=='done') actions+=`<button class="complete" data-complete="${esc(r.id)}">✨ We did it</button>`;
-    else actions+=`<button data-memory="${esc(r.id)}">＋ Add memory</button>`;
+    actions+=`<button class="memory-button" data-memory="${esc(r.id)}">📸 Add our version</button>`;
     if(canEdit(r)) actions+=`<button data-edit="${esc(r.id)}">Edit</button>`;
     if(r.created_by===user?.id&&!pending&&!approved) actions+=`<button data-request-delete="${esc(r.id)}">Request delete</button>`;
     if(isOther(r)&&pending) actions+=`<button class="complete" data-approve-delete="${esc(r.id)}">Approve delete</button>`;
     if(approved) actions+=`<button data-final-delete="${esc(r.id)}">Delete together</button>`;
     return `<article class="reel-card ${r.status==='done'?'done':''}">
+      <div class="reel-post-head"><div class="reel-post-avatar">A♡S</div><div><strong>Aaru & Somo</strong><span>${r.status==='done'?'our memory':'saved a reel to try'}</span></div><span class="reel-dots">•••</span></div>
+      <div class="reel-preview ${r.status==='done'?'done':''}"><div class="reel-preview-icon">▶</div><div class="reel-preview-label">INSTAGRAM REEL</div><div class="reel-preview-shine"></div></div>
       <div class="reel-card-top"><div class="reel-badge ${r.status==='done'?'done':''}">${r.status==='done'?'✓ done together':'to try'}</div><span class="reel-meta">♡ ${memoryCount(r.id)} memories</span></div>
       <h2 class="reel-title">${esc(r.title)}</h2>
       <div class="reel-meta">added by ${esc(r.added_by==='Somda'?'Somo':r.added_by)}</div>
@@ -132,11 +134,13 @@ document.addEventListener('click',async e=>{
   if(final){await finalDelete(final.dataset.finalDelete);return;}
 });
 
-async function markDone(r){
+async function markDone(r, openAfter=true){
   setStatus('Marking it as done…');
   const {error}=await client.rpc('mark_reel_done',{p_reel_id:r.id});
-  if(error){setStatus(error.message);return;}
-  await load();openMemory(reels.find(x=>x.id===r.id));
+  if(error){setStatus(error.message);return false;}
+  await load();
+  if(openAfter) openMemory(reels.find(x=>x.id===r.id));
+  return true;
 }
 
 function openMemory(r){currentReel=r;selectedVideo=null;selectedPhotos=[];videoInput.value='';photoInput.value='';memoryPreview.innerHTML='';memoryTitle.textContent=r.title;memoryStatus.textContent='';openModal(memoryModal);}
@@ -162,6 +166,11 @@ saveMemory.addEventListener('click',async()=>{
   if(!selectedVideo&&!selectedPhotos.length){memoryStatus.textContent='Add a video or at least one photo first. ♡';return;}
   saveMemory.disabled=true;memoryStatus.textContent='Saving our little memories…';
   try{
+    if(currentReel.status!=='done'){
+      const completed=await markDone(currentReel,false);
+      if(!completed)throw new Error('Could not mark this reel as done yet.');
+      currentReel={...currentReel,status:'done'};
+    }
     if(selectedVideo)await uploadOne(selectedVideo,'video');
     for(const f of selectedPhotos)await uploadOne(f,'photo');
     await load();closeModal(memoryModal);currentReel=null;
