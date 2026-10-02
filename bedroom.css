@@ -386,11 +386,11 @@ body.dialogue-open { overflow: hidden; }
 }
 
 
-/* Final compact dialogue layout */
+/* Final compact dialogue + character-attached speech bubbles */
 .bed-dialogue {
   width: min(680px, calc(100% - 24px));
-  padding: 14px 44px 12px 16px;
-  border-radius: 18px;
+  padding: 12px 42px 10px 14px;
+  border-radius: 17px;
 }
 
 .bed-dialogue .dialogue-name,
@@ -399,95 +399,110 @@ body.dialogue-open { overflow: hidden; }
 }
 
 .bed-dialogue p#bedDialogueText {
-  margin: 0 0 9px;
+  margin: 0 0 8px;
   text-align: center;
-  font-size: 14px;
-  line-height: 1.25;
+  font-size: 13px;
+  line-height: 1.2;
 }
 
 .bed-dialogue .bed-actions {
   margin-top: 0;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
 }
 
 .bed-dialogue .bed-actions button {
-  padding: 8px 12px;
-  min-height: 38px;
-  font-size: 13px;
+  padding: 7px 11px;
+  min-height: 36px;
+  font-size: 12px;
 }
 
+/* The bubble coordinates are updated per pose in bedroom.js. */
 .speech-bubble {
   position: absolute;
-  z-index: 20;
+  z-index: 30;
+  left: var(--bubble-x, 50%);
+  top: var(--bubble-y, 0%);
   width: max-content;
-  max-width: min(220px, 38vw);
-  padding: 8px 11px;
-  border: 1px solid rgba(111, 45, 70, .24);
+  max-width: min(175px, 30vw);
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(111, 45, 70, .22);
   border-radius: 14px;
-  background: rgba(255, 249, 251, .97);
+  background: rgba(255, 249, 251, .96);
   color: #4a2030;
-  box-shadow: 0 7px 18px rgba(0,0,0,.18);
-  font-size: 13px;
-  line-height: 1.25;
+  box-shadow: 0 6px 16px rgba(0,0,0,.16);
+  font-size: 12px;
+  line-height: 1.22;
   text-align: center;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(5px) scale(.97);
-  transition: opacity .18s ease, transform .18s ease;
+  transform: translate(-50%, calc(-100% - 8px)) scale(.97);
+  transition: left .36s cubic-bezier(.2,.75,.2,1),
+              top .36s cubic-bezier(.2,.75,.2,1),
+              opacity .18s ease,
+              transform .18s ease;
   pointer-events: none;
-}
-
-.speech-bubble::after {
-  content: "";
-  position: absolute;
-  bottom: -7px;
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 249, 251, .97);
-  border-right: 1px solid rgba(111, 45, 70, .24);
-  border-bottom: 1px solid rgba(111, 45, 70, .24);
-  transform: rotate(45deg);
 }
 
 .speech-bubble.is-visible {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0) scale(1);
+  transform: translate(-50%, calc(-100% - 8px)) scale(1);
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 249, 251, .96);
+  border-right: 1px solid rgba(111, 45, 70, .22);
+  border-bottom: 1px solid rgba(111, 45, 70, .22);
+  transform: translateX(-50%) rotate(45deg);
 }
 
 .speech-bubble-aaru {
-  left: 14%;
-  top: 2%;
+  left: var(--aaru-bubble-x, 25%);
+  top: var(--aaru-bubble-y, 22%);
 }
-.speech-bubble-aaru::after { left: 72%; }
+
 .speech-bubble-somo {
-  right: 14%;
-  top: 2%;
+  left: var(--somo-bubble-x, 74%);
+  top: var(--somo-bubble-y, 16%);
 }
-.speech-bubble-somo::after { right: 20%; }
+
+/* Only one dialogue bubble is visible at a time, so the artwork stays clear. */
+.chibi-stage:not(.initial-state) .character-hotspot {
+  pointer-events: none;
+}
 
 @media (max-width: 600px) {
   .bed-dialogue {
-    width: calc(100% - 16px);
-    padding: 11px 38px 10px 10px;
-    border-radius: 16px;
+    width: calc(100% - 14px);
+    padding: 10px 36px 9px 9px;
+    border-radius: 15px;
   }
+
   .bed-dialogue p#bedDialogueText {
-    margin-bottom: 7px;
-    font-size: 12px;
+    margin-bottom: 6px;
+    font-size: 11px;
   }
-  .bed-dialogue .bed-actions { gap: 5px; }
+
+  .bed-dialogue .bed-actions { gap: 4px; }
+
   .bed-dialogue .bed-actions button {
-    min-height: 35px;
-    padding: 7px 9px;
-    font-size: 11px;
-  }
-  .speech-bubble {
-    max-width: 145px;
+    min-height: 33px;
     padding: 6px 8px;
-    font-size: 11px;
+    font-size: 10.5px;
   }
-  .speech-bubble-aaru { left: 3%; }
-  .speech-bubble-somo { right: 3%; }
+
+  .speech-bubble {
+    max-width: 130px;
+    padding: 6px 8px;
+    font-size: 10.5px;
+    border-radius: 13px;
+  }
 }

@@ -98,8 +98,49 @@ const loveLines = {
 let lastLoveLineAaru = -1;
 let lastLoveLineSomo = -1;
 let currentState = 'initial';
+let dialogueSequenceTimer = null;
+
+// Head anchors are percentages of the chibi stage. Because the bubbles live
+// inside the same stage as the character artwork, they travel with each pose
+// instead of staying pinned to the top of the screen.
+const bubbleAnchors = {
+  initial: { aaru: [25, 22], somo: [74, 16] },
+  hold: { aaru: [38, 26], somo: [63, 18] },
+  holdInHand: { aaru: [35, 25], somo: [64, 17] },
+  kissHands: { aaru: [34, 25], somo: [64, 22] },
+  biteHands: { aaru: [35, 24], somo: [63, 20] },
+  hug: { aaru: [39, 27], somo: [63, 20] },
+  holdTight: { aaru: [39, 24], somo: [61, 17] },
+  cuddle: { aaru: [39, 29], somo: [62, 17] },
+  pat: { aaru: [38, 26], somo: [62, 19] },
+  meTooPat: { aaru: [39, 24], somo: [61, 27] },
+  forehead: { aaru: [39, 30], somo: [61, 18] },
+  foreheadMeToo: { aaru: [40, 21], somo: [61, 29] },
+  foreheadMore: { aaru: [39, 30], somo: [61, 18] },
+  foreheadAgain: { aaru: [40, 21], somo: [61, 29] },
+  cheek: { aaru: [38, 24], somo: [62, 15] },
+  cheekMeToo: { aaru: [39, 24], somo: [61, 21] },
+  kiss: { aaru: [40, 26], somo: [61, 21] }
+};
+
+function setBubbleAnchors(stateId) {
+  const anchors = bubbleAnchors[stateId] || bubbleAnchors.initial;
+  const stage = document.getElementById('chibiStage');
+  stage.style.setProperty('--aaru-bubble-x', anchors.aaru[0] + '%');
+  stage.style.setProperty('--aaru-bubble-y', anchors.aaru[1] + '%');
+  stage.style.setProperty('--somo-bubble-x', anchors.somo[0] + '%');
+  stage.style.setProperty('--somo-bubble-y', anchors.somo[1] + '%');
+}
+
+function clearDialogueSequenceTimer() {
+  if (dialogueSequenceTimer) {
+    clearTimeout(dialogueSequenceTimer);
+    dialogueSequenceTimer = null;
+  }
+}
 
 function hideSpeechBubbles() {
+  clearDialogueSequenceTimer();
   [aaruSpeech, somoSpeech].forEach((bubble) => {
     bubble.classList.remove('is-visible');
     bubble.setAttribute('aria-hidden', 'true');
@@ -107,6 +148,7 @@ function hideSpeechBubbles() {
 }
 
 function showLoveLine(character) {
+  setBubbleAnchors('initial');
   const bubble = character === 'aaru' ? aaruSpeech : somoSpeech;
   const lines = loveLines[character];
   const previous = character === 'aaru' ? lastLoveLineAaru : lastLoveLineSomo;
@@ -339,6 +381,7 @@ function applyState(id, instant = false) {
 
   currentState = id;
   document.getElementById('chibiStage').classList.toggle('initial-state', id === 'initial');
+  setBubbleAnchors(id);
   setChibi(data.asset, instant);
   name.textContent = data.name;
   title.textContent = data.title;
@@ -355,23 +398,33 @@ function applyState(id, instant = false) {
 }
 
 function showDialoguePair(dialogues) {
-  [
-    [aaruSpeech, dialogues.aaru],
-    [somoSpeech, dialogues.somo]
-  ].forEach(([bubble, line]) => {
+  clearDialogueSequenceTimer();
+  hideSpeechBubbles();
+
+  // Somo speaks first by default. For states where Aaru is the one
+  // performing the kiss/hug, her line leads and Somo replies.
+  const aaruFirst = ['meTooPat', 'foreheadMeToo', 'foreheadAgain', 'cheekMeToo'].includes(currentState);
+  const first = aaruFirst ? ['aaru', dialogues.aaru] : ['somo', dialogues.somo];
+  const second = aaruFirst ? ['somo', dialogues.somo] : ['aaru', dialogues.aaru];
+
+  const showOne = ([speaker, line]) => {
+    clearDialogueSequenceTimer();
+    hideSpeechBubbles();
+    const bubble = speaker === 'aaru' ? aaruSpeech : somoSpeech;
     bubble.textContent = line || '';
     bubble.setAttribute('aria-hidden', line ? 'false' : 'true');
-    bubble.classList.remove('is-visible');
-  });
+    requestAnimationFrame(() => bubble.classList.add('is-visible'));
+  };
 
-  requestAnimationFrame(() => {
-    if (dialogues.aaru) aaruSpeech.classList.add('is-visible');
-    if (dialogues.somo) somoSpeech.classList.add('is-visible');
-  });
+  showOne(first);
+  if (second[1]) {
+    dialogueSequenceTimer = setTimeout(() => showOne(second), 1500);
+  }
 }
 
 function openInteraction() {
   hideSpeechBubbles();
+  setBubbleAnchors('initial');
   applyState('initial', true);
   interaction.classList.add('is-open');
   interaction.setAttribute('aria-hidden', 'false');
