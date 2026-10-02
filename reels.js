@@ -67,6 +67,7 @@ function render(){
     const approved=!!r.delete_approved_by;
     let actions='';
     if(r.status!=='done') actions+=`<button class="complete" data-complete="${esc(r.id)}">✨ We did it</button>`;
+    else actions+=`<button data-undo-done="${esc(r.id)}">↩ Undo — back to To try</button>`;
     actions+=`<button class="memory-button" data-memory="${esc(r.id)}">📸 Add our version</button>`;
     if(canEdit(r)) actions+=`<button data-edit="${esc(r.id)}">Edit</button>`;
     if(r.created_by===user?.id&&!pending&&!approved) actions+=`<button data-request-delete="${esc(r.id)}">Request delete</button>`;
@@ -126,13 +127,25 @@ document.addEventListener('click',async e=>{
   const request=e.target.closest('[data-request-delete]');
   const approve=e.target.closest('[data-approve-delete]');
   const final=e.target.closest('[data-final-delete]');
+  const undo=e.target.closest('[data-undo-done]');
   if(edit){const r=reels.find(x=>x.id===edit.dataset.edit);if(r&&canEdit(r))startEdit(r);return;}
   if(complete){const r=reels.find(x=>x.id===complete.dataset.complete);if(r){await markDone(r);return;}}
   if(memory){const r=reels.find(x=>x.id===memory.dataset.memory);if(r)openMemory(r);return;}
   if(request){await requestDelete(request.dataset.requestDelete);return;}
   if(approve){await approveDelete(approve.dataset.approveDelete);return;}
   if(final){await finalDelete(final.dataset.finalDelete);return;}
+  if(undo){await undoDone(undo.dataset.undoDone);return;}
 });
+
+async function undoDone(id){
+  const r=reels.find(x=>x.id===id);
+  if(!r||r.status!=='done')return;
+  if(!window.confirm('Move this reel back to To try? Your saved photos/videos will stay attached.'))return;
+  setStatus('Moving it back to To try…');
+  const {error}=await client.rpc('mark_reel_to_try',{p_reel_id:id});
+  if(error){setStatus(error.message);return;}
+  await load();
+}
 
 async function markDone(r, openAfter=true){
   setStatus('Marking it as done…');

@@ -180,6 +180,33 @@ $$;
 revoke all on function public.request_reel_delete(uuid) from public;
 revoke all on function public.approve_reel_delete(uuid) from public;
 revoke all on function public.mark_reel_done(uuid) from public;
+create or replace function public.mark_reel_to_try(p_reel_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_couple_member() then
+    raise exception 'Not authorised.';
+  end if;
+
+  update public.couple_reels
+  set status = 'to_try',
+      completed_at = null,
+      updated_at = now()
+  where id = p_reel_id
+    and status = 'done';
+
+  if not found then
+    raise exception 'Reel is not currently marked done.';
+  end if;
+end;
+$$;
+
+revoke all on function public.mark_reel_to_try(uuid) from public;
+grant execute on function public.mark_reel_to_try(uuid) to authenticated;
+
 grant execute on function public.request_reel_delete(uuid) to authenticated;
 grant execute on function public.approve_reel_delete(uuid) to authenticated;
 grant execute on function public.mark_reel_done(uuid) to authenticated;
