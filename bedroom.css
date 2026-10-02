@@ -437,7 +437,7 @@ body.dialogue-open { overflow: hidden; }
   text-align: center;
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, calc(-100% - 8px)) scale(.97);
+  transform: translate(-50%, calc(-100% - 28px)) scale(.97);
   transition: left .36s cubic-bezier(.2,.75,.2,1),
               top .36s cubic-bezier(.2,.75,.2,1),
               opacity .18s ease,
@@ -448,7 +448,7 @@ body.dialogue-open { overflow: hidden; }
 .speech-bubble.is-visible {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, calc(-100% - 8px)) scale(1);
+  transform: translate(-50%, calc(-100% - 28px)) scale(1);
 }
 
 .speech-bubble::after {
