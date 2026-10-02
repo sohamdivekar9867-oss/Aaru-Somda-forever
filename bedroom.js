@@ -143,28 +143,32 @@ const actionData = {
     asset: 'hold',
     name: 'Aaru & Somo',
     title: 'Hold hands',
-    text: 'Aaru keeps one hand on the bed. Somo keeps one on it.',
+    text: '',
+    dialogues: { somo: 'Come here, baby… let me hold your hand. ❤️', aaru: 'Okay… but don’t let go, Somo. ❤️' },
     next: ['holdInHand', 'kissHands', 'biteHands', 'mainOptions']
   },
   holdInHand: {
     asset: 'holdInHand',
     name: 'Somo',
     title: 'Hold hands in hand',
-    text: 'Somo gently takes Aaru’s hand and brings it close to his chest.',
+    text: '',
+    dialogues: { somo: 'Your hand fits perfectly in mine. ❤️', aaru: 'Hehe… I don’t think I want to take it back now. ❤️' },
     next: ['kissHands', 'biteHands', 'mainOptions']
   },
   kissHands: {
     asset: 'kissHands',
     name: 'Somo',
     title: 'Kiss hands',
-    text: 'Somo gives Aaru’s hand a tiny, affectionate kiss. ♡',
+    text: '',
+    dialogues: { somo: 'I think your hand deserves a little kiss. ❤️', aaru: 'Somo… you’re making me blush. ❤️' },
     next: ['biteHands', 'holdInHand', 'mainOptions']
   },
   biteHands: {
     asset: 'biteHands',
     name: 'Somo',
     title: 'Bite fingers',
-    text: 'A tiny playful bite, just to make Aaru laugh.',
+    text: '',
+    dialogues: { somo: 'Hmm… these fingers are looking a little too cute. ❤️', aaru: 'Heyyy! Don’t bite me… unless you’re going to be this cute about it. ❤️' },
     next: ['kissHands', 'holdInHand', 'mainOptions']
   },
 
@@ -173,35 +177,40 @@ const actionData = {
     asset: 'hug',
     name: 'Aaru & Somo',
     title: 'Hug',
-    text: 'Somo wraps one arm around Aaru and pulls her close.',
+    text: '',
+    dialogues: { somo: 'Come here, my love… I need a hug from you. ❤️', aaru: 'Come here… I was waiting for you to hug me. ❤️' },
     next: ['holdTight', 'cuddle', 'pat', 'meTooPat', 'mainOptions']
   },
   holdTight: {
     asset: 'holdTight',
     name: 'Somo',
     title: 'Hold tight',
-    text: 'Somo wraps both arms around Aaru and holds her tightly.',
+    text: '',
+    dialogues: { somo: 'I’m not letting you go anytime soon. ❤️', aaru: 'Then hold me tighter… I like being this close to you. ❤️' },
     next: ['cuddle', 'pat', 'meTooPat', 'mainOptions']
   },
   cuddle: {
     asset: 'cuddle',
     name: 'Aaru & Somo',
     title: 'Cuddle',
-    text: 'Aaru buries her face in Somo’s chest and stays there.',
+    text: '',
+    dialogues: { somo: 'Just rest here, baby… you belong right here with me. ❤️', aaru: 'Your chest is so comfy… can I stay like this a little longer? ❤️' },
     next: ['pat', 'meTooPat', 'mainOptions']
   },
   pat: {
     asset: 'pat',
     name: 'Somo',
     title: 'Pat',
-    text: 'Somo gently pats Aaru’s head. ♡',
+    text: '',
+    dialogues: { somo: 'Come here, my little baby… let me spoil you. ❤️', aaru: 'Aww… I feel so loved when you do that. ❤️' },
     next: ['meTooPat', 'cuddle', 'mainOptions']
   },
   meTooPat: {
     asset: 'meTooPat',
     name: 'Aaru',
     title: 'Me too',
-    text: 'Aaru reaches up and pats Somo’s head too.',
+    text: '',
+    dialogues: { somo: 'Oh? Now it’s my turn to be spoiled? ❤️', aaru: 'Of course… my Somo deserves some love too. ❤️' },
     next: ['pat', 'cuddle', 'mainOptions']
   },
 
@@ -210,28 +219,32 @@ const actionData = {
     asset: 'forehead',
     name: 'Somo',
     title: 'Forehead kiss',
-    text: 'A soft little kiss, right on Aaru’s forehead. ♡',
+    text: '',
+    dialogues: { somo: 'Come here, my darling… I want to kiss your forehead. ❤️', aaru: 'Somo… you’re making my heart melt already. ❤️' },
     next: ['foreheadMeToo', 'foreheadMore', 'foreheadAgain', 'mainOptions']
   },
   foreheadMeToo: {
     asset: 'foreheadMeToo',
     name: 'Aaru',
     title: 'Me too',
-    text: 'Aaru gives Somo a soft forehead kiss too. ♡',
+    text: '',
+    dialogues: { somo: 'Aww… my baby wants to kiss me too? ❤️', aaru: 'Yes… come here, my love. ❤️' },
     next: ['foreheadMore', 'foreheadAgain', 'mainOptions']
   },
   foreheadMore: {
     asset: 'forehead',
     name: 'Somo',
     title: 'More',
-    text: 'Somo leans in for another little forehead kiss.',
+    text: '',
+    dialogues: { somo: 'One wasn’t enough… come here again. ❤️', aaru: 'Hehe… okay, one more. ❤️' },
     next: ['foreheadMeToo', 'foreheadAgain', 'mainOptions']
   },
   foreheadAgain: {
     asset: 'foreheadMeToo',
     name: 'Aaru',
     title: 'Me again',
-    text: 'Aaru smiles and gives Somo another forehead kiss.',
+    text: '',
+    dialogues: { somo: 'You’re getting addicted to my forehead kisses, aren’t you? ❤️', aaru: 'Maybe… because I really, really like them. ❤️' },
     next: ['foreheadMore', 'foreheadMeToo', 'mainOptions']
   },
 
@@ -240,14 +253,16 @@ const actionData = {
     asset: 'cheek',
     name: 'Aaru & Somo',
     title: 'Cheek kiss',
-    text: 'Aaru gives Somo a sweet little kiss on the cheek. ♡',
+    text: '',
+    dialogues: { somo: 'Come closer, baby… I want a little kiss on your cheek. ❤️', aaru: 'My cheeks are getting all shy now… but okay. ❤️' },
     next: ['cheekMeToo', 'mainOptions']
   },
   cheekMeToo: {
     asset: 'cheekMeToo',
     name: 'Somo',
     title: 'Me too',
-    text: 'Somo gives Aaru a cheek kiss back. ♡',
+    text: '',
+    dialogues: { somo: 'Hehe… my turn to get one from you? ❤️', aaru: 'Of course… come here, my baby. ❤️' },
     next: ['mainOptions']
   },
 
@@ -256,7 +271,8 @@ const actionData = {
     asset: 'kiss',
     name: 'Aaru & Somo',
     title: 'A little kiss',
-    text: 'They lean in and share a sweet little kiss. ♡',
+    text: '',
+    dialogues: { somo: 'Aaru… come a little closer. I just want to be close to you. ❤️', aaru: 'Somo… my heart is beating so fast right now. ❤️' },
     next: ['mainOptions']
   }
 };
