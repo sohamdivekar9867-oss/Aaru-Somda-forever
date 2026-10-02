@@ -28,7 +28,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();const status=documen
       closeModal();await loadDates()}catch(err){status.textContent='Could not save: '+err.message}finally{save.disabled=false}});
 editButton.addEventListener('click',()=>{if(editing){editing=false;addButton.hidden=true;editButton.textContent='🔒 Edit dates';render();return}const entered=prompt('Enter the editing PIN:');if(entered===PIN){editing=true;addButton.hidden=false;editButton.textContent='🔓 Lock editing';render()}else if(entered!==null)alert("That PIN doesn't match.")});addButton.addEventListener('click',()=>openModal());document.querySelectorAll('[data-close-modal]').forEach(x=>x.addEventListener('click',closeModal));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});loadDates();
 
-// Date Cat planned quests are shared through Supabase so both Aaru and Somda see them.
+// Date Cat planned quests are shared through Supabase so both Aaru and Somo see them.
 const PLANNED_QUESTS_API=`${SUPABASE_URL}/rest/v1/planned_date_quests`;
 async function renderPlannedQuests(){
   const box=document.getElementById('plannedQuests');

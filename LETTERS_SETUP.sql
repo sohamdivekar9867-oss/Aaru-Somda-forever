@@ -1,4 +1,4 @@
--- AARU & SOMDA SHARED WORLD --
+-- AARU & SOMO SHARED WORLD --
 -- Run MASTER_SHARED_SETUP.sql once in Supabase SQL Editor.
 -- All relationship content is shared through Supabase.
 -- Only the two registered couple accounts are allowed to access shared data.

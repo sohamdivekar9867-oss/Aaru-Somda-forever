@@ -7,7 +7,7 @@ create table if not exists public.couple_music (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   youtube_url text not null,
-  added_by text not null check (added_by in ('Aaru','Somda')),
+  added_by text not null check (added_by in ('Aaru','Somo')),
   created_by uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -32,7 +32,7 @@ with check (
   and (
     (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru')
     or
-    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somda')
+    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somo')
   )
 );
 
@@ -54,10 +54,10 @@ using (public.is_couple_member() and created_by = auth.uid());
 
 create table if not exists public.couple_rules (
   id uuid primary key default gen_random_uuid(),
-  target text not null check (target in ('Aaru','Somda')),
+  target text not null check (target in ('Aaru','Somo')),
   kind text not null check (kind in ('to_do','not_do')),
   text text not null,
-  added_by text not null check (added_by in ('Aaru','Somda')),
+  added_by text not null check (added_by in ('Aaru','Somo')),
   created_by uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -80,9 +80,9 @@ with check (
   public.is_couple_member()
   and created_by = auth.uid()
   and (
-    (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru' and target = 'Somda')
+    (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru' and target = 'Somo')
     or
-    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somda' and target = 'Aaru')
+    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somo' and target = 'Aaru')
   )
 );
 

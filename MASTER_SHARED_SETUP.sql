@@ -1,4 +1,4 @@
--- AARU & SOMDA SHARED WORLD --
+-- AARU & SOMO SHARED WORLD --
 -- Run MASTER_SHARED_SETUP.sql once in Supabase SQL Editor.
 -- All relationship content is shared through Supabase.
 -- Only the two registered couple accounts are allowed to access shared data.
@@ -177,7 +177,7 @@ create table if not exists public.story_chapters (
 create table if not exists public.story_perspectives (
   id uuid primary key default gen_random_uuid(),
   chapter_id uuid not null references public.story_chapters(id) on delete cascade,
-  author text not null check (author in ('Aaru','Somda')),
+  author text not null check (author in ('Aaru','Somo')),
   content text not null default '',
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
@@ -212,7 +212,7 @@ begin
   insert into public.story_perspectives (chapter_id, author, content, created_at, updated_at)
   select c.id,
          case
-           when lower(coalesce(sp.author,'') || ' ' || coalesce(sp.slug,'')) like '%soham%' then 'Somda'
+           when lower(coalesce(sp.author,'') || ' ' || coalesce(sp.slug,'')) like '%soham%' then 'Somo'
            else 'Aaru'
          end as author,
          coalesce(sp.content, ''),
@@ -258,7 +258,7 @@ on public.story_chapters for insert
 to authenticated
 with check (auth.uid() is not null);
 
--- Either Aaru or Somda may edit the shared chapter heading.
+-- Either Aaru or Somo may edit the shared chapter heading.
 create policy "story chapters update"
 on public.story_chapters for update
 to authenticated
@@ -270,14 +270,14 @@ on public.story_perspectives for select
 to authenticated
 using (true);
 
--- Aaru can create only Aaru rows; Somda can create only Somda rows.
+-- Aaru can create only Aaru rows; Somo can create only Somo rows.
 create policy "story perspectives insert"
 on public.story_perspectives for insert
 to authenticated
 with check (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 );
 
 -- Each person can update only their own perspective.
@@ -287,12 +287,12 @@ to authenticated
 using (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 )
 with check (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 );
 
 -- IMPORTANT: a chapter is shared metadata. There is intentionally NO direct
@@ -497,7 +497,7 @@ create table if not exists public.couple_music (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   youtube_url text not null,
-  added_by text not null check (added_by in ('Aaru','Somda')),
+  added_by text not null check (added_by in ('Aaru','Somo')),
   created_by uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -522,7 +522,7 @@ with check (
   and (
     (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru')
     or
-    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somda')
+    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somo')
   )
 );
 
@@ -544,10 +544,10 @@ using (public.is_couple_member() and created_by = auth.uid());
 
 create table if not exists public.couple_rules (
   id uuid primary key default gen_random_uuid(),
-  target text not null check (target in ('Aaru','Somda')),
+  target text not null check (target in ('Aaru','Somo')),
   kind text not null check (kind in ('to_do','not_do')),
   text text not null,
-  added_by text not null check (added_by in ('Aaru','Somda')),
+  added_by text not null check (added_by in ('Aaru','Somo')),
   created_by uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -570,9 +570,9 @@ with check (
   public.is_couple_member()
   and created_by = auth.uid()
   and (
-    (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru' and target = 'Somda')
+    (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and added_by = 'Aaru' and target = 'Somo')
     or
-    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somda' and target = 'Aaru')
+    (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and added_by = 'Somo' and target = 'Aaru')
   )
 );
 

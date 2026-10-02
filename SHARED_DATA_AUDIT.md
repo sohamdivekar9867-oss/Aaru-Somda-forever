@@ -1,10 +1,10 @@
-# Aaru & Somda — Shared Experience Audit
+# Aaru & Somo — Shared Experience Audit
 
 This build treats the website as one shared world for two authenticated accounts.
 
 ## Audited sections
 
-- **Our Story** — Supabase `story_chapters`, `story_perspectives`, and deletion-request tables. Shared between Aaru and Somda. Each person edits only their own perspective. Chapter deletion requires the other person to authorize it.
+- **Our Story** — Supabase `story_chapters`, `story_perspectives`, and deletion-request tables. Shared between Aaru and Somo. Each person edits only their own perspective. Chapter deletion requires the other person to authorize it.
 - **Our Dates** — Supabase `date_entries`. Add/edit/delete/read are authenticated shared operations. Date photos use Supabase Storage; uploads/deletes require one of the two accounts.
 - **Planned Date Cat quests** — Supabase `planned_date_quests`. Saving from Date Cat and viewing/removing planned quests in Our Dates are shared backend operations.
 - **Bucket List** — Supabase `bucket_list`. All changes are shared backend operations.
@@ -14,7 +14,7 @@ This build treats the website as one shared world for two authenticated accounts
 
 ## Important architecture rule
 
-If Aaru creates something that Somda should see, or Somda creates something Aaru should see, the data must be stored in Supabase. Browser `localStorage`/`sessionStorage` must not be used for relationship content.
+If Aaru creates something that Somo should see, or Somo creates something Aaru should see, the data must be stored in Supabase. Browser `localStorage`/`sessionStorage` must not be used for relationship content.
 
 ## RLS
 

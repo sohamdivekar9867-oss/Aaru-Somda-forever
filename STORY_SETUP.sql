@@ -16,7 +16,7 @@ create table if not exists public.story_chapters (
 create table if not exists public.story_perspectives (
   id uuid primary key default gen_random_uuid(),
   chapter_id uuid not null references public.story_chapters(id) on delete cascade,
-  author text not null check (author in ('Aaru','Somda')),
+  author text not null check (author in ('Aaru','Somo')),
   content text not null default '',
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
@@ -51,7 +51,7 @@ begin
   insert into public.story_perspectives (chapter_id, author, content, created_at, updated_at)
   select c.id,
          case
-           when lower(coalesce(sp.author,'') || ' ' || coalesce(sp.slug,'')) like '%soham%' then 'Somda'
+           when lower(coalesce(sp.author,'') || ' ' || coalesce(sp.slug,'')) like '%soham%' then 'Somo'
            else 'Aaru'
          end as author,
          coalesce(sp.content, ''),
@@ -97,7 +97,7 @@ on public.story_chapters for insert
 to authenticated
 with check (auth.uid() is not null);
 
--- Either Aaru or Somda may edit the shared chapter heading.
+-- Either Aaru or Somo may edit the shared chapter heading.
 create policy "story chapters update"
 on public.story_chapters for update
 to authenticated
@@ -109,14 +109,14 @@ on public.story_perspectives for select
 to authenticated
 using (true);
 
--- Aaru can create only Aaru rows; Somda can create only Somda rows.
+-- Aaru can create only Aaru rows; Somo can create only Somo rows.
 create policy "story perspectives insert"
 on public.story_perspectives for insert
 to authenticated
 with check (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 );
 
 -- Each person can update only their own perspective.
@@ -126,12 +126,12 @@ to authenticated
 using (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 )
 with check (
   (lower(auth.jwt() ->> 'email') = 'aaru.saru090901@gmail.com' and author = 'Aaru')
   or
-  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somda')
+  (lower(auth.jwt() ->> 'email') = 'sohamdivekar9867@gmail.com' and author = 'Somo')
 );
 
 -- IMPORTANT: a chapter is shared metadata. There is intentionally NO direct

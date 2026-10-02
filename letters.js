@@ -48,7 +48,7 @@ exciting, and so deeply comforting at the same time.
 
 I love you, Aaru. More than this letter can hold, and in
 more ways than I will ever stop discovering.`,
-  signature: 'Yours, always. Somda ❤️'
+  signature: 'Yours, always. Somo ❤️'
 };
 
 let editingUnlocked = false;

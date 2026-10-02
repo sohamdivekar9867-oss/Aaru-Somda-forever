@@ -290,6 +290,9 @@ button {
 .cat-hotspot::after {
   bottom: auto;
   top: calc(100% + 12px);
+  border-radius: 16px 16px 16px 5px;
+  background: rgba(48, 27, 35, 0.97);
+  color: #ffe9df;
 }
 
 

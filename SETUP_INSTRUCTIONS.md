@@ -21,7 +21,7 @@ Replace the website files with the files in this ZIP. Do not mix files from olde
 
 ## 3. After deployment
 
-Log in once as Aaru and once as Somda and test:
+Log in once as Aaru and once as Somo and test:
 - add a Story chapter as either person
 - edit each person's perspective
 - create/delete-request a Story chapter
@@ -42,5 +42,5 @@ Only login/session state and temporary UI state are browser-local. Relationship 
 ## New: Our Music + To Do / Not To Do
 Run `MUSIC_RULES_SETUP.sql` once in Supabase SQL Editor (or use the appended section in `MASTER_SHARED_SETUP.sql`).
 - `couple_music` stores the shared playlist. Each person can edit/delete only songs they added.
-- `couple_rules` stores the To Do / Not To Do reminders. Somda writes the Aaru page; Aaru writes the Somda page. Each can edit/delete only their own additions.
+- `couple_rules` stores the To Do / Not To Do reminders. Somo writes the Aaru page; Aaru writes the Somo page. Each can edit/delete only their own additions.
 - The new room image is `assets/pixel-room v2.png`.

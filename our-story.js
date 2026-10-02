@@ -15,7 +15,7 @@ const storySupabaseClient = window.supabase.createClient(
 
 const PEOPLE = {
   Aaru: "aaru.saru090901@gmail.com",
-  Somda: "sohamdivekar9867@gmail.com"
+  Somo: "sohamdivekar9867@gmail.com"
 };
 
 let chapters = [];
@@ -36,7 +36,7 @@ function escapeHtml(value = "") {
 function authorForEmail(email) {
   const value = String(email || "").trim().toLowerCase();
   if (value === PEOPLE.Aaru) return "Aaru";
-  if (value === PEOPLE.Somda) return "Somda";
+  if (value === PEOPLE.Somo) return "Somo";
   return null;
 }
 
@@ -74,13 +74,13 @@ function canEditChapter() {
 
 function buildPerspectiveSelect(chapter) {
   const aaru = getPerspective(chapter, "Aaru");
-  const somda = getPerspective(chapter, "Somda");
+  const somda = getPerspective(chapter, "Somo");
   return `
     <div class="perspective-control">
       <label for="perspective-${escapeHtml(chapter.id)}">View</label>
       <select class="perspective-select" id="perspective-${escapeHtml(chapter.id)}" data-chapter-id="${escapeHtml(chapter.id)}">
         <option value="Aaru" ${currentPerspective === "Aaru" ? "selected" : ""}>Aaru's Perspective${aaru ? "" : " · not written yet"}</option>
-        <option value="Somda" ${currentPerspective === "Somda" ? "selected" : ""}>Somda's Perspective${somda ? "" : " · not written yet"}</option>
+        <option value="Somo" ${currentPerspective === "Somo" ? "selected" : ""}>Somo's Perspective${somda ? "" : " · not written yet"}</option>
       </select>
     </div>`;
 }
@@ -423,11 +423,11 @@ async function loadDeleteRequests() {
 }
 
 function oppositePerson(author) {
-  return author === "Aaru" ? "Somda" : "Aaru";
+  return author === "Aaru" ? "Somo" : "Aaru";
 }
 
 function emailForAuthor(author) {
-  return author === "Aaru" ? PEOPLE.Aaru : PEOPLE.Somda;
+  return author === "Aaru" ? PEOPLE.Aaru : PEOPLE.Somo;
 }
 
 function renderDeleteRequestList() {
