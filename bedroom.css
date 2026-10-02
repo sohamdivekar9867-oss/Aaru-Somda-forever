@@ -29,35 +29,48 @@ body {
    zooming it until the top and bottom are cropped away. A soft enlarged
    copy fills the sides so the page still feels full-screen. */
 @media (min-width: 601px) {
+  /* Desktop behaves like the main room: the bedroom is a scrollable portrait
+     scene rather than a fixed viewport/cropped image. */
+  .bedroom-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-start;
+    overflow: visible;
+    padding: 0;
+  }
+
   .bedroom-page::before {
     content: "";
-    position: absolute;
-    inset: -5%;
+    position: fixed;
+    inset: 0;
     background-image: url("assets/pixel-bedroom.png");
     background-size: cover;
     background-position: center;
     filter: blur(24px) brightness(.45) saturate(.85);
     transform: scale(1.06);
     opacity: .9;
+    z-index: 0;
   }
 
   .bedroom-page::after {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: radial-gradient(circle at center, rgba(20, 10, 13, .08), rgba(10, 5, 8, .42));
     pointer-events: none;
+    z-index: 0;
   }
 
   .bedroom-image {
     position: relative;
     z-index: 1;
     display: block;
-    width: auto;
-    height: 100dvh;
-    max-width: 100vw;
+    width: min(100vw, 760px);
+    height: auto;
+    max-width: 100%;
     object-fit: contain;
-    object-position: center;
+    object-position: center top;
+    margin: 0 auto;
     box-shadow: 0 0 70px rgba(0, 0, 0, .45);
   }
 }
