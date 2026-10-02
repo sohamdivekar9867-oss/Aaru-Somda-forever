@@ -278,3 +278,109 @@ body.dialogue-open { overflow: hidden; }
 .bed-actions .main-options-button:hover {
   background: rgba(255, 135, 170, .24);
 }
+
+/* Clickable characters + little speech bubbles for the opening scene. */
+.character-hotspot {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 8;
+  border-radius: 45%;
+}
+
+.aaru-hotspot {
+  left: 2%;
+  width: 40%;
+}
+
+.somo-hotspot {
+  right: 2%;
+  width: 40%;
+}
+
+.character-hotspot:focus-visible {
+  outline: 3px solid rgba(255, 224, 236, .9);
+  outline-offset: 4px;
+}
+
+.speech-bubble {
+  position: absolute;
+  z-index: 10;
+  max-width: 190px;
+  min-width: 112px;
+  padding: 10px 15px;
+  border: 2px solid rgba(82, 40, 52, .72);
+  border-radius: 18px;
+  background: rgba(255, 248, 247, .97);
+  color: #4c2631;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(25, 8, 15, .24);
+  opacity: 0;
+  transform: translateY(8px) scale(.92);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 17px;
+  height: 17px;
+  background: rgba(255, 248, 247, .97);
+  border-right: 2px solid rgba(82, 40, 52, .72);
+  border-bottom: 2px solid rgba(82, 40, 52, .72);
+  transform: rotate(45deg);
+}
+
+.speech-bubble.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.speech-bubble-aaru {
+  left: 10%;
+  top: -7%;
+}
+
+.speech-bubble-aaru::after {
+  left: 28px;
+}
+
+.speech-bubble-somo {
+  right: 10%;
+  top: -7%;
+}
+
+.speech-bubble-somo::after {
+  right: 28px;
+}
+
+@media (max-width: 600px) {
+  .character-hotspot {
+    height: 100%;
+  }
+
+  .speech-bubble {
+    max-width: 145px;
+    min-width: 90px;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 15px;
+  }
+
+  .speech-bubble-aaru { left: 3%; top: -8%; }
+  .speech-bubble-somo { right: 3%; top: -8%; }
+}
+
+.chibi-stage:not(.initial-state) .character-hotspot {
+  pointer-events: none;
+}

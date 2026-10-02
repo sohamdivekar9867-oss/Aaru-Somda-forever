@@ -23,9 +23,15 @@
   <section class="bed-interaction" id="bedInteraction" aria-hidden="true">
     <div class="bed-interaction-backdrop" id="bedInteractionBackdrop"></div>
 
-    <div class="chibi-stage" aria-hidden="true">
-      <img id="chibiImageA" class="chibi-composite is-visible" src="assets/bed-chibis/1. First handhold.png" alt="Aaru and Somo">
-      <img id="chibiImageB" class="chibi-composite" src="assets/bed-chibis/1. First handhold.png" alt="">
+    <div class="chibi-stage" id="chibiStage">
+      <img id="chibiImageA" class="chibi-composite is-visible" src="assets/bed-chibis/initial image.png" alt="Aaru and Somo">
+      <img id="chibiImageB" class="chibi-composite" src="assets/bed-chibis/initial image.png" alt="">
+
+      <button class="character-hotspot aaru-hotspot" id="aaruHotspot" type="button" aria-label="Talk to Aaru"></button>
+      <button class="character-hotspot somo-hotspot" id="somoHotspot" type="button" aria-label="Talk to Somo"></button>
+
+      <div class="speech-bubble speech-bubble-aaru" id="aaruSpeech" aria-live="polite" aria-hidden="true"></div>
+      <div class="speech-bubble speech-bubble-somo" id="somoSpeech" aria-live="polite" aria-hidden="true"></div>
     </div>
 
     <div class="bed-dialogue" role="dialog" aria-modal="true" aria-labelledby="bedDialogueTitle">

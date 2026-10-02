@@ -9,6 +9,10 @@ const name = document.getElementById('bedDialogueName');
 const chibiImageA = document.getElementById('chibiImageA');
 const chibiImageB = document.getElementById('chibiImageB');
 const dialogue = document.querySelector('.bed-dialogue');
+const aaruHotspot = document.getElementById('aaruHotspot');
+const somoHotspot = document.getElementById('somoHotspot');
+const aaruSpeech = document.getElementById('aaruSpeech');
+const somoSpeech = document.getElementById('somoSpeech');
 
 const assetBase = 'assets/bed-chibis/';
 const transitionMs = 360;
@@ -16,7 +20,7 @@ let activeLayer = chibiImageA;
 let queuedTimer = null;
 
 const assets = {
-  initial: '1. First handhold.png',
+  initial: 'initial image.png',
 
   // Hold hands
   hold: '1. First handhold.png',
@@ -69,6 +73,56 @@ const labels = {
 };
 
 const MAIN_OPTIONS = ['hold', 'hug', 'forehead', 'cheek', 'kiss'];
+const loveLines = {
+  aaru: [
+    'I love you baby ❤️',
+    'My baby ❤️',
+    'My honey ❤️',
+    'My kuchupuchu ❤️',
+    'My Man ❤️',
+    'My Babu ❤️',
+    'I missed you ❤️'
+  ],
+  somo: [
+    'I love you baby ❤️',
+    'My baby ❤️',
+    'My Darling ❤️',
+    'My kuchupuchu ❤️',
+    'My love ❤️',
+    'My lovely girl ❤️',
+    'My Shona ❤️',
+    'I missed you ❤️'
+  ]
+};
+
+let lastLoveLineAaru = -1;
+let lastLoveLineSomo = -1;
+let currentState = 'initial';
+
+function hideSpeechBubbles() {
+  [aaruSpeech, somoSpeech].forEach((bubble) => {
+    bubble.classList.remove('is-visible');
+    bubble.setAttribute('aria-hidden', 'true');
+  });
+}
+
+function showLoveLine(character) {
+  const bubble = character === 'aaru' ? aaruSpeech : somoSpeech;
+  const lines = loveLines[character];
+  const previous = character === 'aaru' ? lastLoveLineAaru : lastLoveLineSomo;
+  let index = Math.floor(Math.random() * lines.length);
+  if (lines.length > 1 && index === previous) {
+    index = (index + 1) % lines.length;
+  }
+  if (character === 'aaru') lastLoveLineAaru = index;
+  else lastLoveLineSomo = index;
+
+  bubble.textContent = lines[index];
+  bubble.classList.remove('is-visible');
+  bubble.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => bubble.classList.add('is-visible'));
+}
+
 
 /*
  * All dialogue text is intentionally kept simple for now.
@@ -267,6 +321,9 @@ function applyState(id, instant = false) {
   const data = actionData[id];
   if (!data) return;
 
+  currentState = id;
+  document.getElementById('chibiStage').classList.toggle('initial-state', id === 'initial');
+  if (id !== 'initial') hideSpeechBubbles();
   setChibi(data.asset, instant);
   name.textContent = data.name;
   title.textContent = data.title;
@@ -275,6 +332,7 @@ function applyState(id, instant = false) {
 }
 
 function openInteraction() {
+  hideSpeechBubbles();
   applyState('initial', true);
   interaction.classList.add('is-open');
   interaction.setAttribute('aria-hidden', 'false');
@@ -282,6 +340,7 @@ function openInteraction() {
 }
 
 function closeInteraction() {
+  hideSpeechBubbles();
   interaction.classList.remove('is-open');
   interaction.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('dialogue-open');
@@ -298,6 +357,16 @@ function chooseAction(id) {
 }
 
 bedHotspot.addEventListener('click', openInteraction);
+
+aaruHotspot.addEventListener('click', (event) => {
+  event.stopPropagation();
+  showLoveLine('aaru');
+});
+
+somoHotspot.addEventListener('click', (event) => {
+  event.stopPropagation();
+  showLoveLine('somo');
+});
 
 actions.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-action]');
