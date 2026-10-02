@@ -584,3 +584,8 @@ with check (public.is_couple_member() and created_by = auth.uid());
 create policy "Couple rules delete own" on public.couple_rules
 for delete to authenticated
 using (public.is_couple_member() and created_by = auth.uid());
+
+-- ============================================================
+-- REELS TO TRY
+-- Run REELS_SETUP.sql after this master setup.
+-- ============================================================

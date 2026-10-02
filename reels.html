@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reels to try · Aaru & Somo</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js" defer></script>
+  <script src="protect.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="reels.css" />
+</head>
+<body>
+  <main class="reels-page">
+    <a class="reels-back" href="index.html">← Back to our little room</a>
+
+    <header class="reels-header">
+      <div class="reels-instagram-mark" aria-hidden="true">◎</div>
+      <div class="reels-kicker">OUR LITTLE REEL BOOK</div>
+      <h1>Reels to try</h1>
+      <p>Trends we save now, memories we make later. ♡</p>
+    </header>
+
+    <section class="reels-app">
+      <div class="reels-topbar">
+        <div class="profile-chip">
+          <div class="profile-avatar">A♡S</div>
+          <div><strong>Aaru & Somo</strong><span>our private little feed</span></div>
+        </div>
+        <button class="add-reel-button" id="openAddReel">＋ Add reel</button>
+      </div>
+
+      <div class="reels-tabs" role="tablist">
+        <button class="reel-tab active" data-filter="to_try" type="button">To try</button>
+        <button class="reel-tab" data-filter="done" type="button">Done together</button>
+        <button class="reel-tab" data-filter="all" type="button">All</button>
+      </div>
+
+      <div class="reel-status" id="reelStatus"></div>
+      <section class="reel-grid" id="reelGrid"></section>
+    </section>
+
+    <p class="reels-footer-note">Save the trend. Try it together. Keep the memory. ♡</p>
+  </main>
+
+  <div class="reel-modal" id="reelModal" aria-hidden="true">
+    <div class="reel-modal-backdrop" data-close-modal></div>
+    <div class="reel-modal-card" role="dialog" aria-modal="true" aria-labelledby="reelModalTitle">
+      <button class="modal-close" id="closeReelModal" type="button" aria-label="Close">×</button>
+      <div class="modal-kicker">SAVE A TREND</div>
+      <h2 id="reelModalTitle">Add a reel to try</h2>
+      <form id="reelForm">
+        <label>Trend name<input id="reelName" maxlength="120" required placeholder="e.g. That cute transition"></label>
+        <label>Instagram Reel URL<input id="reelUrl" maxlength="700" type="url" required placeholder="https://www.instagram.com/reel/..."></label>
+        <button class="primary-button" id="saveReel" type="submit">Save to our list ♡</button>
+      </form>
+      <div class="modal-status" id="formStatus"></div>
+    </div>
+  </div>
+
+  <div class="reel-modal" id="memoryModal" aria-hidden="true">
+    <div class="reel-modal-backdrop" data-close-memory></div>
+    <div class="reel-modal-card memory-modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryModalTitle">
+      <button class="modal-close" id="closeMemoryModal" type="button" aria-label="Close">×</button>
+      <div class="modal-kicker">WE DID IT ♡</div>
+      <h2 id="memoryModalTitle">Our version</h2>
+      <p class="memory-intro">Add the little proof that we actually did it.</p>
+      <div class="upload-grid">
+        <label class="upload-box"><span>🎥</span><strong>One video</strong><small>MP4, MOV or WebM</small><input id="videoInput" type="file" accept="video/mp4,video/quicktime,video/webm"></label>
+        <label class="upload-box"><span>📸</span><strong>Up to 5 photos</strong><small>JPG, PNG or WebP</small><input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+      </div>
+      <div class="memory-preview" id="memoryPreview"></div>
+      <button class="primary-button" id="saveMemory" type="button">Save our memories ♡</button>
+      <div class="modal-status" id="memoryStatus"></div>
+    </div>
+  </div>
+
+  <script src="reels.js"></script>
+</body>
+</html>

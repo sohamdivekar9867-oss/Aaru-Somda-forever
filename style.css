@@ -260,6 +260,19 @@ button {
   transform: translateY(0);
 }
 
+/* Shopping bag under the desk — Reels to try */
+.reels-hotspot {
+  left: 47%;
+  top: 69%;
+  width: 19%;
+  height: 13%;
+}
+
+.reels-hotspot::after {
+  bottom: auto;
+  top: calc(100% + 12px);
+}
+
 /* Parchment on the carpet — To Do / Not To Do */
 .rules-hotspot {
   left: 49%;
@@ -632,6 +645,13 @@ button {
     top: 10%;
     width: 18%;
     height: 45%;
+  }
+
+  .reels-hotspot {
+    left: 46%;
+    top: 69%;
+    width: 21%;
+    height: 14%;
   }
 
   .rules-hotspot {
