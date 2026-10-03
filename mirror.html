@@ -49,9 +49,10 @@
     .mirror-character { position:absolute; display:block; height:auto; width:auto; pointer-events:none; user-select:none; z-index:2; }
     .mirror-aaru { left:12.5%; top:27%; width:42%; }
     .mirror-somo { left:54%; top:27%; width:28%; }
+    .mirror-somo.flirt-somo { transform: scale(.86); transform-origin: top left; }
     .praise-character, .flirt-character, .tease-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
     .praise-aaru, .flirt-aaru { left:12.5%; top:27%; width:42%; height:auto; }
-    .tease-scene { left:10.5%; top:20.8%; width:50%; height:auto; }
+    .tease-scene { left:10.5%; top:9%; width:50%; height:auto; }
 
     .back-button {
       position: fixed;
@@ -117,8 +118,9 @@
     @media (max-width: 520px) {
       .mirror-aaru { left: 12%; top: 27%; width: 44%; }
       .mirror-somo { left: 53%; top: 27%; width: 29%; }
+      .mirror-somo.flirt-somo { transform: scale(.86); transform-origin: top left; }
       .praise-aaru, .flirt-aaru { left:12%; top:27%; width:44%; height:auto; }
-      .tease-scene { left:10.5%; top:20.8%; width:50%; }
+      .tease-scene { left:10.5%; top:9%; width:50%; }
       .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
       .choice-title { font-size: 15px; }
       .choice-btn { padding: 9px 7px; font-size: 13px; }
@@ -206,6 +208,7 @@
       teaseScene.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
+      baseSomo.classList.remove('flirt-somo');
       baseSomo.style.display = 'block';
     }
 
@@ -216,6 +219,7 @@
       teaseChoices.hidden = true;
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
+      baseSomo.classList.remove('flirt-somo');
       baseSomo.style.display = 'block';
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
@@ -231,6 +235,7 @@
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
       baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
+      baseSomo.classList.add('flirt-somo');
       baseSomo.style.display = 'block';
     }
 
@@ -281,6 +286,7 @@
         baseAaru.style.display = 'none';
         praiseAaru.style.display = 'none';
         baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
+        baseSomo.classList.add('flirt-somo');
         baseSomo.style.display = 'block';
         flirtAaru.style.display = 'block';
       });
