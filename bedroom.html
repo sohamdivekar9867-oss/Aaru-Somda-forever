@@ -14,6 +14,10 @@
         alt="A cozy romantic bedroom with a green bed and moonlit window"
         class="bedroom-image"
       >
+      <div class="live-bedroom-clock" id="liveBedroomClock" aria-label="Current time">
+        <div class="live-clock-time" id="liveClockTime">--:--</div>
+        <div class="live-clock-date" id="liveClockDate">---</div>
+      </div>
       <button class="bed-hotspot" id="bedHotspot" aria-label="Sit together on the bed"></button>
     </div>
 
@@ -44,6 +48,24 @@
     </div>
   </section>
 
+  <!-- Clock countdown popup -->
+  <section class="clock-countdown-modal" id="clockCountdownModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="clockCountdownTitle">
+    <div class="clock-countdown-backdrop" id="clockCountdownBackdrop"></div>
+    <div class="clock-countdown-card">
+      <button class="clock-countdown-close" id="clockCountdownClose" type="button" aria-label="Close">×</button>
+      <div class="clock-countdown-kicker" id="clockCountdownKicker">❤️ OUR NEXT DATE</div>
+      <h2 id="clockCountdownTitle">Counting down until we meet again…</h2>
+      <div class="countdown-grid" id="countdownGrid" aria-live="polite">
+        <div class="countdown-unit"><strong id="countdownDays">00</strong><span>Days</span></div>
+        <div class="countdown-unit"><strong id="countdownHours">00</strong><span>Hours</span></div>
+        <div class="countdown-unit"><strong id="countdownMinutes">00</strong><span>Minutes</span></div>
+        <div class="countdown-unit"><strong id="countdownSeconds">00</strong><span>Seconds</span></div>
+      </div>
+      <p class="countdown-date-label" id="countdownDateLabel"></p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="bedroom.js"></script>
 </body>
 </html>

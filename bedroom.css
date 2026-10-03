@@ -543,3 +543,205 @@ body.dialogue-open { overflow: hidden; }
     transform: translate(-50%, calc(-100% - 30px)) scale(1);
   }
 }
+
+
+/* Live clock overlay — aligned to the physical clock printed in pixel-bedroom.png. */
+.live-bedroom-clock {
+  position: absolute;
+  left: 10.25%;
+  top: 40.15%;
+  width: 7.9%;
+  height: 3.15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 2px;
+  border-radius: 2px;
+  background: rgba(10, 13, 11, .92);
+  color: #ffd35b;
+  pointer-events: auto;
+  user-select: none;
+  cursor: pointer;
+  z-index: 12;
+  overflow: hidden;
+  font-family: "Courier New", Courier, monospace;
+  text-shadow: 0 0 4px rgba(255, 185, 55, .55);
+  box-shadow: inset 0 0 3px rgba(0,0,0,.55);
+}
+
+.live-clock-time {
+  font-size: clamp(7px, 1.45vw, 12px);
+  line-height: .95;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+}
+
+.live-clock-date {
+  margin-top: 2px;
+  font-size: clamp(4px, .68vw, 6px);
+  line-height: .9;
+  font-weight: 900;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .live-bedroom-clock {
+    left: 10.15%;
+    top: 40.1%;
+    width: 8.1%;
+    height: 3.2%;
+  }
+
+  .live-clock-time {
+    font-size: clamp(6px, 2vw, 10px);
+  }
+
+  .live-clock-date {
+    font-size: clamp(3.5px, .95vw, 5px);
+    margin-top: 1px;
+  }
+}
+
+
+/* Clickable clock -> next-date countdown popup */
+.clock-countdown-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.clock-countdown-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.clock-countdown-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 8, 14, .58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.clock-countdown-card {
+  position: relative;
+  z-index: 1;
+  width: min(470px, 100%);
+  padding: 30px 24px 24px;
+  border: 1px solid rgba(255, 226, 234, .55);
+  border-radius: 25px;
+  background: linear-gradient(145deg, rgba(73, 29, 44, .98), rgba(35, 15, 26, .98));
+  color: #fff5f4;
+  box-shadow: 0 24px 70px rgba(0,0,0,.48), 0 0 40px rgba(255, 130, 165, .14);
+  text-align: center;
+  transform: translateY(14px) scale(.97);
+  transition: transform .3s cubic-bezier(.2,.75,.2,1);
+}
+
+.clock-countdown-modal.is-open .clock-countdown-card {
+  transform: translateY(0) scale(1);
+}
+
+.clock-countdown-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.09);
+  color: #ffe8ed;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.clock-countdown-kicker {
+  color: #f7b6c8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  margin-bottom: 8px;
+}
+
+.clock-countdown-card h2 {
+  margin: 0 auto 20px;
+  max-width: 360px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(20px, 4vw, 27px);
+  line-height: 1.2;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.countdown-unit {
+  padding: 13px 6px 11px;
+  border: 1px solid rgba(255, 216, 226, .22);
+  border-radius: 16px;
+  background: rgba(255,255,255,.065);
+}
+
+.countdown-unit strong {
+  display: block;
+  color: #ffd7e2;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(24px, 6vw, 36px);
+  line-height: 1;
+}
+
+.countdown-unit span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 240, 243, .78);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.countdown-date-label {
+  margin: 17px 0 0;
+  color: rgba(255, 240, 243, .72);
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .clock-countdown-card { padding: 28px 14px 18px; border-radius: 21px; }
+  .countdown-grid { gap: 5px; }
+  .countdown-unit { padding: 11px 3px 9px; border-radius: 13px; }
+  .countdown-unit strong { font-size: 25px; }
+  .countdown-unit span { font-size: 8px; }
+  .countdown-date-label { font-size: 11px; }
+}
+
+
+.clock-countdown-card .countdown-grid[hidden] { display: none; }
+.clock-countdown-modal.date-today .clock-countdown-card {
+  background: linear-gradient(145deg, rgba(87, 39, 61, .99), rgba(38, 18, 29, .99));
+}
+.clock-countdown-modal.date-today .clock-countdown-card h2 {
+  font-size: clamp(24px, 5vw, 34px);
+}
+.clock-countdown-modal.date-planning .clock-countdown-card {
+  background: linear-gradient(145deg, rgba(48, 31, 42, .99), rgba(28, 20, 27, .99));
+}
+.clock-countdown-modal.date-planning .clock-countdown-card h2 {
+  font-size: clamp(23px, 5vw, 32px);
+}

@@ -74,25 +74,8 @@ const labels = {
 
 const MAIN_OPTIONS = ['hold', 'hug', 'forehead', 'cheek', 'kiss'];
 const loveLines = {
-  aaru: [
-    'I love you baby ❤️',
-    'My baby ❤️',
-    'My honey ❤️',
-    'My kuchupuchu ❤️',
-    'My Man ❤️',
-    'My Babu ❤️',
-    'I missed you ❤️'
-  ],
-  somo: [
-    'I love you baby ❤️',
-    'My baby ❤️',
-    'My Darling ❤️',
-    'My kuchupuchu ❤️',
-    'My love ❤️',
-    'My lovely girl ❤️',
-    'My Shona ❤️',
-    'I missed you ❤️'
-  ]
+  aaru: ['I love u Somo ❤️'],
+  somo: ['I love u Aaru ❤️']
 };
 
 let lastLoveLineAaru = -1;
@@ -559,3 +542,209 @@ document.addEventListener('keydown', (event) => {
 });
 
 preloadAssets();
+
+
+/* Date Cat -> bedroom clock state + next-date countdown. */
+const SUPABASE_URL = 'https://swqaakxywwajesuajflz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G';
+const DATE_COUNTDOWN_TIME = '20:00:00'; // Used for the countdown; the whole calendar day becomes "Today is our day".
+
+(function initClockCountdown() {
+  const clock = document.getElementById('liveBedroomClock');
+  const modal = document.getElementById('clockCountdownModal');
+  const close = document.getElementById('clockCountdownClose');
+  const backdrop = document.getElementById('clockCountdownBackdrop');
+  const kicker = document.getElementById('clockCountdownKicker');
+  const titleEl = document.getElementById('clockCountdownTitle');
+  const grid = document.getElementById('countdownGrid');
+  const daysEl = document.getElementById('countdownDays');
+  const hoursEl = document.getElementById('countdownHours');
+  const minutesEl = document.getElementById('countdownMinutes');
+  const secondsEl = document.getElementById('countdownSeconds');
+  const dateLabel = document.getElementById('countdownDateLabel');
+
+  if (!clock || !modal || !close || !backdrop) return;
+
+  let plannedDate = null;
+  let plannedTitle = '';
+  let lastFetchedAt = 0;
+  let fetchInFlight = false;
+
+  const supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+
+  const indiaDateParts = (date = new Date()) => {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(date);
+    const out = {};
+    parts.forEach(p => { if (p.type !== 'literal') out[p.type] = p.value; });
+    return `${out.year}-${out.month}-${out.day}`;
+  };
+
+  function pad(value) { return String(value).padStart(2, '0'); }
+
+  function setState(mode, values = {}) {
+    if (mode === 'countdown') {
+      kicker.textContent = '❤️ OUR NEXT DATE';
+      titleEl.textContent = 'Counting down until we meet again…';
+      grid.hidden = false;
+      dateLabel.textContent = values.label || '';
+      modal.classList.remove('date-today', 'date-planning');
+      return;
+    }
+
+    grid.hidden = true;
+    if (mode === 'today') {
+      kicker.textContent = '❤️ AARU & SOMO';
+      titleEl.textContent = 'Today is our day, Aaru and Somo ❤️';
+      dateLabel.textContent = values.label || '';
+      modal.classList.add('date-today');
+      modal.classList.remove('date-planning');
+    } else {
+      kicker.textContent = '🐾 DATE CAT';
+      titleEl.textContent = 'Planning in progress ..........';
+      dateLabel.textContent = 'Date Cat is planning our next little adventure.';
+      modal.classList.add('date-planning');
+      modal.classList.remove('date-today');
+    }
+  }
+
+  function dateLabelFor(dateString) {
+    const d = new Date(`${dateString}T12:00:00+05:30`);
+    if (Number.isNaN(d.getTime())) return dateString;
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    }).format(d);
+  }
+
+  function targetFor(dateString) {
+    return new Date(`${dateString}T${DATE_COUNTDOWN_TIME}+05:30`);
+  }
+
+  async function fetchNextPlannedDate(force = false) {
+    if (!supabase || fetchInFlight) return;
+    const nowMs = Date.now();
+    if (!force && nowMs - lastFetchedAt < 30000) return;
+    fetchInFlight = true;
+    lastFetchedAt = nowMs;
+    try {
+      const today = indiaDateParts();
+      const { data, error } = await supabase
+        .from('planned_date_quests')
+        .select('id,title,date,status,created_at')
+        .eq('status', 'planned')
+        .gte('date', today)
+        .order('date', { ascending: true })
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (!error) {
+        const row = data?.[0] || null;
+        plannedDate = row?.date || null;
+        plannedTitle = row?.title || '';
+      }
+    } catch (_) {
+      // Keep the last known planned date if a refresh temporarily fails.
+    } finally {
+      fetchInFlight = false;
+    }
+  }
+
+  function updateCountdown() {
+    const today = indiaDateParts();
+
+    if (!plannedDate) {
+      setState('planning');
+      return;
+    }
+
+    if (plannedDate === today) {
+      setState('today', { label: plannedTitle ? `${plannedTitle} · Today ❤️` : 'Today is our day ❤️' });
+      return;
+    }
+
+    const target = targetFor(plannedDate);
+    const remaining = target.getTime() - Date.now();
+    if (remaining <= 0) {
+      // If the date has just crossed the countdown time, keep the whole calendar day as "today".
+      if (plannedDate === indiaDateParts()) {
+        setState('today', { label: plannedTitle ? `${plannedTitle} · Today ❤️` : 'Today is our day ❤️' });
+      } else {
+        setState('planning');
+      }
+      return;
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    daysEl.textContent = pad(days);
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(minutes);
+    secondsEl.textContent = pad(seconds);
+    setState('countdown', { label: `${plannedTitle ? `${plannedTitle} · ` : ''}${dateLabelFor(plannedDate)}` });
+  }
+
+  function openModal() {
+    fetchNextPlannedDate(true).finally(updateCountdown);
+    updateCountdown();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('clock-modal-open');
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('clock-modal-open');
+  }
+
+  clock.addEventListener('click', openModal);
+  close.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+
+  // Pick up a new date after Date Cat saves it, without requiring a page refresh.
+  fetchNextPlannedDate(true).finally(updateCountdown);
+  setInterval(async () => {
+    await fetchNextPlannedDate();
+    updateCountdown();
+  }, 1000);
+})();
+
+/* Live bedroom clock: Mumbai/India time, updated every second. */
+(function initLiveBedroomClock() {
+  const timeEl = document.getElementById('liveClockTime');
+  const dateEl = document.getElementById('liveClockDate');
+  if (!timeEl || !dateEl) return;
+
+  const timeFormatter = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+
+  const dateFormatter = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short'
+  });
+
+  function updateBedroomClock() {
+    const now = new Date();
+    timeEl.textContent = timeFormatter.format(now).replace(/^24:/, '00:');
+    dateEl.textContent = dateFormatter.format(now).toUpperCase();
+  }
+
+  updateBedroomClock();
+  setInterval(updateBedroomClock, 1000);
+})();
