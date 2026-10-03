@@ -24,7 +24,7 @@
           <div class="phone-app-title">Our Memories</div>
           <div class="phone-app-subtitle">Whose memories?</div>
           <div class="profile-options" id="profileOptions">
-            <article class="profile-card" id="profileCardAaru">
+            <article class="profile-card" id="profileCardAaru" data-profile="Aaru">
               <button class="profile-main" type="button" onclick="window.__openPhoneProfileFallback('Aaru')" aria-label="Open Aaru's memories">
                 <div class="profile-avatar-wrap">
                   <img class="profile-avatar" id="profileAvatarAaru" alt="Aaru profile picture">
@@ -36,7 +36,7 @@
                 <input id="profileInputAaru" type="file" accept="image/*">
               </label>
             </article>
-            <article class="profile-card" id="profileCardSomo">
+            <article class="profile-card" id="profileCardSomo" data-profile="Somo">
               <button class="profile-main" type="button" onclick="window.__openPhoneProfileFallback('Somo')" aria-label="Open Somo's memories">
                 <div class="profile-avatar-wrap">
                   <img class="profile-avatar" id="profileAvatarSomo" alt="Somo profile picture">
@@ -92,20 +92,21 @@
   <script src="protect.js"></script>
 
   <script>
-    // Navigation fallback: opens the gallery screen even if another script fails to initialise.
+    // Immediate navigation: this is deliberately independent of Supabase.
     window.__openPhoneProfileFallback = function(profile) {
       var chooser = document.getElementById('profileChooser');
       var gallery = document.getElementById('galleryView');
       var title = document.getElementById('galleryTitle');
-      if (!chooser || !gallery) return;
+      if (!chooser || !gallery) return false;
       chooser.hidden = true;
+      chooser.style.display = 'none';
       gallery.hidden = false;
+      gallery.style.display = 'block';
       if (title) title.textContent = profile + "'s Memories";
       if (typeof window.openPhoneProfile === 'function') {
-        Promise.resolve(window.openPhoneProfile(profile)).catch(function(err) { console.error(err); });
-      } else if (typeof window.__loadPhoneProfile === 'function') {
-        window.__loadPhoneProfile(profile);
+        window.openPhoneProfile(profile).catch(function(err){ console.error(err); });
       }
+      return false;
     };
   </script>
   <script src="phone-gallery.js"></script>

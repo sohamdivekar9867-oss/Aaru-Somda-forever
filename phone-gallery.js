@@ -53,8 +53,8 @@
   }
 
   function showChooser() {
-    if (galleryView) galleryView.hidden = true;
-    if (chooser) chooser.hidden = false;
+    if (galleryView) { galleryView.hidden = true; galleryView.style.display = 'none'; }
+    if (chooser) { chooser.hidden = false; chooser.style.display = ''; }
     selectedProfile = '';
     setStatus('');
   }
@@ -65,8 +65,8 @@
     if (galleryTitle) galleryTitle.textContent = `${profile}'s Memories`;
     if (uploadLabel) uploadLabel.classList.toggle('is-disabled', profile !== myProfile);
     if (input) input.disabled = profile !== myProfile;
-    if (chooser) chooser.hidden = true;
-    if (galleryView) galleryView.hidden = false;
+    if (chooser) { chooser.hidden = true; chooser.style.display = 'none'; }
+    if (galleryView) { galleryView.hidden = false; galleryView.style.display = 'block'; }
     setStatus(profile === myProfile ? 'Your collection · you can add photos here.' : `${profile}'s collection · view only.`);
     if (!phoneClient) { setStatus('Gallery opened, but Supabase is not available.'); return; }
     await loadPhotos();
@@ -227,6 +227,18 @@
   }
   function closeViewer(){ viewer.classList.remove('is-open'); viewer.setAttribute('aria-hidden','true'); viewerImage.src=''; viewerDeleteWrap.innerHTML=''; }
   function stepViewer(direction){ if(!photos.length)return; openViewer((viewerIndex+direction+photos.length)%photos.length); }
+
+  const profileOptions = $('profileOptions');
+  if (profileOptions) {
+    profileOptions.addEventListener('click', (event) => {
+      // Upload controls must never open the gallery.
+      if (event.target.closest('.profile-upload')) return;
+      const card = event.target.closest('.profile-card');
+      if (!card) return;
+      const profile = card.dataset.profile;
+      if (profile) window.__openPhoneProfileFallback(profile);
+    });
+  }
 
   if (galleryBack) galleryBack.addEventListener('click', showChooser);
   if (input) input.addEventListener('change',()=>uploadPhotos(Array.from(input.files||[])));
