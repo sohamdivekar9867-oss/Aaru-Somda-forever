@@ -27,13 +27,46 @@
       align-items: center;
       justify-content: center;
       background: #12090b;
+      overflow: hidden;
+    }
+    .mirror-stage {
+      position: relative;
+      width: min(100vw, 66.6667svh);
+      height: min(150vw, 100svh);
+      aspect-ratio: 2 / 3;
+      flex: 0 0 auto;
     }
     .mirror-art {
+      position: absolute;
+      inset: 0;
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      object-position: center;
+      object-fit: fill;
+      z-index: 1;
+    }
+    /*
+      These are character-only transparent PNGs. They sit above the reflection
+      so the room/bed remains supplied by Mirror.png itself.
+    */
+    .mirror-character {
+      position: absolute;
+      display: block;
+      height: auto;
+      width: auto;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+    .mirror-aaru {
+      left: 12.5%;
+      top: 12.5%;
+      width: 42%;
+    }
+    .mirror-somo {
+      left: 54%;
+      top: 42%;
+      width: 28%;
     }
     .back-button {
       position: fixed;
@@ -50,16 +83,46 @@
       backdrop-filter: blur(8px);
     }
     .back-button:active { transform: scale(.97); }
+
+    @media (max-width: 520px) {
+      .mirror-aaru {
+        left: 12%;
+        top: 13%;
+        width: 44%;
+      }
+      .mirror-somo {
+        left: 53%;
+        top: 43%;
+        width: 29%;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="mirror-page">
     <button class="back-button" onclick="history.back()">← Back</button>
-    <img
-      class="mirror-art"
-      src="assets/Mirror.png"
-      alt="Our cozy bedroom reflected in the mirror"
-    />
+
+    <div class="mirror-stage" aria-label="Aaru and Somo in the mirror">
+      <img
+        class="mirror-art"
+        src="assets/Mirror.png"
+        alt="Our cozy bedroom reflected in the mirror"
+      />
+
+      <img
+        class="mirror-character mirror-aaru"
+        src="assets/mirror-scene/mirror-aaru.png"
+        alt="Aaru standing in front of the mirror"
+        draggable="false"
+      />
+
+      <img
+        class="mirror-character mirror-somo"
+        src="assets/mirror-scene/mirror-somo.png"
+        alt="Somo sitting on the bed and looking at Aaru"
+        draggable="false"
+      />
+    </div>
   </main>
 </body>
 </html>
