@@ -25,7 +25,7 @@
           <div class="phone-app-subtitle">Whose memories?</div>
           <div class="profile-options" id="profileOptions">
             <article class="profile-card" id="profileCardAaru">
-              <button class="profile-main" type="button" onclick="window.openPhoneProfile('Aaru')" aria-label="Open Aaru's memories">
+              <button class="profile-main" type="button" onclick="window.__openPhoneProfileFallback('Aaru')" aria-label="Open Aaru's memories">
                 <div class="profile-avatar-wrap">
                   <img class="profile-avatar" id="profileAvatarAaru" alt="Aaru profile picture">
                   <span class="profile-placeholder" id="profilePlaceholderAaru">A</span>
@@ -37,7 +37,7 @@
               </label>
             </article>
             <article class="profile-card" id="profileCardSomo">
-              <button class="profile-main" type="button" onclick="window.openPhoneProfile('Somo')" aria-label="Open Somo's memories">
+              <button class="profile-main" type="button" onclick="window.__openPhoneProfileFallback('Somo')" aria-label="Open Somo's memories">
                 <div class="profile-avatar-wrap">
                   <img class="profile-avatar" id="profileAvatarSomo" alt="Somo profile picture">
                   <span class="profile-placeholder" id="profilePlaceholderSomo">S</span>
@@ -90,6 +90,24 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
   <script src="protect.js"></script>
+
+  <script>
+    // Navigation fallback: opens the gallery screen even if another script fails to initialise.
+    window.__openPhoneProfileFallback = function(profile) {
+      var chooser = document.getElementById('profileChooser');
+      var gallery = document.getElementById('galleryView');
+      var title = document.getElementById('galleryTitle');
+      if (!chooser || !gallery) return;
+      chooser.hidden = true;
+      gallery.hidden = false;
+      if (title) title.textContent = profile + "'s Memories";
+      if (typeof window.openPhoneProfile === 'function') {
+        Promise.resolve(window.openPhoneProfile(profile)).catch(function(err) { console.error(err); });
+      } else if (typeof window.__loadPhoneProfile === 'function') {
+        window.__loadPhoneProfile(profile);
+      }
+    };
+  </script>
   <script src="phone-gallery.js"></script>
 </body>
 </html>

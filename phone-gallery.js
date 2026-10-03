@@ -68,6 +68,7 @@
     if (chooser) chooser.hidden = true;
     if (galleryView) galleryView.hidden = false;
     setStatus(profile === myProfile ? 'Your collection · you can add photos here.' : `${profile}'s collection · view only.`);
+    if (!phoneClient) { setStatus('Gallery opened, but Supabase is not available.'); return; }
     await loadPhotos();
   };
 
@@ -143,6 +144,8 @@
     }
     await loadProfilePictures();
   }
+
+  window.__loadPhoneProfile = function(profile) { return window.openPhoneProfile(profile); };
 
   async function loadPhotos() {
     if (!grid) return;
