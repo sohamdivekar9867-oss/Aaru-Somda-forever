@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>The Mirror · Aaru & Somo</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #12090b;
+    }
+    body {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: Georgia, serif;
+    }
+    .mirror-page {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #12090b;
+      overflow: hidden;
+    }
+    .mirror-stage {
+      position: relative;
+      width: min(100vw, 66.6667svh);
+      height: min(150vw, 100svh);
+      aspect-ratio: 2 / 3;
+      flex: 0 0 auto;
+    }
+    .mirror-art {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      z-index: 1;
+    }
+    .mirror-character { position:absolute; display:block; height:auto; width:auto; pointer-events:none; user-select:none; z-index:2; }
+    .mirror-aaru { left:12.5%; top:27%; width:42%; }
+    .mirror-somo { left:54%; top:27%; width:28%; }
+    /* Flirt Somo uses the same fixed character position as Praise, with a
+       visual scale correction because mirror-somo2.png has different
+       transparent padding. */
+    .mirror-somo.flirt-somo { transform: scale(.88); transform-origin: 50% 100%; }
+    .praise-character, .flirt-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
+    .praise-aaru, .flirt-aaru { left:12.5%; top:27%; width:42%; height:auto; }
+
+    .back-button {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      left: 14px;
+      z-index: 30;
+      border: 1px solid rgba(255, 235, 220, .35);
+      background: rgba(30, 12, 14, .72);
+      color: #fff1e8;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font: 500 12px/1 monospace;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .back-button:active { transform: scale(.97); }
+
+    .choice-panel {
+      position: fixed;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 25;
+      width: min(92vw, 420px);
+      padding: 14px;
+      border: 1px solid rgba(255, 220, 210, .28);
+      border-radius: 20px;
+      background: rgba(28, 12, 15, .82);
+      box-shadow: 0 12px 35px rgba(0,0,0,.35);
+      backdrop-filter: blur(12px);
+      color: #fff5ee;
+    }
+    .choice-title {
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .choice-btn {
+      border: 1px solid rgba(255, 220, 210, .25);
+      border-radius: 12px;
+      padding: 10px 8px;
+      background: rgba(255,255,255,.08);
+      color: #fff8f3;
+      font: 600 14px/1.1 Georgia, serif;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease;
+    }
+    .choice-btn:hover { background: rgba(255,255,255,.14); }
+    .choice-btn:active { transform: scale(.97); }
+    .back-choice {
+      margin-top: 8px;
+      width: 100%;
+      background: rgba(180, 95, 105, .18);
+    }
+
+    @media (max-width: 520px) {
+      .mirror-aaru { left: 12%; top: 27%; width: 44%; }
+      .mirror-somo { left: 53%; top: 27%; width: 29%; }
+      .mirror-somo.flirt-somo { transform: scale(.88); transform-origin: 50% 100%; }
+      .praise-aaru, .flirt-aaru { left:12%; top:27%; width:44%; height:auto; }
+      .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
+      .choice-title { font-size: 15px; }
+      .choice-btn { padding: 9px 7px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="mirror-page">
+    <button class="back-button" onclick="history.back()">← Back</button>
+
+    <div class="mirror-stage" aria-label="Aaru and Somo in the mirror">
+      <img class="mirror-art" src="assets/Mirror.png" alt="Our cozy bedroom reflected in the mirror" />
+
+      <img class="mirror-character mirror-aaru" src="assets/mirror-scene/mirror-aaru.png" alt="Aaru standing in front of the mirror" draggable="false" />
+      <img id="mirrorSomo" data-mirror-somo="true" class="mirror-character mirror-somo" src="assets/mirror-scene/mirror-somo.png" alt="Somo sitting on the bed and looking at Aaru" draggable="false" />
+
+      <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
+      <img id="flirtAaru" class="flirt-character flirt-aaru" src="" alt="Aaru flirt expression" draggable="false" />
+    </div>
+
+    <section id="mainChoices" class="choice-panel" aria-label="Mirror choices">
+      <p class="choice-title">Aaru baby. What do u want Somo to do for u:</p>
+      <div class="choice-grid">
+        <button class="choice-btn" data-action="praise">1. Praise</button>
+        <button class="choice-btn" data-action="flirt">2. Flirt</button>
+        <button class="choice-btn" disabled>3. Tease</button>
+        <button class="choice-btn" disabled>4. Pamper</button>
+      </div>
+    </section>
+
+    <section id="praiseChoices" class="choice-panel" aria-label="Praise choices" hidden>
+      <p class="choice-title">Praise:</p>
+      <div class="choice-grid">
+        <button class="choice-btn praise-btn" data-scene="1.1.png">1.1</button>
+        <button class="choice-btn praise-btn" data-scene="1.2.png">1.2</button>
+        <button class="choice-btn praise-btn" data-scene="1.3.png">1.3</button>
+        <button class="choice-btn praise-btn" data-scene="1.4.png">1.4</button>
+        <button class="choice-btn praise-btn" data-scene="1.5.png">1.5</button>
+      </div>
+      <button id="backToMain" class="choice-btn back-choice">← Back to main options</button>
+    </section>
+
+    <section id="flirtChoices" class="choice-panel" aria-label="Flirt choices" hidden>
+      <p class="choice-title">Flirt:</p>
+      <div class="choice-grid">
+        <button class="choice-btn flirt-btn" data-scene="2.1.png">2.1</button>
+        <button class="choice-btn flirt-btn" data-scene="2.2.png">2.2</button>
+        <button class="choice-btn flirt-btn" data-scene="2.3.png">2.3</button>
+        <button class="choice-btn flirt-btn" data-scene="2.4.png">2.4</button>
+        <button class="choice-btn flirt-btn" data-scene="2.5.png">2.5</button>
+      </div>
+      <button id="backToMainFromFlirt" class="choice-btn back-choice">← Back to main options</button>
+    </section>
+  </main>
+
+  <script>
+    // The opening scene already contains the single fixed Somo element.
+    // Praise swaps only Aaru; Somo never changes or gets recreated.
+    const mainChoices = document.getElementById('mainChoices');
+    const praiseChoices = document.getElementById('praiseChoices');
+    const praiseAaru = document.getElementById('praiseAaru');
+    const flirtChoices = document.getElementById('flirtChoices');
+    const flirtAaru = document.getElementById('flirtAaru');
+    const baseAaru = document.querySelector('.mirror-aaru');
+    const baseSomo = document.getElementById('mirrorSomo');
+
+    function showMain() {
+      praiseChoices.hidden = true;
+      flirtChoices.hidden = true;
+      mainChoices.hidden = false;
+      praiseAaru.style.display = 'none';
+      flirtAaru.style.display = 'none';
+      baseAaru.style.display = 'block';
+      baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
+      baseSomo.classList.remove('flirt-somo');
+      baseSomo.style.display = 'block';
+    }
+
+    function showPraiseMenu() {
+      mainChoices.hidden = true;
+      praiseChoices.hidden = false;
+      flirtChoices.hidden = true;
+      baseAaru.style.display = 'block';
+      baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
+      baseSomo.classList.remove('flirt-somo');
+      baseSomo.style.display = 'block';
+      praiseAaru.style.display = 'none';
+      flirtAaru.style.display = 'none';
+    }
+
+    document.querySelector('[data-action="praise"]').addEventListener('click', showPraiseMenu);
+
+    function showFlirtMenu() {
+      mainChoices.hidden = true;
+      praiseChoices.hidden = true;
+      flirtChoices.hidden = false;
+      baseAaru.style.display = 'block';
+      praiseAaru.style.display = 'none';
+      flirtAaru.style.display = 'none';
+      baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
+      baseSomo.classList.add('flirt-somo');
+      baseSomo.style.display = 'block';
+    }
+
+    document.querySelector('[data-action="flirt"]').addEventListener('click', showFlirtMenu);
+
+    document.querySelectorAll('.praise-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const scene = button.dataset.scene;
+        praiseAaru.src = `assets/mirror-scene/Praise/${scene}`;
+        baseAaru.style.display = 'none';
+        baseSomo.style.display = 'block';
+        praiseAaru.style.display = 'block';
+      });
+    });
+
+    document.getElementById('backToMain').addEventListener('click', showMain);
+
+    document.querySelectorAll('.flirt-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const scene = button.dataset.scene;
+        flirtAaru.src = `assets/mirror-scene/Flirt/${scene}`;
+        baseAaru.style.display = 'none';
+        praiseAaru.style.display = 'none';
+        baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
+        baseSomo.classList.add('flirt-somo');
+        baseSomo.style.display = 'block';
+        flirtAaru.style.display = 'block';
+      });
+    });
+
+    document.getElementById('backToMainFromFlirt').addEventListener('click', showMain);
+  </script>
+</body>
+</html>
