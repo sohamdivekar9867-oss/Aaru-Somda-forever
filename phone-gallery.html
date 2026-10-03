@@ -21,12 +21,33 @@
         </header>
 
         <section class="phone-home" id="profileChooser">
-          <div class="phone-app-icon">♡</div>
           <div class="phone-app-title">Our Memories</div>
           <div class="phone-app-subtitle">Whose memories?</div>
-          <div class="user-options">
-            <button class="user-option" type="button" onclick="window.openPhoneProfile('Aaru')">Aaru</button>
-            <button class="user-option" type="button" onclick="window.openPhoneProfile('Somo')">Somo</button>
+          <div class="profile-options" id="profileOptions">
+            <article class="profile-card" id="profileCardAaru">
+              <button class="profile-main" type="button" onclick="window.openPhoneProfile('Aaru')" aria-label="Open Aaru's memories">
+                <div class="profile-avatar-wrap">
+                  <img class="profile-avatar" id="profileAvatarAaru" alt="Aaru profile picture">
+                  <span class="profile-placeholder" id="profilePlaceholderAaru">A</span>
+                </div>
+                <span class="profile-name">Aaru</span>
+              </button>
+              <label class="profile-upload" id="profileUploadAaru">+ Add photo
+                <input id="profileInputAaru" type="file" accept="image/*">
+              </label>
+            </article>
+            <article class="profile-card" id="profileCardSomo">
+              <button class="profile-main" type="button" onclick="window.openPhoneProfile('Somo')" aria-label="Open Somo's memories">
+                <div class="profile-avatar-wrap">
+                  <img class="profile-avatar" id="profileAvatarSomo" alt="Somo profile picture">
+                  <span class="profile-placeholder" id="profilePlaceholderSomo">S</span>
+                </div>
+                <span class="profile-name">Somo</span>
+              </button>
+              <label class="profile-upload" id="profileUploadSomo">+ Add photo
+                <input id="profileInputSomo" type="file" accept="image/*">
+              </label>
+            </article>
           </div>
           <div class="phone-hint">Choose a collection to open it.</div>
         </section>

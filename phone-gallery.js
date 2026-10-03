@@ -59,7 +59,6 @@
     setStatus('');
   }
 
-  // Expose this directly so the profile buttons still work even if another site script fails.
   window.openPhoneProfile = async function(profile) {
     if (profile !== 'Aaru' && profile !== 'Somo') return;
     selectedProfile = profile;
@@ -81,6 +80,68 @@
     if (candidate === 'aaru') return 'Aaru';
     if (candidate === 'somo' || candidate === 'soham') return 'Somo';
     return '';
+  }
+
+  async function loadProfilePictures() {
+    if (!phoneClient) return;
+    for (const profile of ['Aaru','Somo']) {
+      const img = $(`profileAvatar${profile}`);
+      const placeholder = $(`profilePlaceholder${profile}`);
+      const upload = $(`profileUpload${profile}`);
+      if (upload) upload.hidden = profile !== myProfile;
+      try {
+        const { data, error } = await phoneClient.from('phone_profile_pictures')
+          .select('id,profile_name,storage_path,created_at')
+          .eq('profile_name', profile).maybeSingle();
+        if (error) throw error;
+        if (data?.storage_path) {
+          const { data: signed, error: signError } = await phoneClient.storage.from('chat-photos').createSignedUrl(data.storage_path, 3600);
+          if (signError) throw signError;
+          if (signed?.signedUrl) {
+            img.src = signed.signedUrl;
+            img.hidden = false;
+            placeholder.hidden = true;
+          }
+        } else {
+          img.hidden = true;
+          placeholder.hidden = false;
+        }
+      } catch (err) {
+        console.error(`Profile picture load error for ${profile}:`, err);
+        img.hidden = true;
+        placeholder.hidden = false;
+      }
+    }
+  }
+
+  async function uploadProfilePicture(profile, file) {
+    if (!file || !phoneClient || !currentUser) return;
+    if (profile !== myProfile) {
+      alert(`You are logged in as ${myProfile}. You can only change your own profile picture.`);
+      return;
+    }
+    if (!file.type.startsWith('image/')) { alert('Please choose an image.'); return; }
+    const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'') || 'profile';
+    const path = `profiles/${profile}/${currentUser.id}/${crypto.randomUUID()}-${safeName}`;
+    const { data: existing, error: existingError } = await phoneClient.from('phone_profile_pictures')
+      .select('id,storage_path').eq('profile_name', profile).maybeSingle();
+    if (existingError) { alert(existingError.message); return; }
+    const { error: storageError } = await phoneClient.storage.from('chat-photos').upload(path, file, { cacheControl:'31536000', upsert:false, contentType:file.type });
+    if (storageError) { alert(`Could not upload profile picture: ${storageError.message}`); return; }
+    if (existing?.storage_path) await phoneClient.storage.from('chat-photos').remove([existing.storage_path]);
+    const payload = { profile_name: profile, storage_path: path, updated_by: currentUser.id };
+    let dbError;
+    if (existing?.id) {
+      ({ error: dbError } = await phoneClient.from('phone_profile_pictures').update(payload).eq('id', existing.id));
+    } else {
+      ({ error: dbError } = await phoneClient.from('phone_profile_pictures').insert(payload));
+    }
+    if (dbError) {
+      await phoneClient.storage.from('chat-photos').remove([path]);
+      alert(`Could not save profile picture: ${dbError.message}`);
+      return;
+    }
+    await loadProfilePictures();
   }
 
   async function loadPhotos() {
@@ -166,6 +227,10 @@
 
   if (galleryBack) galleryBack.addEventListener('click', showChooser);
   if (input) input.addEventListener('change',()=>uploadPhotos(Array.from(input.files||[])));
+  for (const profile of ['Aaru','Somo']) {
+    const inputEl = $(`profileInput${profile}`);
+    if (inputEl) inputEl.addEventListener('change', () => uploadProfilePicture(profile, inputEl.files?.[0]));
+  }
   if (grid) grid.addEventListener('click',e=>{
     const del=e.target.closest('[data-delete-id]');
     if(del){e.stopPropagation();deletePhoto(del.dataset.deleteId);return;}
@@ -184,7 +249,7 @@
       if(error||!user){ window.location.replace('login.html'); return; }
       currentUser=user;
       myProfile=await resolveMyProfile();
-      if(!myProfile){ console.warn('Could not map logged-in user to Aaru/Somo.'); }
+      await loadProfilePictures();
       showChooser();
     } catch(err) { console.error('Phone gallery init error:',err); }
   }
