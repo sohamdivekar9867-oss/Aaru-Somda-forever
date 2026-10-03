@@ -131,7 +131,7 @@
       <img class="mirror-art" src="assets/Mirror.png" alt="Our cozy bedroom reflected in the mirror" />
 
       <img class="mirror-character mirror-aaru" src="assets/mirror-scene/mirror-aaru.png" alt="Aaru standing in front of the mirror" draggable="false" />
-      <img class="mirror-character mirror-somo" src="assets/mirror-scene/mirror-somo.png" alt="Somo sitting on the bed and looking at Aaru" draggable="false" />
+      <img id="mirrorSomo" data-mirror-somo="true" class="mirror-character mirror-somo" src="assets/mirror-scene/mirror-somo.png" alt="Somo sitting on the bed and looking at Aaru" draggable="false" />
 
       <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
     </div>
@@ -160,14 +160,21 @@
   </main>
 
   <script>
-    // Keep exactly ONE Somo in every mirror state.
-    // Any legacy Praise/scene Somo overlays are removed/hidden.
-    document.querySelectorAll('.praise-somo, .praise-character.somo, [data-praise-somo], [data-scene-somo]').forEach(el => el.remove());
+    // ONE Somo only. Remove every legacy/duplicate Somo node, then create one fixed node.
+    document.querySelectorAll('.praise-somo, .praise-character.somo, [data-praise-somo], [data-scene-somo], [data-mirror-somo]').forEach(el => el.remove());
+    const stage = document.querySelector('.mirror-stage');
+    const baseSomo = document.createElement('img');
+    baseSomo.id = 'mirrorSomo';
+    baseSomo.className = 'mirror-character mirror-somo';
+    baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
+    baseSomo.alt = 'Somo sitting on the bed and looking at Aaru';
+    baseSomo.draggable = false;
+    stage.appendChild(baseSomo);
+
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
     const praiseAaru = document.getElementById('praiseAaru');
     const baseAaru = document.querySelector('.mirror-aaru');
-    const baseSomo = document.querySelector('.mirror-somo');
 
     function showMain() {
       praiseChoices.hidden = true;
