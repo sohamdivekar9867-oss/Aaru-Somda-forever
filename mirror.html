@@ -160,13 +160,13 @@
   </main>
 
   <script>
-    // Use the single Somo image already present in the HTML.
-    // Do not create or append another Somo node.
-
+    // The opening scene already contains the single fixed Somo element.
+    // Praise swaps only Aaru; Somo never changes or gets recreated.
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
     const praiseAaru = document.getElementById('praiseAaru');
     const baseAaru = document.querySelector('.mirror-aaru');
+    const baseSomo = document.getElementById('mirrorSomo');
 
     function showMain() {
       praiseChoices.hidden = true;
@@ -179,14 +179,17 @@
     function showPraiseMenu() {
       mainChoices.hidden = true;
       praiseChoices.hidden = false;
+      baseAaru.style.display = 'block';
+      baseSomo.style.display = 'block';
+      praiseAaru.style.display = 'none';
     }
 
     document.querySelector('[data-action="praise"]').addEventListener('click', showPraiseMenu);
 
     document.querySelectorAll('.praise-btn').forEach(button => {
       button.addEventListener('click', () => {
-        const scene = button.dataset.scene.replace('.png', '');
-        praiseAaru.src = `assets/mirror-scene/Praise/${scene}.png`;
+        const scene = button.dataset.scene;
+        praiseAaru.src = `assets/mirror-scene/Praise/${scene}`;
         baseAaru.style.display = 'none';
         baseSomo.style.display = 'block';
         praiseAaru.style.display = 'block';
