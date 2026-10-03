@@ -160,6 +160,9 @@
   </main>
 
   <script>
+    // Keep exactly ONE Somo in every mirror state.
+    // Any legacy Praise/scene Somo overlays are removed/hidden.
+    document.querySelectorAll('.praise-somo, .praise-character.somo, [data-praise-somo], [data-scene-somo]').forEach(el => el.remove());
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
     const praiseAaru = document.getElementById('praiseAaru');
