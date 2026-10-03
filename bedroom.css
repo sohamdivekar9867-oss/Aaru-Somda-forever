@@ -506,3 +506,40 @@ body.dialogue-open { overflow: hidden; }
     border-radius: 13px;
   }
 }
+
+
+/* Slow, soft speech-bubble formation */
+.speech-bubble {
+  transform: translate(-50%, calc(-100% - 34px)) scale(.72);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(2px);
+  transition:
+    opacity 0.62s ease,
+    transform 0.62s cubic-bezier(.18,.78,.22,1),
+    filter 0.62s ease,
+    left .55s cubic-bezier(.2,.75,.2,1),
+    top .55s cubic-bezier(.2,.75,.2,1);
+}
+
+.speech-bubble.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, calc(-100% - 34px)) scale(1);
+  filter: blur(0);
+}
+
+.speech-bubble::after {
+  transition: transform .62s ease;
+}
+
+@media (max-width: 600px) {
+  .speech-bubble {
+    transform: translate(-50%, calc(-100% - 30px)) scale(.72);
+  }
+
+  .speech-bubble.is-visible {
+    transform: translate(-50%, calc(-100% - 30px)) scale(1);
+  }
+}

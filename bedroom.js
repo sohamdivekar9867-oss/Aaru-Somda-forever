@@ -310,11 +310,19 @@ const actionData = {
 
   // ACTUAL KISS
   kiss: {
-    asset: 'kiss',
+    asset: 'hold',
     name: 'Aaru & Somo',
     title: 'A little kiss',
     text: '',
-    dialogues: { somo: 'Aaru… come a little closer. I just want to be close to you. ❤️', aaru: 'Somo… my heart is beating so fast right now. ❤️' },
+    kissSequence: [
+      { speaker: 'somo', line: 'Aaru… come a little closer. I just want to look at you for a while. ❤️', asset: 'hold' },
+      { speaker: 'aaru', line: 'Why are you looking at me like that, Somo…? ❤️', asset: 'hold' },
+      { speaker: 'somo', line: 'Because every time I look at you, I fall for you a little more. ❤️', asset: 'hold' },
+      { speaker: 'aaru', line: 'You make me so shy when you say things like that… ❤️', asset: 'hold' },
+      { speaker: 'somo', line: 'Then let me stay this close to you, my love. ❤️', asset: 'hold' },
+      { speaker: 'aaru', line: 'Okay… I’m right here. ❤️', asset: 'hold' },
+      { speaker: 'kiss', line: '', asset: 'kiss', pauseAfter: 2200 }
+    ],
     next: ['mainOptions']
   }
 };
@@ -390,6 +398,8 @@ function applyState(id, instant = false) {
 
   if (id === 'initial') {
     hideSpeechBubbles();
+  } else if (data.kissSequence) {
+    showDialoguePair(data.kissSequence);
   } else if (data.dialogues) {
     showDialoguePair(data.dialogues);
   } else {
@@ -401,25 +411,89 @@ function showDialoguePair(dialogues) {
   clearDialogueSequenceTimer();
   hideSpeechBubbles();
 
-  // Somo speaks first by default. For states where Aaru is the one
-  // performing the kiss/hug, her line leads and Somo replies.
+  // Special staged kiss sequence: slow conversation, hand-holding/eye contact,
+  // then the actual kiss asset.
+  if (currentState === 'kiss' && Array.isArray(dialogues)) {
+    runDialogueSequence(dialogues);
+    return;
+  }
+
+  // Standard interactions: Somo speaks first unless Aaru is performing
+  // the affectionate action.
   const aaruFirst = ['meTooPat', 'foreheadMeToo', 'foreheadAgain', 'cheekMeToo'].includes(currentState);
   const first = aaruFirst ? ['aaru', dialogues.aaru] : ['somo', dialogues.somo];
   const second = aaruFirst ? ['somo', dialogues.somo] : ['aaru', dialogues.aaru];
 
-  const showOne = ([speaker, line]) => {
-    clearDialogueSequenceTimer();
-    hideSpeechBubbles();
-    const bubble = speaker === 'aaru' ? aaruSpeech : somoSpeech;
-    bubble.textContent = line || '';
-    bubble.setAttribute('aria-hidden', line ? 'false' : 'true');
-    requestAnimationFrame(() => bubble.classList.add('is-visible'));
+  runDialogueSequence([
+    { speaker: first[0], line: first[1] },
+    { speaker: second[0], line: second[1] }
+  ]);
+}
+
+function runDialogueSequence(sequence) {
+  clearDialogueSequenceTimer();
+  hideSpeechBubbles();
+
+  let index = 0;
+
+  const next = () => {
+    if (index >= sequence.length) return;
+
+    const step = sequence[index++];
+    if (!step) return;
+
+    // The final kiss step has no bubble: switch to the kiss artwork after
+    // the preceding dialogue has had time to breathe.
+    if (step.speaker === 'kiss') {
+      hideSpeechBubbles();
+      setBubbleAnchors('kiss');
+      setChibi(step.asset || 'kiss', false);
+
+      // Hold the actual kiss moment before returning to the main options.
+      dialogueSequenceTimer = setTimeout(() => {
+        if (currentState === 'kiss') {
+          renderActions(['mainOptions']);
+        }
+      }, step.pauseAfter || 2200);
+      return;
+    }
+
+    if (step.asset) {
+      setBubbleAnchors(step.asset);
+      setChibi(step.asset, false);
+    }
+
+    const bubble = step.speaker === 'aaru' ? aaruSpeech : somoSpeech;
+    const other = step.speaker === 'aaru' ? somoSpeech : aaruSpeech;
+
+    // Bubble formation: clear the previous bubble, then grow the new one
+    // above the correct character.
+    [bubble, other].forEach((el) => {
+      el.classList.remove('is-visible');
+      el.setAttribute('aria-hidden', 'true');
+    });
+
+    bubble.textContent = step.line || '';
+    bubble.setAttribute('aria-hidden', step.line ? 'false' : 'true');
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => bubble.classList.add('is-visible'));
+    });
+
+    // Longer, readable pacing. Longer text gets a little extra time.
+    const readingMs = Math.max(3200, Math.min(5200, 2300 + (step.line || '').length * 34));
+
+    dialogueSequenceTimer = setTimeout(() => {
+      // Let the current bubble gently dissolve before the next one forms.
+      bubble.classList.remove('is-visible');
+
+      dialogueSequenceTimer = setTimeout(() => {
+        next();
+      }, 650);
+    }, readingMs);
   };
 
-  showOne(first);
-  if (second[1]) {
-    dialogueSequenceTimer = setTimeout(() => showOne(second), 1500);
-  }
+  next();
 }
 
 function openInteraction() {
@@ -456,6 +530,7 @@ aaruHotspot.addEventListener('click', (event) => {
     showLoveLine('aaru');
   } else {
     const data = actionData[currentState];
+    if (data?.kissSequence) return;
     if (data?.dialogues) showDialoguePair(data.dialogues);
   }
 });
@@ -466,6 +541,7 @@ somoHotspot.addEventListener('click', (event) => {
     showLoveLine('somo');
   } else {
     const data = actionData[currentState];
+    if (data?.kissSequence) return;
     if (data?.dialogues) showDialoguePair(data.dialogues);
   }
 });
