@@ -49,8 +49,9 @@
     .mirror-character { position:absolute; display:block; height:auto; width:auto; pointer-events:none; user-select:none; z-index:2; }
     .mirror-aaru { left:12.5%; top:27%; width:42%; }
     .mirror-somo { left:54%; top:27%; width:28%; }
-    .praise-character, .flirt-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
+    .praise-character, .flirt-character, .tease-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
     .praise-aaru, .flirt-aaru { left:12.5%; top:27%; width:42%; height:auto; }
+    .tease-scene { left:10%; top:25%; width:80%; height:auto; }
 
     .back-button {
       position: fixed;
@@ -117,6 +118,7 @@
       .mirror-aaru { left: 12%; top: 27%; width: 44%; }
       .mirror-somo { left: 53%; top: 27%; width: 29%; }
       .praise-aaru, .flirt-aaru { left:12%; top:27%; width:44%; height:auto; }
+      .tease-scene { left:7%; top:24%; width:86%; }
       .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
       .choice-title { font-size: 15px; }
       .choice-btn { padding: 9px 7px; font-size: 13px; }
@@ -135,6 +137,7 @@
 
       <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
       <img id="flirtAaru" class="flirt-character flirt-aaru" src="" alt="Aaru flirt expression" draggable="false" />
+      <img id="teaseScene" class="tease-character tease-scene" src="" alt="Aaru and Somo teasing scene" draggable="false" />
     </div>
 
     <section id="mainChoices" class="choice-panel" aria-label="Mirror choices">
@@ -142,7 +145,7 @@
       <div class="choice-grid">
         <button class="choice-btn" data-action="praise">1. Praise</button>
         <button class="choice-btn" data-action="flirt">2. Flirt</button>
-        <button class="choice-btn" disabled>3. Tease</button>
+        <button class="choice-btn" data-action="tease">3. Tease</button>
         <button class="choice-btn" disabled>4. Pamper</button>
       </div>
     </section>
@@ -157,6 +160,14 @@
         <button class="choice-btn praise-btn" data-scene="1.5.png">1.5</button>
       </div>
       <button id="backToMain" class="choice-btn back-choice">← Back to main options</button>
+    </section>
+
+    <section id="teaseChoices" class="choice-panel" aria-label="Tease choices" hidden>
+      <p class="choice-title">Tease:</p>
+      <div class="choice-grid">
+        <button class="choice-btn tease-btn" data-scene="3.1.png">3.1</button>
+      </div>
+      <button id="backToMainFromTease" class="choice-btn back-choice">← Back to main options</button>
     </section>
 
     <section id="flirtChoices" class="choice-panel" aria-label="Flirt choices" hidden>
@@ -179,6 +190,8 @@
     const praiseChoices = document.getElementById('praiseChoices');
     const praiseAaru = document.getElementById('praiseAaru');
     const flirtChoices = document.getElementById('flirtChoices');
+    const teaseChoices = document.getElementById('teaseChoices');
+    const teaseScene = document.getElementById('teaseScene');
     const flirtAaru = document.getElementById('flirtAaru');
     const baseAaru = document.querySelector('.mirror-aaru');
     const baseSomo = document.getElementById('mirrorSomo');
@@ -186,9 +199,11 @@
     function showMain() {
       praiseChoices.hidden = true;
       flirtChoices.hidden = true;
+      teaseChoices.hidden = true;
       mainChoices.hidden = false;
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
+      teaseScene.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
       baseSomo.style.display = 'block';
@@ -198,6 +213,7 @@
       mainChoices.hidden = true;
       praiseChoices.hidden = false;
       flirtChoices.hidden = true;
+      teaseChoices.hidden = true;
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
       baseSomo.style.display = 'block';
@@ -219,6 +235,32 @@
     }
 
     document.querySelector('[data-action="flirt"]').addEventListener('click', showFlirtMenu);
+
+    function showTeaseMenu() {
+      mainChoices.hidden = true;
+      praiseChoices.hidden = true;
+      flirtChoices.hidden = true;
+      teaseChoices.hidden = false;
+      baseAaru.style.display = 'none';
+      baseSomo.style.display = 'none';
+      praiseAaru.style.display = 'none';
+      flirtAaru.style.display = 'none';
+      teaseScene.style.display = 'block';
+      teaseScene.src = 'assets/mirror-scene/Tease/3.1.png';
+    }
+
+    document.querySelector('[data-action="tease"]').addEventListener('click', showTeaseMenu);
+
+    document.querySelector('.tease-btn').addEventListener('click', () => {
+      teaseScene.src = 'assets/mirror-scene/Tease/3.1.png';
+      baseAaru.style.display = 'none';
+      baseSomo.style.display = 'none';
+      praiseAaru.style.display = 'none';
+      flirtAaru.style.display = 'none';
+      teaseScene.style.display = 'block';
+    });
+
+    document.getElementById('backToMainFromTease').addEventListener('click', showMain);
 
     document.querySelectorAll('.praise-btn').forEach(button => {
       button.addEventListener('click', () => {
