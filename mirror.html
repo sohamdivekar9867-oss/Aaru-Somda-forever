@@ -160,16 +160,8 @@
   </main>
 
   <script>
-    // ONE Somo only. Remove every legacy/duplicate Somo node, then create one fixed node.
-    document.querySelectorAll('.praise-somo, .praise-character.somo, [data-praise-somo], [data-scene-somo], [data-mirror-somo]').forEach(el => el.remove());
-    const stage = document.querySelector('.mirror-stage');
-    const baseSomo = document.createElement('img');
-    baseSomo.id = 'mirrorSomo';
-    baseSomo.className = 'mirror-character mirror-somo';
-    baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
-    baseSomo.alt = 'Somo sitting on the bed and looking at Aaru';
-    baseSomo.draggable = false;
-    stage.appendChild(baseSomo);
+    // Use the single Somo image already present in the HTML.
+    // Do not create or append another Somo node.
 
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
@@ -179,7 +171,6 @@
     function showMain() {
       praiseChoices.hidden = true;
       mainChoices.hidden = false;
-      praiseAaru.style.display = 'none';
       praiseAaru.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.style.display = 'block';
