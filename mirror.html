@@ -51,7 +51,6 @@
     .mirror-somo { left:54%; top:27%; width:28%; }
     .praise-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
     .praise-aaru { left:12.5%; top:27%; height:50.441176%; }
-    .praise-somo { left:54%; top:27%; height:36.403100%; }
 
     .back-button {
       position: fixed;
@@ -118,7 +117,6 @@
       .mirror-aaru { left: 12%; top: 27%; width: 44%; }
       .mirror-somo { left: 53%; top: 27%; width: 29%; }
       .praise-aaru { left:12%; top:27%; height:52.843137%; }
-      .praise-somo { left:53%; top:27%; height:37.703211%; }
       .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
       .choice-title { font-size: 15px; }
       .choice-btn { padding: 9px 7px; font-size: 13px; }
@@ -136,7 +134,6 @@
       <img class="mirror-character mirror-somo" src="assets/mirror-scene/mirror-somo.png" alt="Somo sitting on the bed and looking at Aaru" draggable="false" />
 
       <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
-      <img id="praiseSomo" class="praise-character praise-somo" src="" alt="Somo praise expression" draggable="false" />
     </div>
 
     <section id="mainChoices" class="choice-panel" aria-label="Mirror choices">
@@ -166,7 +163,6 @@
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
     const praiseAaru = document.getElementById('praiseAaru');
-    const praiseSomo = document.getElementById('praiseSomo');
     const baseAaru = document.querySelector('.mirror-aaru');
     const baseSomo = document.querySelector('.mirror-somo');
 
@@ -174,7 +170,7 @@
       praiseChoices.hidden = true;
       mainChoices.hidden = false;
       praiseAaru.style.display = 'none';
-      praiseSomo.style.display = 'none';
+      praiseAaru.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.style.display = 'block';
     }
@@ -190,11 +186,9 @@
       button.addEventListener('click', () => {
         const scene = button.dataset.scene.replace('.png', '');
         praiseAaru.src = `assets/mirror-scene/Praise/states/${scene}-aaru.png`;
-        praiseSomo.src = `assets/mirror-scene/Praise/states/${scene}-somo.png`;
         baseAaru.style.display = 'none';
-        baseSomo.style.display = 'none';
+        baseSomo.style.display = 'block';
         praiseAaru.style.display = 'block';
-        praiseSomo.style.display = 'block';
       });
     });
 
