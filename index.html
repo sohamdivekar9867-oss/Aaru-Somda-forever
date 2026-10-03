@@ -58,6 +58,15 @@
           aria-label="Open Our Story"
         ></button>
 
+        <!-- LETTER -->
+        <button
+          class="hotspot letter-hotspot"
+          data-title="Love Letters"
+          data-link="letters.html"
+          data-content="Words we write, feelings we keep, and little pieces of our hearts."
+          aria-label="Open Love Letters"
+        ></button>
+
         <!-- FLOWERS -->
         <button
           class="hotspot flowers-hotspot"
@@ -103,9 +112,10 @@
           aria-label="Our important dates"
         ></button>
 
-        <!-- MIRROR — COMPLIMENTS -->
+        <!-- MIRROR — OPENS MIRROR PAGE -->
         <button
           class="hotspot mirror-hotspot"
+          data-link="mirror.html"
           aria-label="Look into the mirror"
         ></button>
 
@@ -277,23 +287,6 @@
       </div>
     </div>
   </div>
-
-  <!-- MIRROR COMPLIMENTS -->
-  <div class="mirror-modal" id="mirrorModal" aria-hidden="true">
-    <div class="mirror-backdrop"></div>
-
-    <div class="mirror-card" role="dialog" aria-modal="true" aria-labelledby="mirrorTitle">
-      <button class="mirror-close" aria-label="Close">×</button>
-
-      <div class="mirror-small">A LITTLE LOOK IN THE MIRROR</div>
-      <h2 id="mirrorTitle">The Mirror says...</h2>
-
-      <div class="mirror-compliment" id="mirrorCompliment"></div>
-
-      <button class="mirror-next" id="mirrorNext">Awww ♡</button>
-    </div>
-  </div>
-
 
   <!-- PRIVATE BED INTERACTION -->
   <div class="kiss-modal" id="kissModal" aria-hidden="true">
