@@ -1,7 +1,26 @@
 const SUPABASE_URL = 'https://swqaakxywwajesuajflz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G';
 const EDIT_PIN = 'RT2026';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+
+let currentUser = null;
+let currentPerson = '';
+let recipientPerson = '';
+
+function personFromEmail(email = '') {
+  const e = email.toLowerCase();
+  if (e.includes('aaru')) return 'Aaru';
+  if (e.includes('soham')) return 'Somo';
+  return '';
+}
+
+async function loadCurrentUser() {
+  const { data } = await supabaseClient.auth.getUser();
+  currentUser = data?.user || null;
+  currentPerson = personFromEmail(currentUser?.email || '');
+  recipientPerson = currentPerson === 'Aaru' ? 'Somo' : currentPerson === 'Somo' ? 'Aaru' : '';
+  if (recipientPerson) document.getElementById('recipientInput').value = recipientPerson;
+}
 
 const staticLetter = {
   recipient: 'Aaru',
@@ -75,6 +94,7 @@ function makeCard(letter, isStatic) {
     <div class="letter-recipient">Dear ${escapeHtml(letter.recipient || '')},</div>
     <div class="letter-content">${escapeHtml(letter.content || '')}</div>
     <div class="letter-signature">${escapeHtml(letter.signature || '')}</div>
+    ${!isStatic && letter.sender ? `<div class="letter-meta">From ${escapeHtml(letter.sender)}${letter.read_at ? ' · Read' : ' · Waiting to be read'}</div>` : ''}
     ${!isStatic && editingUnlocked ? `
       <div class="letter-actions">
         <button class="small-button" data-action="edit" data-id="${letter.id}">Edit</button>
@@ -136,11 +156,13 @@ async function createLetter() {
   const signature = document.getElementById('signatureInput').value.trim();
   if (!recipient || !content || !signature) return alert('Please fill in all three fields.');
   const { error } = await supabaseClient.from('love_letters').insert({
-    recipient, content, signature, display_order: letters.length + 1
+    recipient, content, signature, display_order: letters.length + 1,
+    sender: currentPerson || signature,
+    read_at: null
   });
   if (error) return alert(`Could not create the letter: ${error.message}`);
   closeForm();
-  await loadLetters();
+  await loadCurrentUser().then(loadLetters);
 }
 
 async function editLetter(id) {
@@ -154,14 +176,14 @@ async function editLetter(id) {
   if (signature === null) return;
   const { error } = await supabaseClient.from('love_letters').update({ recipient, content, signature, updated_at: new Date().toISOString() }).eq('id', id);
   if (error) return alert(`Could not save the letter: ${error.message}`);
-  await loadLetters();
+  await loadCurrentUser().then(loadLetters);
 }
 
 async function deleteLetter(id) {
   if (!confirm('Delete this entire letter?')) return;
   const { error } = await supabaseClient.from('love_letters').delete().eq('id', id);
   if (error) return alert(`Could not delete the letter: ${error.message}`);
-  await loadLetters();
+  await loadCurrentUser().then(loadLetters);
 }
 
 editToggle.addEventListener('click', unlockOrLock);
@@ -174,4 +196,4 @@ collection.addEventListener('click', event => {
   if (button.dataset.action === 'edit') editLetter(button.dataset.id);
   if (button.dataset.action === 'delete') deleteLetter(button.dataset.id);
 });
-loadLetters();
+loadCurrentUser().then(loadLetters);

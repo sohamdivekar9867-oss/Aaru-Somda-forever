@@ -13,6 +13,15 @@ const aaruHotspot = document.getElementById('aaruHotspot');
 const somoHotspot = document.getElementById('somoHotspot');
 const aaruSpeech = document.getElementById('aaruSpeech');
 const somoSpeech = document.getElementById('somoSpeech');
+const bedForwardWrap = document.getElementById('bedForwardWrap');
+const bedForward = document.getElementById('bedForward');
+const owlHotspot = document.getElementById('owlHotspot');
+const owlUnreadDot = document.getElementById('owlUnreadDot');
+const owlLettersModal = document.getElementById('owlLettersModal');
+const owlLettersBackdrop = document.getElementById('owlLettersBackdrop');
+const owlLettersClose = document.getElementById('owlLettersClose');
+const owlUnreadList = document.getElementById('owlUnreadList');
+const owlLettersIntro = document.getElementById('owlLettersIntro');
 
 const assetBase = 'assets/bed-chibis/';
 const transitionMs = 360;
@@ -113,6 +122,12 @@ function setBubbleAnchors(stateId) {
   stage.style.setProperty('--aaru-bubble-y', anchors.aaru[1] + '%');
   stage.style.setProperty('--somo-bubble-x', anchors.somo[0] + '%');
   stage.style.setProperty('--somo-bubble-y', anchors.somo[1] + '%');
+}
+
+function setForwardVisible(visible, label = 'Next →') {
+  if (!bedForwardWrap || !bedForward) return;
+  bedForwardWrap.hidden = !visible;
+  bedForward.textContent = label;
 }
 
 function clearDialogueSequenceTimer() {
@@ -304,7 +319,9 @@ const actionData = {
       { speaker: 'aaru', line: 'You make me so shy when you say things like that… ❤️', asset: 'hold' },
       { speaker: 'somo', line: 'Then let me stay this close to you, my love. ❤️', asset: 'hold' },
       { speaker: 'aaru', line: 'Okay… I’m right here. ❤️', asset: 'hold' },
-      { speaker: 'kiss', line: '', asset: 'kiss', pauseAfter: 2200 }
+      { speaker: 'kiss', line: '', asset: 'kiss' },
+      { speaker: 'somo', line: 'I love u Aaru ❤️', asset: 'kiss' },
+      { speaker: 'aaru', line: 'I love u Somo ❤️', asset: 'kiss' }
     ],
     next: ['mainOptions']
   }
@@ -379,6 +396,8 @@ function applyState(id, instant = false) {
   text.textContent = id === 'initial' ? data.text : '';
   renderActions(data.next);
 
+  setForwardVisible(false);
+
   if (id === 'initial') {
     hideSpeechBubbles();
   } else if (data.kissSequence) {
@@ -416,28 +435,24 @@ function showDialoguePair(dialogues) {
 function runDialogueSequence(sequence) {
   clearDialogueSequenceTimer();
   hideSpeechBubbles();
-
   let index = 0;
+  let active = true;
 
-  const next = () => {
-    if (index >= sequence.length) return;
+  const renderStep = () => {
+    if (!active) return;
+    if (index >= sequence.length) {
+      setForwardVisible(false);
+      renderActions(actionData[currentState]?.next || ['mainOptions']);
+      return;
+    }
 
-    const step = sequence[index++];
-    if (!step) return;
+    const step = sequence[index];
 
-    // The final kiss step has no bubble: switch to the kiss artwork after
-    // the preceding dialogue has had time to breathe.
     if (step.speaker === 'kiss') {
       hideSpeechBubbles();
       setBubbleAnchors('kiss');
       setChibi(step.asset || 'kiss', false);
-
-      // Hold the actual kiss moment before returning to the main options.
-      dialogueSequenceTimer = setTimeout(() => {
-        if (currentState === 'kiss') {
-          renderActions(['mainOptions']);
-        }
-      }, step.pauseAfter || 2200);
+      setForwardVisible(true, 'Next →');
       return;
     }
 
@@ -448,9 +463,6 @@ function runDialogueSequence(sequence) {
 
     const bubble = step.speaker === 'aaru' ? aaruSpeech : somoSpeech;
     const other = step.speaker === 'aaru' ? somoSpeech : aaruSpeech;
-
-    // Bubble formation: clear the previous bubble, then grow the new one
-    // above the correct character.
     [bubble, other].forEach((el) => {
       el.classList.remove('is-visible');
       el.setAttribute('aria-hidden', 'true');
@@ -458,27 +470,29 @@ function runDialogueSequence(sequence) {
 
     bubble.textContent = step.line || '';
     bubble.setAttribute('aria-hidden', step.line ? 'false' : 'true');
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => bubble.classList.add('is-visible'));
-    });
-
-    // Longer, readable pacing. Longer text gets a little extra time.
-    const readingMs = Math.max(3200, Math.min(5200, 2300 + (step.line || '').length * 34));
-
-    dialogueSequenceTimer = setTimeout(() => {
-      // Let the current bubble gently dissolve before the next one forms.
-      bubble.classList.remove('is-visible');
-
-      dialogueSequenceTimer = setTimeout(() => {
-        next();
-      }, 650);
-    }, readingMs);
+    requestAnimationFrame(() => requestAnimationFrame(() => bubble.classList.add('is-visible')));
+    setForwardVisible(true, index === sequence.length - 1 ? 'Done ❤️' : 'Next →');
   };
 
-  next();
-}
+  bedForward.onclick = () => {
+    if (!active) return;
+    const current = sequence[index];
+    if (current) {
+      const bubble = current.speaker === 'aaru' ? aaruSpeech : somoSpeech;
+      bubble?.classList.remove('is-visible');
+    }
+    index += 1;
+    if (index >= sequence.length) {
+      active = false;
+      setForwardVisible(false);
+      renderActions(actionData[currentState]?.next || ['mainOptions']);
+      return;
+    }
+    renderStep();
+  };
 
+  renderStep();
+}
 function openInteraction() {
   hideSpeechBubbles();
   setBubbleAnchors('initial');
@@ -490,6 +504,7 @@ function openInteraction() {
 
 function closeInteraction() {
   hideSpeechBubbles();
+  setForwardVisible(false);
   interaction.classList.remove('is-open');
   interaction.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('dialogue-open');
@@ -543,6 +558,116 @@ document.addEventListener('keydown', (event) => {
 
 preloadAssets();
 
+
+/* Love-letter owl + locker */
+const LETTERS_SUPABASE_URL = 'https://swqaakxywwajesuajflz.supabase.co';
+const LETTERS_SUPABASE_KEY = 'sb_publishable_LfHzOfkinZEd_D8AZpNqCw_075eKf-G';
+const lettersClient = window.supabase?.createClient(LETTERS_SUPABASE_URL, LETTERS_SUPABASE_KEY, {
+  auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+
+function personFromEmail(email = '') {
+  const e = email.toLowerCase();
+  if (e.includes('aaru')) return 'Aaru';
+  if (e.includes('soham')) return 'Somo';
+  return '';
+}
+
+let owlUnreadLetters = [];
+
+async function getUnreadLetters() {
+  if (!lettersClient) return [];
+  const { data: { user } } = await lettersClient.auth.getUser();
+  const me = personFromEmail(user?.email || '');
+  if (!me) return [];
+  const { data, error } = await lettersClient
+    .from('love_letters')
+    .select('id,recipient,content,signature,sender,created_at,read_at')
+    .eq('recipient', me)
+    .is('read_at', null)
+    .not('sender', 'is', null)
+    .order('created_at', { ascending: true });
+  if (error) {
+    console.error('Could not load unread love letters:', error);
+    return [];
+  }
+  return data || [];
+}
+
+function escapeLetterHtml(value = '') {
+  return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[char]));
+}
+
+function updateOwlGlow() {
+  if (!owlHotspot) return;
+  owlHotspot.classList.toggle('has-unread', owlUnreadLetters.length > 0);
+  if (owlUnreadDot) owlUnreadDot.hidden = owlUnreadLetters.length === 0;
+}
+
+async function refreshOwlUnread() {
+  owlUnreadLetters = await getUnreadLetters();
+  updateOwlGlow();
+}
+
+function closeOwlLetters() {
+  if (!owlLettersModal) return;
+  owlLettersModal.classList.remove('is-open');
+  owlLettersModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('owl-letters-open');
+}
+
+function renderUnreadLetters() {
+  if (!owlUnreadList) return;
+  if (!owlUnreadLetters.length) {
+    owlUnreadList.innerHTML = '<div class="owl-empty-letter">No unread letters right now. ❤️<br><span>The owl is resting by the window.</span></div>';
+    return;
+  }
+  owlUnreadList.innerHTML = owlUnreadLetters.map(letter => `
+    <article class="owl-letter-card" data-letter-id="${escapeLetterHtml(letter.id)}">
+      <div class="owl-letter-from">A little letter from ${escapeLetterHtml(letter.sender || 'someone special')} ❤️</div>
+      <div class="owl-letter-recipient">Dear ${escapeLetterHtml(letter.recipient || '')},</div>
+      <div class="owl-letter-content">${escapeLetterHtml(letter.content || '')}</div>
+      <div class="owl-letter-signature">${escapeLetterHtml(letter.signature || '')}</div>
+      <button class="owl-letter-read" type="button" data-read-id="${escapeLetterHtml(letter.id)}">Read & keep in the locker ❤️</button>
+    </article>
+  `).join('');
+}
+
+async function markLetterRead(id) {
+  if (!lettersClient) return;
+  const { error } = await lettersClient.from('love_letters').update({ read_at: new Date().toISOString() }).eq('id', id);
+  if (error) {
+    alert(`Could not mark the letter as read: ${error.message}`);
+    return;
+  }
+  owlUnreadLetters = owlUnreadLetters.filter(letter => String(letter.id) !== String(id));
+  updateOwlGlow();
+  renderUnreadLetters();
+}
+
+async function openOwlLetters() {
+  await refreshOwlUnread();
+  renderUnreadLetters();
+  if (owlLettersIntro) owlLettersIntro.textContent = owlUnreadLetters.length ? 'The owl brought these letters just for you.' : 'There are no new letters waiting right now.';
+  owlLettersModal?.classList.add('is-open');
+  owlLettersModal?.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('owl-letters-open');
+}
+
+owlHotspot?.addEventListener('click', openOwlLetters);
+owlLettersClose?.addEventListener('click', closeOwlLetters);
+owlLettersBackdrop?.addEventListener('click', closeOwlLetters);
+owlUnreadList?.addEventListener('click', event => {
+  const button = event.target.closest('[data-read-id]');
+  if (button) markLetterRead(button.dataset.readId);
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && owlLettersModal?.classList.contains('is-open')) closeOwlLetters();
+});
+
+refreshOwlUnread();
+setInterval(refreshOwlUnread, 5000);
 
 /* Date Cat -> bedroom clock state + next-date countdown. */
 const SUPABASE_URL = 'https://swqaakxywwajesuajflz.supabase.co';

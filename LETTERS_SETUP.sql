@@ -33,6 +33,8 @@ alter table public.love_letters add column if not exists signature text;
 alter table public.love_letters add column if not exists display_order integer not null default 0;
 alter table public.love_letters add column if not exists created_at timestamptz not null default now();
 alter table public.love_letters add column if not exists updated_at timestamptz not null default now();
+alter table public.love_letters add column if not exists sender text;
+alter table public.love_letters add column if not exists read_at timestamptz;
 alter table public.love_letters enable row level security;
 drop policy if exists "Authenticated users can view love letters" on public.love_letters;
 drop policy if exists "Authenticated users can create love letters" on public.love_letters;
