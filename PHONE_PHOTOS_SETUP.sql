@@ -7,13 +7,15 @@ returns text
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
-  select case lower(coalesce(auth.jwt() ->> 'email', ''))
+  select case lower(coalesce(u.email, ''))
     when 'aaru.saru090901@gmail.com' then 'Aaru'
     when 'sohamdivekar9867@gmail.com' then 'Somo'
     else null
-  end;
+  end
+  from auth.users u
+  where u.id = auth.uid();
 $$;
 
 revoke all on function public.current_couple_profile() from public;
