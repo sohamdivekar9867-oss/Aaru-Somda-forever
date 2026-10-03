@@ -49,10 +49,9 @@
     .mirror-character { position:absolute; display:block; height:auto; width:auto; pointer-events:none; user-select:none; z-index:2; }
     .mirror-aaru { left:12.5%; top:27%; width:42%; }
     .mirror-somo { left:54%; top:27%; width:28%; }
-    .mirror-somo.flirt-somo { transform: scale(.86); transform-origin: top left; }
-    .praise-character, .flirt-character, .tease-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
+    .praise-character, .flirt-character, .tease-character, .pamper-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
     .praise-aaru, .flirt-aaru { left:12.5%; top:27%; width:42%; height:auto; }
-    .tease-scene { left:10.5%; top:9%; width:50%; height:auto; }
+    .tease-scene, .pamper-scene { left:10.5%; top:9%; width:50%; height:auto; }
 
     .back-button {
       position: fixed;
@@ -118,9 +117,8 @@
     @media (max-width: 520px) {
       .mirror-aaru { left: 12%; top: 27%; width: 44%; }
       .mirror-somo { left: 53%; top: 27%; width: 29%; }
-      .mirror-somo.flirt-somo { transform: scale(.86); transform-origin: top left; }
       .praise-aaru, .flirt-aaru { left:12%; top:27%; width:44%; height:auto; }
-      .tease-scene { left:10.5%; top:9%; width:50%; }
+      .tease-scene, .pamper-scene { left:10.5%; top:9%; width:50%; }
       .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
       .choice-title { font-size: 15px; }
       .choice-btn { padding: 9px 7px; font-size: 13px; }
@@ -140,6 +138,7 @@
       <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
       <img id="flirtAaru" class="flirt-character flirt-aaru" src="" alt="Aaru flirt expression" draggable="false" />
       <img id="teaseScene" class="tease-character tease-scene" src="" alt="Aaru and Somo teasing scene" draggable="false" />
+      <img id="pamperScene" class="pamper-character pamper-scene" src="" alt="Aaru and Somo pampering scene" draggable="false" />
     </div>
 
     <section id="mainChoices" class="choice-panel" aria-label="Mirror choices">
@@ -148,7 +147,7 @@
         <button class="choice-btn" data-action="praise">1. Praise</button>
         <button class="choice-btn" data-action="flirt">2. Flirt</button>
         <button class="choice-btn" data-action="tease">3. Tease</button>
-        <button class="choice-btn" disabled>4. Pamper</button>
+        <button class="choice-btn" data-action="pamper">4. Pamper</button>
       </div>
     </section>
 
@@ -168,8 +167,24 @@
       <p class="choice-title">Tease:</p>
       <div class="choice-grid">
         <button class="choice-btn tease-btn" data-scene="3.1.png">3.1</button>
+        <button class="choice-btn tease-btn" data-scene="3.2.png">3.2</button>
+        <button class="choice-btn tease-btn" data-scene="3.3.png">3.3</button>
+        <button class="choice-btn tease-btn" data-scene="3.4.png">3.4</button>
+        <button class="choice-btn tease-btn" data-scene="3.5.png">3.5</button>
       </div>
       <button id="backToMainFromTease" class="choice-btn back-choice">← Back to main options</button>
+    </section>
+
+    <section id="pamperChoices" class="choice-panel" aria-label="Pamper choices" hidden>
+      <p class="choice-title">Pamper:</p>
+      <div class="choice-grid">
+        <button class="choice-btn pamper-btn" data-scene="4.1.png">4.1</button>
+        <button class="choice-btn pamper-btn" data-scene="4.2.png">4.2</button>
+        <button class="choice-btn pamper-btn" data-scene="4.3.png">4.3</button>
+        <button class="choice-btn pamper-btn" data-scene="4.4.png">4.4</button>
+        <button class="choice-btn pamper-btn" data-scene="4.5.png">4.5</button>
+      </div>
+      <button id="backToMainFromPamper" class="choice-btn back-choice">← Back to main options</button>
     </section>
 
     <section id="flirtChoices" class="choice-panel" aria-label="Flirt choices" hidden>
@@ -194,6 +209,8 @@
     const flirtChoices = document.getElementById('flirtChoices');
     const teaseChoices = document.getElementById('teaseChoices');
     const teaseScene = document.getElementById('teaseScene');
+    const pamperChoices = document.getElementById('pamperChoices');
+    const pamperScene = document.getElementById('pamperScene');
     const flirtAaru = document.getElementById('flirtAaru');
     const baseAaru = document.querySelector('.mirror-aaru');
     const baseSomo = document.getElementById('mirrorSomo');
@@ -202,13 +219,14 @@
       praiseChoices.hidden = true;
       flirtChoices.hidden = true;
       teaseChoices.hidden = true;
+      pamperChoices.hidden = true;
       mainChoices.hidden = false;
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
       teaseScene.style.display = 'none';
+      pamperScene.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
-      baseSomo.classList.remove('flirt-somo');
       baseSomo.style.display = 'block';
     }
 
@@ -217,9 +235,9 @@
       praiseChoices.hidden = false;
       flirtChoices.hidden = true;
       teaseChoices.hidden = true;
+      pamperChoices.hidden = true;
       baseAaru.style.display = 'block';
       baseSomo.src = 'assets/mirror-scene/mirror-somo.png';
-      baseSomo.classList.remove('flirt-somo');
       baseSomo.style.display = 'block';
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
@@ -231,11 +249,11 @@
       mainChoices.hidden = true;
       praiseChoices.hidden = true;
       flirtChoices.hidden = false;
+      pamperChoices.hidden = true;
       baseAaru.style.display = 'block';
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
       baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
-      baseSomo.classList.add('flirt-somo');
       baseSomo.style.display = 'block';
     }
 
@@ -246,26 +264,64 @@
       praiseChoices.hidden = true;
       flirtChoices.hidden = true;
       teaseChoices.hidden = false;
+      pamperChoices.hidden = true;
       baseAaru.style.display = 'none';
       baseSomo.style.display = 'none';
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
       teaseScene.style.display = 'block';
+      pamperScene.style.display = 'none';
       teaseScene.src = 'assets/mirror-scene/Tease/3.1.png';
     }
 
     document.querySelector('[data-action="tease"]').addEventListener('click', showTeaseMenu);
 
-    document.querySelector('.tease-btn').addEventListener('click', () => {
-      teaseScene.src = 'assets/mirror-scene/Tease/3.1.png';
+    document.querySelectorAll('.tease-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const scene = button.dataset.scene;
+        teaseScene.src = `assets/mirror-scene/Tease/${scene}`;
+        baseAaru.style.display = 'none';
+        baseSomo.style.display = 'none';
+        praiseAaru.style.display = 'none';
+        flirtAaru.style.display = 'none';
+        pamperScene.style.display = 'none';
+        teaseScene.style.display = 'block';
+      });
+    });
+
+    document.getElementById('backToMainFromTease').addEventListener('click', showMain);
+
+    function showPamperMenu() {
+      mainChoices.hidden = true;
+      praiseChoices.hidden = true;
+      flirtChoices.hidden = true;
+      teaseChoices.hidden = true;
+      pamperChoices.hidden = false;
       baseAaru.style.display = 'none';
       baseSomo.style.display = 'none';
       praiseAaru.style.display = 'none';
       flirtAaru.style.display = 'none';
-      teaseScene.style.display = 'block';
+      teaseScene.style.display = 'none';
+      pamperScene.style.display = 'block';
+      pamperScene.src = 'assets/mirror-scene/Pamper/4.1.png';
+    }
+
+    document.querySelector('[data-action="pamper"]').addEventListener('click', showPamperMenu);
+
+    document.querySelectorAll('.pamper-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const scene = button.dataset.scene;
+        pamperScene.src = `assets/mirror-scene/Pamper/${scene}`;
+        baseAaru.style.display = 'none';
+        baseSomo.style.display = 'none';
+        praiseAaru.style.display = 'none';
+        flirtAaru.style.display = 'none';
+        teaseScene.style.display = 'none';
+        pamperScene.style.display = 'block';
+      });
     });
 
-    document.getElementById('backToMainFromTease').addEventListener('click', showMain);
+    document.getElementById('backToMainFromPamper').addEventListener('click', showMain);
 
     document.querySelectorAll('.praise-btn').forEach(button => {
       button.addEventListener('click', () => {
@@ -286,7 +342,6 @@
         baseAaru.style.display = 'none';
         praiseAaru.style.display = 'none';
         baseSomo.src = 'assets/mirror-scene/mirror-somo2.png';
-        baseSomo.classList.add('flirt-somo');
         baseSomo.style.display = 'block';
         flirtAaru.style.display = 'block';
       });
