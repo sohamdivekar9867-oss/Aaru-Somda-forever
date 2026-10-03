@@ -22,6 +22,7 @@ const owlLettersBackdrop = document.getElementById('owlLettersBackdrop');
 const owlLettersClose = document.getElementById('owlLettersClose');
 const owlUnreadList = document.getElementById('owlUnreadList');
 const owlLettersIntro = document.getElementById('owlLettersIntro');
+const phoneHotspot = document.getElementById('phoneHotspot');
 const lockerHotspot = document.getElementById('lockerHotspot');
 
 const assetBase = 'assets/bed-chibis/';
@@ -656,12 +657,8 @@ async function openOwlLetters() {
 }
 
 owlHotspot?.addEventListener('click', openOwlLetters);
-
-// The bedroom locker opens the existing Love Letters page.
-// All existing letters remain there; this is only the navigation from the locker hotspot.
-lockerHotspot?.addEventListener('click', () => {
-  window.location.href = 'letters.html';
-});
+lockerHotspot?.addEventListener('click', () => { window.location.href = 'letters.html'; });
+phoneHotspot?.addEventListener('click', () => { window.location.href = 'phone-gallery.html'; });
 owlLettersClose?.addEventListener('click', closeOwlLetters);
 owlLettersBackdrop?.addEventListener('click', closeOwlLetters);
 owlUnreadList?.addEventListener('click', event => {

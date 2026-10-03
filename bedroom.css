@@ -749,7 +749,8 @@ body.dialogue-open { overflow: hidden; }
 
 /* Permanent owl messenger + Love Letter Locker */
 .owl-hotspot,
-.locker-hotspot {
+.locker-hotspot,
+.phone-hotspot {
   position: absolute;
   border: 0;
   padding: 0;
@@ -807,6 +808,15 @@ body.dialogue-open { overflow: hidden; }
   width: 15%;
   height: 12%;
   border-radius: 12%;
+}
+
+/* Coordinates follow the phone on the new bedroom artwork. */
+.phone-hotspot {
+  left: 10.5%;
+  top: 76.4%;
+  width: 17.5%;
+  height: 5.2%;
+  border-radius: 22%;
 }
 
 .owl-letters-modal {
@@ -916,6 +926,7 @@ body.dialogue-open { overflow: hidden; }
 @media (max-width: 600px) {
   .owl-hotspot { left: 51%; top: 29.5%; width: 18%; height: 9.5%; }
   .locker-hotspot { right: 5%; top: 39%; width: 22%; height: 14%; }
+.phone-hotspot { left: 8%; top: 76%; width: 26%; height: 7%; }
   .owl-letters-card { padding: 25px 14px 18px; border-radius: 20px; }
   .owl-letter-card { padding: 28px 22px 23px; }
   .owl-letter-content { font-size: 15px; line-height: 1.7; }
