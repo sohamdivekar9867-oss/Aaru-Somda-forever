@@ -46,29 +46,12 @@
       object-fit: fill;
       z-index: 1;
     }
-    .mirror-character {
-      position: absolute;
-      display: block;
-      height: auto;
-      width: auto;
-      pointer-events: none;
-      user-select: none;
-      z-index: 2;
-    }
-    .mirror-aaru { left: 12.5%; top: 27%; width: 42%; }
-    .mirror-somo { left: 54%; top: 27%; width: 28%; }
-
-    .praise-scene {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: fill;
-      z-index: 3;
-      display: none;
-      pointer-events: none;
-      user-select: none;
-    }
+    .mirror-character { position:absolute; display:block; height:auto; width:auto; pointer-events:none; user-select:none; z-index:2; }
+    .mirror-aaru { left:12.5%; top:27%; width:42%; }
+    .mirror-somo { left:54%; top:27%; width:28%; }
+    .praise-character { position:absolute; display:none; width:auto; pointer-events:none; user-select:none; z-index:3; }
+    .praise-aaru { left:12.5%; top:27%; height:calc(42% * 1225 / 680); }
+    .praise-somo { left:54%; top:27%; height:calc(28% * 1174 / 602); }
 
     .back-button {
       position: fixed;
@@ -134,6 +117,8 @@
     @media (max-width: 520px) {
       .mirror-aaru { left: 12%; top: 27%; width: 44%; }
       .mirror-somo { left: 53%; top: 27%; width: 29%; }
+      .praise-aaru { left:12%; top:27%; height:calc(44% * 1225 / 680); }
+      .praise-somo { left:53%; top:27%; height:calc(29% * 1174 / 602); }
       .choice-panel { bottom: max(10px, env(safe-area-inset-bottom)); padding: 11px; }
       .choice-title { font-size: 15px; }
       .choice-btn { padding: 9px 7px; font-size: 13px; }
@@ -150,7 +135,8 @@
       <img class="mirror-character mirror-aaru" src="assets/mirror-scene/mirror-aaru.png" alt="Aaru standing in front of the mirror" draggable="false" />
       <img class="mirror-character mirror-somo" src="assets/mirror-scene/mirror-somo.png" alt="Somo sitting on the bed and looking at Aaru" draggable="false" />
 
-      <img id="praiseScene" class="praise-scene" src="assets/mirror-scene/Praise/1.1.png" alt="Praise scene" draggable="false" />
+      <img id="praiseAaru" class="praise-character praise-aaru" src="" alt="Aaru praise expression" draggable="false" />
+      <img id="praiseSomo" class="praise-character praise-somo" src="" alt="Somo praise expression" draggable="false" />
     </div>
 
     <section id="mainChoices" class="choice-panel" aria-label="Mirror choices">
@@ -179,14 +165,16 @@
   <script>
     const mainChoices = document.getElementById('mainChoices');
     const praiseChoices = document.getElementById('praiseChoices');
-    const praiseScene = document.getElementById('praiseScene');
+    const praiseAaru = document.getElementById('praiseAaru');
+    const praiseSomo = document.getElementById('praiseSomo');
     const baseAaru = document.querySelector('.mirror-aaru');
     const baseSomo = document.querySelector('.mirror-somo');
 
     function showMain() {
       praiseChoices.hidden = true;
       mainChoices.hidden = false;
-      praiseScene.style.display = 'none';
+      praiseAaru.style.display = 'none';
+      praiseSomo.style.display = 'none';
       baseAaru.style.display = 'block';
       baseSomo.style.display = 'block';
     }
@@ -200,10 +188,13 @@
 
     document.querySelectorAll('.praise-btn').forEach(button => {
       button.addEventListener('click', () => {
-        praiseScene.src = `assets/mirror-scene/Praise/${button.dataset.scene}`;
+        const scene = button.dataset.scene.replace('.png', '');
+        praiseAaru.src = `assets/mirror-scene/Praise/states/${scene}-aaru.png`;
+        praiseSomo.src = `assets/mirror-scene/Praise/states/${scene}-somo.png`;
         baseAaru.style.display = 'none';
         baseSomo.style.display = 'none';
-        praiseScene.style.display = 'block';
+        praiseAaru.style.display = 'block';
+        praiseSomo.style.display = 'block';
       });
     });
 
